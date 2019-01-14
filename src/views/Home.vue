@@ -5,6 +5,9 @@
 
 <script>
 export default {
-  name: 'home'
-}
+  name: "home",
+  created() {
+    
+  },
+};
 </script>
