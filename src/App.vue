@@ -15,6 +15,9 @@ export default {
   },
   mounted() {
     window.app = this;
+    document.body.oncontextmenu = function() {
+      return false;
+    };
   }
 };
 </script>
@@ -27,6 +30,10 @@ export default {
 
 html,
 body {
+  height: 100%;
+}
+
+#app {
   height: 100%;
 }
 </style>
