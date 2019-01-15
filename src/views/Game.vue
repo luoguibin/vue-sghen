@@ -16,7 +16,7 @@ export default {
   mounted() {
     this.loadJs(["stats.min.js", "three.min.js", "tween.min.js"], () => {
       this.loadJs(["gltf-loader.js"], () => {
-        import("../components/game/Game").then(e => {
+        import(/* webpackChunkName: "game-entrance" */"../components/game/Game").then(e => {
           Vue.component("game", e.default);
           this.isReady = true;
         });
