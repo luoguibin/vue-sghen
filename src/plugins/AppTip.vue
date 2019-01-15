@@ -49,5 +49,6 @@ export default {
   color: white;
   font-size: 18px;
   text-align: center;
+  box-sizing: border-box;
 }
 </style>

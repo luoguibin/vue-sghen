@@ -19,7 +19,8 @@ module.exports = {
       .chunkFilename('js/[name].js?[hash]')
       .end()
 
-    config.plugins.delete('prefetch')
+    config.plugins.delete('prefetch').end()
+    config.plugins.delete('preload').end()
   },
   configureWebpack: () => {
   },
