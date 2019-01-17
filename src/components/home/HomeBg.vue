@@ -93,9 +93,20 @@ svg {
   filter: blur(1px);
 }
 
+@keyframes cloud-anim {
+    from {
+        transform: translate(-20%, 200px)
+    }
+    to {
+        transform: translate(100%, 200px)
+    }
+}
+
 .clouds {
   transform: translate(200px, 200px);
+  animation: cloud-anim 20s infinite linear;
 }
+
 .cloud {
   stroke: transparent;
   fill: rgba(220, 220, 220, 0.5);
