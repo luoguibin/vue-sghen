@@ -19,6 +19,11 @@ export default new Router({
       component: () => import(/* webpackChunkName: "game-entrance" */ "./views/Game")
     },
     {
+      path: "/demo",
+      name: "name",
+      component: () => import(/* webpackChunkName: "demo" */ "./views/Demo")
+    },
+    {
       path: "/*",
       redirect: "/"
     }
