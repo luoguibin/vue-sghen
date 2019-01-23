@@ -1,5 +1,3 @@
-import { LabDom } from "./LabDom";
-
 export class LabContainer {
 
     ID_COUNT = 2020000;
@@ -13,23 +11,15 @@ export class LabContainer {
     constructor(el) {
         this.el = el;
         this._addListener(true);
-
-        this.test();
     }
 
-    test() {
-        for (let i = 0; i < 3; i++) {
-            const labDom = new LabDom(this, "img", { action: 3 });
-            labDom.setStyle({ width: 200, height: 120, position: "absolute", left: 300, top: 200 });
-            labDom.setAttributes({ src: require("@/assets/textures/grass.png") });
-            this.labDomMap[labDom.id] = labDom;
-        }
-        for (let i = 0; i < 2; i++) {
-            const labDom = new LabDom(this, "div", { action: i });
-            labDom.setStyle({ position: "absolute", left: 300 * i, top: 200 });
-            labDom.setInnerHTML("message-" + i);
-            this.labDomMap[labDom.id] = labDom;
-        }
+    addLabDom(labDom) {
+        this.labDomMap[labDom.id] = labDom;
+    }
+
+    appendLabDom(labDom) {
+        this.el.appendChild(labDom.el);
+        this.addLabDom(labDom);
     }
 
     _addListener(isFirst) {
@@ -85,13 +75,13 @@ export class LabContainer {
      * @param {MouseEvent} e
      */
     _onMouseDown(e) {
-        if (e.target === this.el) {
-            return;
-        }
+        if (e.target === this.el) return;
+
         const el = e.target,
             id = el.getAttribute("lab-id");
+        if (!id) return;
 
-        if (id && this.labDomMap[id]) {
+        if (this.labDomMap[id]) {
             const curLabDom = this.labDomMap[id];
             if (!curLabDom.canDown()) return;
 
@@ -155,10 +145,6 @@ export class LabContainer {
         const x = (e.clientX - rect.left) / scale,
             y = (e.clientY - rect.top) / scale;
         return { x, y };
-    }
-
-    appendChild(el) {
-        this.el.appendChild(el);
     }
 
     newId() {

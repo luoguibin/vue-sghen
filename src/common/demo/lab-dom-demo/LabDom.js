@@ -1,5 +1,3 @@
-import { LabContainer } from "./LabContainer";
-
 export class LabDom {
 
     static STYLES_CONFIG = {
@@ -10,6 +8,7 @@ export class LabDom {
         height: 1,
         left: 1,
         top: 1,
+        padding: 1,
 
         // number value
         zIndex: 2,
@@ -17,11 +16,15 @@ export class LabDom {
         // string value
         position: 3,
         transformOrigin: 3,
-        transform: 3
+        transform: 3,
+        border: 3
     }
 
     styles = {};
     attributes = {};
+
+    parent = null;
+    children = [];
 
     /**
      * constructor
@@ -33,26 +36,32 @@ export class LabDom {
         this.container = container;
         this.id = container.newId();
         this.label = label;
-        this.config = config;
+        this.config = config || {};
 
         const el = document.createElement(label);
         el.setAttribute("lab-id", this.id);
-        container.appendChild(el);
         this.el = el;
     }
 
     canDown() {
         return this.config.action > 0;
+        // if (this.config.action > 0) return true;
+        // else if (this.parent) {
+        //     return this.parent.canDown();
+        // } else return false;
     }
 
     canMove() {
         return this.config.action > 2;
+        // if (this.config.action > 2) return true;
+        // else if (this.parent) {
+        //     return this.parent.canMove();
+        // } else return false;
     }
 
     setInnerHTML(innerHTML) {
-        if (this.label === "div" || this.label === "p" || this.label === "span") {
-            this.el.innerHTML = innerHTML;
-        }
+        if (this.el.innerHTML === undefined) return;
+        this.el.innerHTML = innerHTML;
     }
 
     setStyle(style) {
@@ -70,6 +79,10 @@ export class LabDom {
                 }
             }
         }
+    }
+
+    getStyles() {
+        return this.styles;
     }
 
     addStyle(style) {
@@ -99,7 +112,50 @@ export class LabDom {
         }
     }
 
+    addChild(labDom) {
+        if (this.label !== "div") return;
+        if (labDom.el.parentElement) return;
+        labDom.parent = this;
+        this.el.appendChild(labDom.el);
+        this.children.push(labDom);
+        this.container.addLabDom(labDom);
+    }
+
+    containChild(id) {
+        const labDom = this.children.find(o => {
+            return o.id === id;
+        });
+        return labDom;
+    }
+
+    removeChild(id) {
+        const labDom = this.containChild(id);
+        if (labDom) {
+            const index = this.children.findIndex(o => {
+                return id === o.id;
+            })
+            this.children.splice(index, 1);
+            this.el.removeChild(labDom.el);
+        }
+        return labDom;
+    }
+
+    removeChildren() {
+        const children = this.children,
+            len = children.length;
+        if (!len) return;
+        const el = this.el;
+        for (let i = len - 1; i >= 0; i--) {
+            const labDom = children[i];
+            el.removeChild(labDom.el);
+            labDom.release();
+            children.splice(i, 1);
+        }
+    }
+
     release() {
+
         this.container = null;
+        this.children = null;
     }
 }

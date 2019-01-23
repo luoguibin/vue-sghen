@@ -9,6 +9,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "animejs": "^3.0.1",
     "pathfinding": "^0.4.18",
     "three": "^0.100.0",
     "vue": "^2.5.21",
