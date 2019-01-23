@@ -19,6 +19,11 @@ export default new Router({
       component: () => import(/* webpackChunkName: "game-entrance" */ "./views/Game")
     },
     {
+      path: "/new-year",
+      name: "new-year",
+      component: () => import(/* webpackChunkName: "year" */ "./views/NewYear")
+    },
+    {
       path: "/demo",
       name: "name",
       component: () => import(/* webpackChunkName: "demo" */ "./views/Demo")
