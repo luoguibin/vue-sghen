@@ -31,11 +31,13 @@ var newSpriteCanvas = function(colorStr) {
     canvas.width = 16;
     canvas.height = 16;
     var context = canvas.getContext('2d');
+    context.fillStyle = "rgba(255, 255, 255, 0)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
     var gradient = context.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
     gradient.addColorStop(0, 'rgba(255,255,255,1)');
     gradient.addColorStop(0.15, colorStr ? colorStr : `rgba(${THREE.Math.randInt(0, 255)},${THREE.Math.randInt(0, 255)},${THREE.Math.randInt(0, 255)},1)`);
     gradient.addColorStop(0.4, 'rgba(20,20,20,1)');
-    gradient.addColorStop(1, 'rgba(0,0,0,1)');
+    gradient.addColorStop(1, 'rgba(0,0,0,0)');
 
     context.fillStyle = gradient;
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -50,8 +52,9 @@ var addSprites = function(mesh, offSet) {
         const spriteMaterial = new THREE.SpriteMaterial({
             map: new THREE.CanvasTexture(newSpriteCanvas(colors[i])),
             blending: THREE.AdditiveBlending
-        }),
-            sprite = new THREE.Sprite(spriteMaterial);
+        });
+        spriteMaterial.transparent =  true;
+        const sprite = new THREE.Sprite(spriteMaterial);
         mesh.add(sprite);
 
         const position = sprite.position,
