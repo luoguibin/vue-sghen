@@ -1,7 +1,8 @@
 <template>
-    <div class="demo">
-        <component v-if="compName" :is="compName"></component>
-    </div>
+  <div class="demo">
+    <component v-if="compName" :is="compName"></component>
+    <p v-else>{{Object.keys(componentMap).join("&nbsp;&nbsp;")}}</p>
+  </div>
 </template>
 
 <script>
@@ -13,13 +14,22 @@ export default {
     return {
       compName: "",
       componentMap: {
-        LabDomDemo: true
+        LabDomDemo: true,
+        LineAdsorption: true,
+        ShapeCut: true
       }
     };
   },
   mounted() {
     window.demo = this;
     this.init();
+  },
+  watch: {
+    $route(to, from) {
+      if (to.path.indexOf("demo") >= 0) {
+        this.init();
+      }
+    }
   },
   methods: {
     init() {
@@ -31,6 +41,8 @@ export default {
           }
           this.compName = compName;
         });
+      } else {
+        this.compName = "";
       }
     }
   }
