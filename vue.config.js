@@ -9,7 +9,10 @@ module.exports = {
       entry: './src/main',
       template: './public/index.html',
       filename: 'index.html'
-    }
+    },
+    app2: {
+      entry: './src2/main',
+    },
   },
 
   chainWebpack: config => {
