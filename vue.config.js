@@ -13,6 +13,11 @@ module.exports = {
     app2: {
       entry: './src2/main',
     },
+    vue: {
+      entry: './src3/main',
+      template: './public/vue.html',
+      filename: 'vue.html'
+    }
   },
 
   chainWebpack: config => {
