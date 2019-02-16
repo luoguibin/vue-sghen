@@ -19,7 +19,6 @@
         </div>
 
         <div>
-            <dyna0 v-if="isReady"></dyna0>
         </div>
     </div>
 </template>
@@ -30,15 +29,15 @@ import Vue from "vue";
 export default {
   data() {
     return {
-        isReady: false
     };
   },
   mounted() {
     window.vApp = this;
     this.$root.getDynamicComponent('dyna0').then(o => {
         Vue.component("dyna0", o.default);
-        this.isReady = true;
-    })
+    }).catch(e => {
+        // console.log("dyna0 load error")
+    });
   },
   methods: {}
 };
