@@ -36,6 +36,7 @@ export default {
           if (count === jsNames.length) {
             call && call();
           }
+          script.onload = null;
         };
         head.appendChild(script);
       });
