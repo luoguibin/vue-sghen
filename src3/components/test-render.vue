@@ -94,6 +94,9 @@ export default {
       items: [{ name: "0" }, { name: "1" }, { name: "2" }]
     };
   },
+  /**
+   * 如果 Vue 选项中包含render渲染函数，其template模板将被忽略。
+   */
   render(createElement) {
     if (this.items.length) {
       return createElement(
