@@ -2,6 +2,7 @@ import Vue from "vue";
 import App from "./App";
 import getDynamicComponent from "./components/dynamic/index";
 require("./components/global/index");
+require("./common/iview-config");
 
 Vue.config.productionTip = false;
 

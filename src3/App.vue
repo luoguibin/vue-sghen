@@ -26,6 +26,11 @@
       <p>
         <span class="bold">keep-alive</span> 要求同时只有一个子元素被渲染</p>
       <p>父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的。</p>
+
+      <p>
+        <Spin style="display: inline-block;"></Spin>
+        <Button>一套基于 Vue.js 的高质量UI 组件库</Button>
+      </p>
     </div>
 
     <div>
