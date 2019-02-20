@@ -1,6 +1,8 @@
 <template>
   <div id="g-hello">
-    <div :class="$style['g-hello']">g-hello</div>
+    <div :class="$style['g-hello']">
+      g-hello,<slot>world</slot>
+    </div>
   </div>
 </template>
 
