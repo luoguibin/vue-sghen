@@ -88,7 +88,7 @@ createElement(
 */
 
 export default {
-  name: "TestRender",
+  name: "GRender",
   data() {
     return {
       items: [{ name: "0" }, { name: "1" }, { name: "2" }]

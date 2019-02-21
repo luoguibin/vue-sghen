@@ -38,16 +38,15 @@
       <g-hello>sghen.
         <div>It's a good day.</div>
       </g-hello>
-      <test-render>
+      <g-render>
         day day up
-      </test-render>
+      </g-render>
     </div>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
-import TestRender from "./components/test-render";
 
 export default {
   name: "App",
@@ -66,9 +65,6 @@ export default {
     },
     val1: "printVal",
     "val2.val3": "printVal"
-  },
-  components: {
-    "test-render": TestRender
   },
   mounted() {
     window.vApp = this;
