@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <Tabs value="g-vue">
+    <Tabs value="g-js" class="tabs">
 
       <TabPane label="Vue" name="g-vue">
         <g-vue d-data="123" :d-data1="321" v-bind="val2"></g-vue>
@@ -64,6 +64,22 @@ export default {
 
 <style lang="css" scoped>
 .app {
+  height: 100%;
   padding: 10px;
+}
+</style>
+
+<style>
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.ivu-tabs, .ivu-tabs-content {
+  height: 100%;
+}
+.ivu-tabs-tabpane {
+  height: calc(100% - 52px);
+  overflow-y: auto;
 }
 </style>
