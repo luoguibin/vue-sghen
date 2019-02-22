@@ -70,12 +70,14 @@ export default {
 </style>
 
 <style>
-html, body {
+html,
+body {
   height: 100%;
   overflow: hidden;
 }
 
-.ivu-tabs, .ivu-tabs-content {
+.ivu-tabs,
+.ivu-tabs-content {
   height: 100%;
 }
 .ivu-tabs-tabpane {

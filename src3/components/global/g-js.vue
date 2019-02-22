@@ -1,13 +1,14 @@
 <template>
     <div class="v-js">
         <p>
-            <span class="bold">JavaScript</span> (JS) 是一种具有函数优先的轻量级解释型或即时编译型的编程语言。</p>
+            <span class="bold">JavaScript</span> (JS) 是一种具有函数优先的轻量级解释型或即时编译型的编程语言。由三部分组成：核心(ECMAScript)、文档对象模型(DOM)、浏览器对象模型(BOM)</p>
 
         <div class="part">
             <p>ECMAScript标准定义的
                 <span class="bold">7种数据类型</span>： 六种基本数据类型: 布尔值（Boolean）、 null、undefined、数字（Number）、字符串（String）、代表（Symbol）。以及对象（Object）。
             </p>
             <p>Symbol表示独一无二的值，不能用new命令，其值只能通过Symbol函数生成。</p>
+            <p>对于尚未声明过的变量,只能执行一项操作,即使用 typeof 操作符检测其数据类型，而声明过的变量，但又未赋予初始值，使用 typeof 操作符也返回 undefined。</p>
         </div>
 
         <p>
@@ -26,10 +27,17 @@
         <p>
             <span class="bold">es6 class直接定义继承</span>
         </p>
+
+        <!-- draggable test -->
+        <draggable ref="dragEl" v-model="myArray" :options="{group:'people', animation: 550, setData: setData}" @start="onDragStart" @end="onDragEnd">
+            <div class="drag-item" v-for="element in myArray" :key="element.id">{{element.name}}</div>
+        </draggable>
     </div>
 </template>
 
 <script>
+import draggable from "vuedraggable";
+
 const StrData = {
   jicheng: `
     // 定义一个动物类
@@ -62,13 +70,35 @@ const StrData = {
 
 export default {
   name: "GJs",
+  components: {
+    draggable
+  },
   data() {
     return {
-      strData: StrData
+      strData: StrData,
+      myArray: [
+        { id: 0, name: 0 },
+        { id: 1, name: 1 },
+        { id: 2, name: 2 },
+        { id: 3, name: 3 },
+        { id: 4, name: 4 }
+      ]
     };
   },
   mounted() {
     window.gjs = this;
+  },
+  methods: {
+    setData(dataTransfer, dragEl) {
+      // prevent from opening a tab when use txt elements
+      dataTransfer.setData("Text", "");
+    },
+    onDragStart(e) {
+      console.log("onDragStart", e);
+    },
+    onDragEnd(e) {
+      console.log("onDragEnd", e);
+    }
   }
 };
 </script>
@@ -90,5 +120,13 @@ p {
   font-size: 16px;
   text-indent: 2em;
   line-height: 1.8em;
+}
+
+.drag-item {
+  width: 30%;
+  font-size: 30px;
+  border: 1px solid gray;
+  background-color: #eee;
+  margin-bottom: 10px;
 }
 </style>
