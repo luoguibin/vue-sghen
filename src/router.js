@@ -4,7 +4,7 @@ import Home from "./views/Home.vue"
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   // mode: "history",
   base: process.env.BASE_URL,
   routes: [
@@ -20,17 +20,33 @@ export default new Router({
     },
     {
       path: "/new-year",
+      alias: "/newyear",  // 别名，可为数组
       name: "new-year",
       component: () => import(/* webpackChunkName: "year" */ "./views/NewYear")
     },
     {
       path: "/demo/:name",
-      name: "name",
-      component: () => import(/* webpackChunkName: "demo" */ "./views/Demo")
+      name: "demo",
+      component: () => import(/* webpackChunkName: "demo" */ "./views/Demo"),
+      // props: true,
+      props: (route) => ({ compName: route.params.name }),
+      // beforeEnter: (to, from, next) => {
+      // }
     },
     {
       path: "/*",
       redirect: "/"
     }
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  // console.log("router.beforeEach()");
+  next();
+});
+
+router.afterEach((to, from) => {
+  // console.log("router.afterEach");
+});
+
+export default router;
