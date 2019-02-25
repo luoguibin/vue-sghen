@@ -16,7 +16,8 @@ export default {
       componentMap: {
         LabDomDemo: true,
         LineAdsorption: true,
-        ShapeCut: true
+        ShapeCut: true,
+        WorkerDemo: true
       }
     };
   },
