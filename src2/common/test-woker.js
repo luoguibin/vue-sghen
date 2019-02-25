@@ -4,7 +4,6 @@ document.body.appendChild(input);
 const button = document.createElement("BUTTON");
 button.innerHTML = "send"
 button.onclick = function () {
-    console.log(port, input.value)
     port.postMessage(input.value);
 }
 document.body.appendChild(button);
@@ -17,11 +16,10 @@ const port = worker.port;
 port.start();
 
 port.onmessage = function (e) {
-    if (typeof e.data === "object") {
-        console.log("onmessage() count=" + e.data.count);
-    } else {
-        div.innerHTML = e.data;
-    }
+    let data = e.data;
+    if (typeof data === "object")
+        data = JSON.stringify(data) || "";
+    div.innerHTML = data;
 }
 
-export {}
+export { }
