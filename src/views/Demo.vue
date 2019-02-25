@@ -1,7 +1,9 @@
 <template>
   <div class="demo">
     <component v-if="compName" :is="compName"></component>
-    <p v-else>{{Object.keys(componentMap).join("&nbsp;&nbsp;")}}</p>
+    <div v-else style="padding-top: 10px;">
+      <router-link v-for="(val, key) in componentMap" :key="key" :to="'/demo/' + key" class="a-link">{{key}}</router-link>
+    </div>
   </div>
 </template>
 
@@ -34,7 +36,7 @@ export default {
   },
   methods: {
     init() {
-      const compName = this.$route.query.compName;
+      const compName = this.$route.params.name;
       if (compName && this.componentMap[compName]) {
         import("@/components/demo/" + compName).then(o => {
           if (!Vue.component(compName)) {
@@ -53,5 +55,10 @@ export default {
 <style scoped>
 .demo {
   height: 100%;
+}
+
+.a-link {
+  padding: 10px;
+  margin: 5px;
 }
 </style>

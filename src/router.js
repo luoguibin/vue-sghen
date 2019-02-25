@@ -24,7 +24,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "year" */ "./views/NewYear")
     },
     {
-      path: "/demo",
+      path: "/demo/:name",
       name: "name",
       component: () => import(/* webpackChunkName: "demo" */ "./views/Demo")
     },
