@@ -1,4 +1,6 @@
-export class LabContainer {
+import LabDom from "./LabDom";
+
+export default class LabContainer {
 
     ID_COUNT = 2020000;
 
@@ -13,8 +15,28 @@ export class LabContainer {
         this._addListener(true);
     }
 
+    setData(data) {
+        data.forEach(o => {
+            this.appendLabDom(LabDom.newLabDom(this, o));
+        });
+    }
+
+    resetLabDoms() {
+        const object = this.labDomMap;
+        for (const key in object) {
+            if (object.hasOwnProperty(key)) {
+                const o = object[key];
+                o.setStyle(o._oldStyle);
+            }
+        }
+    }
+
     addLabDom(labDom) {
         this.labDomMap[labDom.id] = labDom;
+    }
+
+    getLabDom(id) {
+        return this.labDomMap[id];
     }
 
     appendLabDom(labDom) {
@@ -37,6 +59,7 @@ export class LabContainer {
             el.ondragstart = function () {
                 return false;
             }
+            return;
         }
         if (this.isTouch) {
             el.addEventListener("touchmove", this._onMouseMove);
@@ -149,5 +172,9 @@ export class LabContainer {
 
     newId() {
         return this.ID_COUNT++;
+    }
+
+    release() {
+
     }
 }

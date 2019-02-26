@@ -1,4 +1,4 @@
-export class LabDom {
+export default class LabDom {
 
     static STYLES_CONFIG = {
         opacity: 0,
@@ -9,21 +9,26 @@ export class LabDom {
         left: 1,
         top: 1,
         padding: 1,
+        borderRadius: 1,
 
         // number value
         zIndex: 2,
 
         // string value
+        display: 3,
         position: 3,
-        transformOrigin: 3,
+        border: 3,
+        overflow: 3,
         transform: 3,
-        border: 3
+        transformOrigin: 3,
+        backgroundColor: 3,
     }
 
+    el = null;
     styles = {};
     attributes = {};
 
-    parent = null;
+    container = null;
     children = [];
 
     /**
@@ -43,20 +48,29 @@ export class LabDom {
         this.el = el;
     }
 
+    static newLabDom(container, o) {
+        const labDom = new LabDom(container, o.tag, o.config);
+        labDom.setStyle(o.style);
+        labDom.setAttributes(o.attributes);
+        labDom.setChildrenData(o.children);
+        labDom._oldStyle = JSON.parse(JSON.stringify(o.style));
+        return labDom;
+    }
+
+    setChildrenData(children) {
+        if (!children) return;
+
+        children.forEach(o => {
+            this.addChild(LabDom.newLabDom(this.container, o));
+        });
+    }
+
     canDown() {
         return this.config.action > 0;
-        // if (this.config.action > 0) return true;
-        // else if (this.parent) {
-        //     return this.parent.canDown();
-        // } else return false;
     }
 
     canMove() {
         return this.config.action > 2;
-        // if (this.config.action > 2) return true;
-        // else if (this.parent) {
-        //     return this.parent.canMove();
-        // } else return false;
     }
 
     setInnerHTML(innerHTML) {
@@ -115,7 +129,7 @@ export class LabDom {
     addChild(labDom) {
         if (this.label !== "div") return;
         if (labDom.el.parentElement) return;
-        labDom.parent = this;
+
         this.el.appendChild(labDom.el);
         this.children.push(labDom);
         this.container.addLabDom(labDom);
