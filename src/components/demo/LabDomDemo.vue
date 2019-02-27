@@ -11,31 +11,31 @@ const labDomDatas = [
   {
     tag: "img",
     config: {
-      action: 3
+      action: 2
     },
-    attributes: {
+    attribute: {
       src: require("@/assets/textures/grass.png")
     },
     style: {
-      width: 200,
-      height: 120,
+      width: "200px",
+      height: "120px",
       position: "absolute",
-      left: 300,
-      top: 200
+      left: "300px",
+      top: "200px"
     }
   },
   {
     tag: "div",
     config: {
-      action: 3
+      action: 2
     },
     style: {
       position: "absolute",
-      left: 500,
-      top: 200,
-      width: 190,
-      height: 190,
-      borderRadius: 100,
+      left: "500px",
+      top: "200px",
+      width: "190px",
+      height: "190px",
+      borderRadius: "100px",
       border: "5px solid gray",
       backgroundColor: "#333333",
       overflow: "hidden"
@@ -44,17 +44,17 @@ const labDomDatas = [
       {
         tag: "img",
         config: {
-          action: 1
+          action: 2
         },
-        attributes: {
+        attribute: {
           src: require("@/assets/textures/grass.png")
         },
         style: {
-          width: 50,
-          height: 50,
+          width: "50px",
+          height: "50px",
           position: "absolute",
-          left: 95 - 25,
-          top: 95 - 25,
+          left: "70px",
+          top: "70px",
           transformOrigin: "25px -70px",
           transform: "rotate(80deg)"
         }
@@ -67,10 +67,12 @@ const labDomDatas = [
 const labDomSteps = [
   {
     id: 2020000,
-    anime: {
-      left: 500,
-      top: 300,
-      opacity: 0,
+    animeStyle: {
+      left: "500px",
+      top: "300px",
+      opacity: 0
+    },
+    animeConfig: {
       duration: 1000,
       delay: 300
     },
@@ -79,9 +81,11 @@ const labDomSteps = [
   [
     {
       id: 2020002,
-      anime: {
+      animeStyle: {
         transform: "rotate(0deg)", // dom style
-        rotate: 0, // anime style
+        rotate: 0 // anime style
+      },
+      animeConfig: {
         duration: 1000,
         delay: 300
       },
@@ -90,8 +94,10 @@ const labDomSteps = [
   ],
   {
     id: 2020000,
-    anime: {
-      opacity: 1,
+    animeStyle: {
+      opacity: 1
+    },
+    animeConfig: {
       duration: 0,
       delay: 0
     },
@@ -132,18 +138,18 @@ export default {
     animeLabDom(c, o) {
       console.log(o);
       const labDom = c.getLabDom(o.id);
-      const styles = labDom.getStyles(),
-        o_ = {
-          targets: labDom.el,
-          easing: "linear",
-          ...o.anime,
-          complete: () => {
-            labDom.setStyle(o.anime);
-            if (o.call === "after") {
-              this.nextStep();
-            }
+      const o_ = {
+        targets: labDom.el,
+        easing: "linear",
+        ...o.animeStyle,
+        ...o.animeConfig,
+        complete: () => {
+          labDom.setStyle(o.animeStyle);
+          if (o.call === "after") {
+            this.nextStep();
           }
-        };
+        }
+      };
       anime(o_);
       if (o.call === "immediate") {
         this.nextStep();

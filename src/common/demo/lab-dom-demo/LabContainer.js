@@ -17,7 +17,7 @@ export default class LabContainer {
 
     setData(data) {
         data.forEach(o => {
-            this.appendLabDom(LabDom.newLabDom(this, o));
+            this.appendLabDom(new LabDom(this, o));
         });
     }
 
@@ -31,17 +31,17 @@ export default class LabContainer {
         }
     }
 
-    addLabDom(labDom) {
+    appendLabDom(labDom) {
+        this.el.appendChild(labDom.el);
+        this.addToMap(labDom);
+    }
+
+    addToMap(labDom) {
         this.labDomMap[labDom.id] = labDom;
     }
 
     getLabDom(id) {
         return this.labDomMap[id];
-    }
-
-    appendLabDom(labDom) {
-        this.el.appendChild(labDom.el);
-        this.addLabDom(labDom);
     }
 
     _addListener(isFirst) {
@@ -101,14 +101,14 @@ export default class LabContainer {
         if (e.target === this.el) return;
 
         const el = e.target,
-            id = el.getAttribute("lab-id");
+            id = el.getAttribute("id");
         if (!id) return;
 
         if (this.labDomMap[id]) {
             const curLabDom = this.labDomMap[id];
             if (!curLabDom.canDown()) return;
 
-            curLabDom.addStyle({ zIndex: 100 });
+            curLabDom.setStyle({ zIndex: 100 });
             this.curLabDom = curLabDom;
             this.curPoint = this._getEventPoint(e);
             this._addListener();
@@ -125,10 +125,12 @@ export default class LabContainer {
         if (!curLabDom.canMove()) return;
 
         const curPoint_ = this._getEventPoint(this.isTouch ? e.touches[0] : e),
-            curPoint = this.curPoint;
-        curLabDom.addStyle({
-            left: curPoint_.x - curPoint.x,
-            top: curPoint_.y - curPoint.y
+            curPoint = this.curPoint,
+            leftVal = parseInt(curLabDom._getStyle("left")),
+            topVal = parseInt(curLabDom._getStyle("top"));
+        curLabDom.setStyle({
+            left: leftVal + curPoint_.x - curPoint.x + "px",
+            top: topVal + curPoint_.y - curPoint.y + "px"
         });
 
         this.isMove = true;
@@ -152,7 +154,7 @@ export default class LabContainer {
         if (!curLabDom) return;
 
         console.log("_onMouseUp() " + this.curLabDom.id + " isMove=" + this.isMove);
-        this.curLabDom.addStyle({ zIndex: -100 });
+        curLabDom.setStyle({ zIndex: curLabDom._getStyle("zIndex") - 100 });
         this.curLabDom = null;
 
         this._removeListener();
