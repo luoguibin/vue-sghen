@@ -2,12 +2,23 @@ import LabDom from "./LabDom";
 
 export default class LabContainer {
 
+    /**
+     * id序列起始点
+     */
     ID_COUNT = 2020000;
 
+    /**
+     * 所有LabDom元素对应el的容器
+     */
+    el = null;
+
+    /**
+     * 所有LabDom元素表
+     */
     labDomMap = {};
 
     /**
-     * constructor
+     * 构造函数
      * @param {HTMLElement} el 
      */
     constructor(el) {
@@ -15,23 +26,48 @@ export default class LabContainer {
         this._addListener(true);
     }
 
-    setData(data) {
-        data.forEach(o => {
-            this.appendLabDom(new LabDom(this, o));
+    newId() {
+        return this.ID_COUNT++;
+    }
+
+    /**
+     * 根据给定数据构建LabDom
+     * @param {Array} datas 数据类型参照LabDom规范
+     */
+    setData(datas) {
+        if (!datas || !datas instanceof Array) return;
+        datas.forEach(o => {
+            this.addLabDom(new LabDom(this, o));
         });
     }
 
+    /**
+     * 设置鼠标事件回调
+     * @param {Function} down 
+     * @param {Function} move 
+     * @param {Function} up 
+     */
+    setCall(down, move, up) {
+        this.downCall = down;
+        this.moveCall = move;
+        this.upCall = up;
+    }
+
+    /**
+     * 重置LabDom为初始创建时的样式
+     */
     resetLabDoms() {
         const object = this.labDomMap;
         for (const key in object) {
             if (object.hasOwnProperty(key)) {
                 const o = object[key];
-                o.setStyle(o._oldStyle);
+                o.resetStyle(true);
+                o.resetConfig();
             }
         }
     }
 
-    appendLabDom(labDom) {
+    addLabDom(labDom) {
         this.el.appendChild(labDom.el);
         this.addToMap(labDom);
     }
@@ -44,6 +80,23 @@ export default class LabContainer {
         return this.labDomMap[id];
     }
 
+    removeLabDomById(id, real) {
+        const dom = this.labDomMap[id];
+        this.removeLabDom(dom, real);
+    }
+
+    removeLabDom(dom, real) {
+        if (!dom) return;
+        if (real) {
+            dom.release();
+        }
+        delete this.labDomMap[dom.id];
+    }
+
+    /**
+     *　初始化事件
+     * @param {Boolean} isFirst 是否为第一次初始化
+     */
     _addListener(isFirst) {
         const el = this.el;
         if (isFirst) {
@@ -71,6 +124,9 @@ export default class LabContainer {
         }
     }
 
+    /**
+     * 移除事件
+     */
     _removeListener() {
         const el = this.el;
 
@@ -112,6 +168,8 @@ export default class LabContainer {
             this.curLabDom = curLabDom;
             this.curPoint = this._getEventPoint(e);
             this._addListener();
+
+            this.downCall && this.downCall(curLabDom);
         }
     }
 
@@ -126,8 +184,8 @@ export default class LabContainer {
 
         const curPoint_ = this._getEventPoint(this.isTouch ? e.touches[0] : e),
             curPoint = this.curPoint,
-            leftVal = parseInt(curLabDom._getStyle("left")),
-            topVal = parseInt(curLabDom._getStyle("top"));
+            leftVal = parseInt(curLabDom.getStyle("left")),
+            topVal = parseInt(curLabDom.getStyle("top"));
         curLabDom.setStyle({
             left: leftVal + curPoint_.x - curPoint.x + "px",
             top: topVal + curPoint_.y - curPoint.y + "px"
@@ -153,10 +211,12 @@ export default class LabContainer {
         const curLabDom = this.curLabDom;
         if (!curLabDom) return;
 
-        console.log("_onMouseUp() " + this.curLabDom.id + " isMove=" + this.isMove);
-        curLabDom.setStyle({ zIndex: curLabDom._getStyle("zIndex") - 100 });
-        this.curLabDom = null;
+        // console.log("_onMouseUp() " + this.curLabDom.id + " isMove=" + this.isMove);
+        curLabDom.setStyle({ zIndex: curLabDom.getStyle("zIndex") - 100 });
 
+        this.upCall && this.upCall(curLabDom, this.isMove);
+
+        this.curLabDom = null;
         this._removeListener();
         this.isTouch = false;
         this.isMove = false;
@@ -172,11 +232,15 @@ export default class LabContainer {
         return { x, y };
     }
 
-    newId() {
-        return this.ID_COUNT++;
-    }
-
     release() {
+        this.downCall = null;
+        this.moveCall = null;
+        this.upCall = null;
+        
+        Object.keys(this.labDomMap).forEach(key => {
+            this.removeLabDomById(key, true);
+        });
 
+        this.labDomMap = null;
     }
 }
