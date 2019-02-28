@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <Tabs value="g-js" class="tabs">
+    <Tabs value="g-css" class="tabs">
 
       <TabPane label="Vue" name="g-vue">
         <g-vue d-data="123" :d-data1="321" v-bind="val2"></g-vue>
@@ -11,6 +11,9 @@
         <g-js></g-js>
       </TabPane>
 
+      <TabPane label="Css" name="g-css">
+        <g-css></g-css>
+      </TabPane>
     </Tabs>
   </div>
 </template>

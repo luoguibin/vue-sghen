@@ -7,80 +7,10 @@ import LabContainer from "../../common/demo/lab-dom-demo/LabContainer";
 import LabDom from "../../common/demo/lab-dom-demo/LabDom";
 import {
   waveConfig,
-  labDomDatas
+  labDomDatas,
+  labDomSteps
 } from "../../common/demo/lab-dom-demo/data-config";
-
 import anime from "animejs";
-
-// 定义元素过程状态
-const labDomSteps = [
-  {
-    id: "cap-set",
-    wave: true,
-    twinkle: true,
-    toLocation: {
-      left: "530px",
-      top: "250px"
-    },
-    toConfig: {
-      action: 0
-    }
-  },
-  {
-    id: "cotton",
-    animeConfig: {
-      duration: 0,
-      delay: 300
-    },
-    animeEndStyle: {
-      display: "block"
-    },
-    call: "after" // "before" or "after::selfFunction" or "before::selfFunction"
-  },
-  {
-    id: "cotton",
-    wave: true,
-    twinkle: true,
-    toLocation: {
-      left: "15px",
-      top: "-110px"
-    },
-    toConfig: {
-      action: 0
-    }
-  },
-  {
-    id: "cotton",
-    animeConfig: {
-      scale: 0.6,
-      duration: 1000,
-      delay: 300
-    },
-    animeEndStyle: {
-      transfrom: "scale(0.6)"
-    },
-    call: "after::showTip"
-  },
-  {
-    id: "clip",
-    style: {
-      display: "block"
-    },
-    call: "before"
-  },
-  {
-    id: "clip",
-    wave: true,
-    twinkle: true,
-    toLocation: {
-      left: "155px",
-      top: "-110px"
-    },
-    toConfig: {
-      action: 0
-    }
-  }
-];
 
 export default {
   name: "LabDomDemo",
@@ -107,20 +37,11 @@ export default {
         if (!step) return;
 
         // 一步骤停止波纹提示
-        if (step.wave) {
-          this.waveDom.el.remove();
-        }
+        this.hideWaveDom();
 
-        // 一步骤是否闪现提示拖动物体至所在的位置（可优化）
-        if (step.twinkle && !this.twinkleEl) {
-          const twinkleEl = dom.el.cloneNode(true);
-          twinkleEl.classList.add("lab-dom-twinkle");
-          twinkleEl.style.zIndex = 99;
-          twinkleEl.style.left = step.toLocation.left;
-          twinkleEl.style.top = step.toLocation.top;
-
-          dom.el.parentElement.appendChild(twinkleEl);
-          this.twinkleEl = twinkleEl;
+        // 一步骤是否闪现提示拖动物体至所在的位置
+        if (step.twinkle) {
+          this.showTwinkle(dom.el, step.toLocation);
         }
       },
       undefined,
@@ -137,19 +58,15 @@ export default {
 
           // 拖动位置是否正确
           if (this.getDistance(left, top, left0, top0) < 30) {
+            dom.setStyle(step.toLocation);
             if (step.toConfig) {
-              dom.setStyle(step.toLocation);
               dom.setConfig(step.toConfig);
             }
             this.nextStep();
           }
         }
 
-        //　闪烁提示隐藏
-        if (this.twinkleEl) {
-          this.twinkleEl.remove();
-          this.twinkleEl = null;
-        }
+        this.hideTwinkleEl();
       }
     );
 
@@ -157,40 +74,31 @@ export default {
     this.nextStep();
   },
   methods: {
+    /**
+     * 进行下一步骤
+     */
     nextStep() {
-      this.stepIndex++;
-      const index = this.stepIndex;
-      if (index >= labDomSteps.length) {
+      const stepIndex = ++this.stepIndex;
+      if (stepIndex >= labDomSteps.length) {
         console.log("nextStep() end");
         return;
       }
 
-      const step = labDomSteps[index];
-      console.log("nextStep() " + index);
+      const step = labDomSteps[stepIndex];
+      console.log("nextStep() " + stepIndex);
       this.processStep(step);
     },
+
+    /**
+     * 处理当前步骤
+     * @param {Object} step 步骤对象
+     */
     processStep(step) {
       const dom = this.labContainer.getLabDom(step.id);
 
       // 一步骤是否波纹提示操作组件
       if (step.wave) {
-        const width = parseInt(dom.getStyle("width")),
-          height = parseInt(dom.getStyle("height")),
-          top = parseInt(dom.getStyle("top")),
-          left = parseInt(dom.getStyle("left"));
-        this.waveDom.setStyle({
-          top:
-            top +
-            height / 2 -
-            parseInt(this.waveDom.getStyle("height")) / 2 +
-            "px",
-          left:
-            left +
-            width / 2 -
-            parseInt(this.waveDom.getStyle("width")) / 2 +
-            "px"
-        });
-        dom.el.parentElement.appendChild(this.waveDom.el);
+        this.showWaveDom(dom);
       }
 
       // 一步骤是否立刻设置样式
@@ -198,12 +106,7 @@ export default {
         dom.setStyle(step.style);
       }
 
-      //　一步骤是否进行手动拖动至目标位置
-      if (step.toLocation) {
-        return;
-      }
-
-      // 一步骤是否进行动画
+      // 一步骤是否进行动画(如果多个动画执行，然后立刻销毁则存在bug)
       if (step.animeConfig) {
         const o = {
           targets: dom.el,
@@ -211,19 +114,26 @@ export default {
           ...step.animeConfig,
           complete: () => {
             dom.setStyle(step.animeEndStyle);
-            if (step.call.indexOf("after") !== -1)
-            this.checkCall(step.call);
+            this.checkCall(step.call, "after");
           }
         };
         anime(o);
       }
 
       // 是否立刻结束当前步骤
-      if (step.call.indexOf("before") !== -1)
-        this.checkCall(step.call);
+      this.checkCall(step.call, "before");
     },
-    checkCall(call) {
-      console.log("checkCall() " + call);
+
+    /**
+     * 检测回调参数
+     * @param {String} call
+     * @param {String} match
+     */
+    checkCall(call, match) {
+      if (!call) return;
+      if (match && call.indexOf(match) === -1) return;
+      console.log("checkCall() " + call + " " + match);
+
       if (call === "before") {
         this.nextStep();
       } else if (call === "after") {
@@ -233,22 +143,115 @@ export default {
         this[funStr[1]] && this[funStr[1]]();
       }
     },
+
+    /**
+     * 闪烁提示显示
+     * @param {HTMLElement} el
+     * @param {Object} toLocation
+     */
+    showTwinkle(el, toLocation) {
+      let twinkleEl = this.twinkleEl;
+      if (!twinkleEl || el.getAttribute("id") != twinkleEl.getAttribute("id")) {
+        twinkleEl = el.cloneNode(true);
+        twinkleEl.classList.add("lab-dom-twinkle");
+        twinkleEl.style.zIndex = 99;
+        twinkleEl.style.left = toLocation.left;
+        twinkleEl.style.top = toLocation.top;
+        this.twinkleEl = twinkleEl;
+      }
+
+      el.parentElement.appendChild(twinkleEl);
+    },
+
+    /**
+     * 闪烁提示隐藏
+     */
+    hideTwinkleEl() {
+      const twinkleEl = this.twinkleEl;
+      if (twinkleEl && twinkleEl.parentElement) twinkleEl.remove();
+    },
+
+    /**
+     * 波纹提示显示
+     * @param {LabDom} dom
+     */
+    showWaveDom(dom) {
+      const waveDom = this.waveDom;
+      const width = parseInt(dom.getStyle("width")),
+        height = parseInt(dom.getStyle("height")),
+        top = parseInt(dom.getStyle("top")),
+        left = parseInt(dom.getStyle("left"));
+
+      // 居中显示
+      waveDom.setStyle({
+        top: top + height / 2 - parseInt(waveDom.getStyle("height")) / 2 + "px",
+        left: left + width / 2 - parseInt(waveDom.getStyle("width")) / 2 + "px"
+      });
+      dom.el.parentElement.appendChild(waveDom.el);
+    },
+    /**
+     * 波纹提示隐藏
+     */
+    hideWaveDom() {
+      const el = this.waveDom.el;
+      if (el.parentElement) el.remove();
+    },
+
+    /**
+     * 重置所有LabDom
+     * @param {Boolean} next 是否进入下一步骤
+     */
+    resetLabDoms(next) {
+      this.labContainer.resetLabDoms();
+      this.stepIndex = -1;
+      this.hideWaveDom();
+      this.hideTwinkleEl();
+      if (next) this.nextStep();
+    },
+
+    /**
+     * 跳步骤
+     * @param {Number} index 步骤下标
+     */
+    jumpStep(index) {
+      if (index < 0 || index >= labDomSteps.length) return;
+      this.resetLabDoms(false);
+
+      const labContainer = this.labContainer;
+      for (let i = 0; i <= index; i++) {
+        const step = labDomSteps[i],
+          labDom = labContainer.getLabDom(step.id);
+
+        if (step.style) {
+          labDom.setStyle(step.style);
+        }
+        if (step.toLocation) {
+          labDom.setStyle(step.toLocation);
+          if (step.toConfig) {
+            labDom.setConfig(step.toConfig);
+          }
+        }
+        if (step.animeEndStyle) {
+          labDom.setStyle(step.animeEndStyle);
+        }
+      }
+
+      setTimeout(() => {
+        this.stepIndex = index;
+        this.nextStep();
+      }, 1000);
+    },
+
     showTip() {
       console.log("showTip() is called");
       this.nextStep();
     },
     getDistance(x0, y0, x1, y1) {
       return Math.sqrt(Math.pow(x0 - x1, 2) + Math.pow(y0 - y1, 2));
-    },
-
-    resetLabDoms() {
-      this.labContainer.resetLabDoms();
-      this.stepIndex = -1;
-      this.nextStep();
-    },
-    beforeDestroy() {
-      this.labContainer.release();
     }
+  },
+  beforeDestroy() {
+    this.labContainer.release();
   }
 };
 </script>
@@ -257,6 +260,7 @@ export default {
 .lab-dom-demo {
   height: 100%;
   background-color: #333333;
+  position: relative;
 }
 
 .lab-dom-demo * {

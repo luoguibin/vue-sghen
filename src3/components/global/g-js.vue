@@ -1,5 +1,5 @@
 <template>
-    <div class="v-js">
+    <div class="g-js">
         <p>
             <span class="bold">JavaScript</span> (JS) 是一种具有函数优先的轻量级解释型或即时编译型的编程语言。由三部分组成：核心(ECMAScript)、文档对象模型(DOM)、浏览器对象模型(BOM)</p>
 
@@ -104,7 +104,7 @@ export default {
 </script>
 
 <style scoped>
-.v-js {
+.g-js {
   padding: 10px;
 }
 

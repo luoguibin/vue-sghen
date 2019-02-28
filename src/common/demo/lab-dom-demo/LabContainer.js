@@ -163,8 +163,10 @@ export default class LabContainer {
         if (this.labDomMap[id]) {
             const curLabDom = this.labDomMap[id];
             if (!curLabDom.canDown()) return;
+            
+            // 注意：这里设置了zIndex，将会影响层叠上下文
+            curLabDom.setStyle({ zIndex: 100 + (curLabDom.getStyle("zIndex") || 0) });
 
-            curLabDom.setStyle({ zIndex: 100 });
             this.curLabDom = curLabDom;
             this.curPoint = this._getEventPoint(e);
             this._addListener();
