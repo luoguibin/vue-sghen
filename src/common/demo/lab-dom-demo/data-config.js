@@ -39,11 +39,11 @@ const waveConfig = {
         action: 0
       },
       style: {
-        width: "80px",
-        height: "80px",
+        width: "85px",
+        height: "85px",
         position: "absolute",
-        top: "10px",
-        left: "10px",
+        top: "7.5px",
+        left: "7.5px",
         border: "2px solid white",
         borderRadius: "50%",
         pointerEvents: "none"
@@ -71,7 +71,7 @@ const waveConfig = {
 // 定义元素集合及初始状态
 const labDomDatas = [
   {
-    tag: "img",
+    tag: "div",
     config: {
       action: 0
     },
@@ -86,7 +86,39 @@ const labDomDatas = [
       left: "500px",
       top: "300px",
       zIndex: 10
-    }
+    },
+    children: [
+      {
+        tag: "img",
+        attribute: {
+          id: "cupbottle",
+          src: require("@/assets/img/bio/cupbottle.png")
+        },
+        style: {
+          width: "217px",
+          height: "343px",
+          position: "absolute",
+          left: "0px",
+          top: "0px",
+        }
+      },
+      {
+        tag: "img",
+        attribute: {
+          id: "water",
+          src: require("@/assets/img/bio/water.png")
+        },
+        style: {
+          display: "none",
+          width: "217px",
+          height: "123px",
+          position: "absolute",
+          left: "0px",
+          top: "221px",
+          opacity: 0.5
+        }
+      }
+    ]
   },
   {
     tag: "div",
@@ -135,7 +167,7 @@ const labDomDatas = [
           width: "91px",
           height: "352px",
           position: "absolute",
-          left: "15px",
+          left: "-5px",
           top: "-100px",
           zIndex: 5,
           pointerEvents: "none"
@@ -153,8 +185,8 @@ const labDomDatas = [
           width: "180px",
           height: "322px",
           position: "absolute",
-          left: "95px",
-          top: "-50px",
+          left: "115px",
+          top: "-100px",
           zIndex: 5,
           pointerEvents: "none"
         }
@@ -199,6 +231,174 @@ const labDomDatas = [
         }
       }
     ]
+  },
+  {
+    tag: "div",
+    config: {
+      action: 2
+    },
+    attribute: {
+      id: "beaker-set"
+    },
+    style: {
+      display: "none",
+      width: "159px",
+      height: "162px",
+      position: "absolute",
+      left: "900px",
+      top: "400px",
+      zIndex: 15,
+      transformOrigin: "0 12px"
+    },
+    children: [
+      {
+        tag: "img",
+        config: {
+          action: 0
+        },
+        attribute: {
+          id: "dropwater",
+          src: require("@/assets/img/bio/dropwater.png")
+        },
+        style: {
+          width: "140px",
+          height: "81px",
+          position: "absolute",
+          left: "7px",
+          top: "81px",
+          opacity: 0.5,
+          zIndex: 10,
+          pointerEvents: "none"
+        }
+      },
+      {
+        tag: "img",
+        config: {
+          action: 0
+        },
+        attribute: {
+          id: "beaker",
+          src: require("@/assets/img/bio/beaker.png")
+        },
+        style: {
+          width: "159px",
+          height: "162px",
+          position: "absolute",
+          left: "0px",
+          top: "0px",
+          opacity: 0.3,
+          zIndex: 10,
+          pointerEvents: "none"
+        }
+      }
+    ]
+  },
+  {
+    tag: "div",
+    config: {
+      action: 2
+    },
+    attribute: {
+      id: "tube-set"
+    },
+    style: {
+      display: "none",
+      width: "55px",
+      height: "228px",
+      position: "absolute",
+      left: "900px",
+      top: "400px",
+      zIndex: 5
+    },
+    children: [
+      {
+        tag: "img",
+        config: {
+          action: 0
+        },
+        attribute: {
+          id: "limewater",
+          src: require("@/assets/img/bio/limewater.png")
+        },
+        style: {
+          width: "51px",
+          height: "153px",
+          position: "absolute",
+          left: "2px",
+          top: "75px",
+          opacity: 0.3,
+          zIndex: 10,
+          pointerEvents: "none"
+        }
+      },
+      {
+        tag: "img",
+        config: {
+          action: 0
+        },
+        attribute: {
+          id: "testtube",
+          src: require("@/assets/img/bio/testtube.png")
+        },
+        style: {
+          width: "55px",
+          height: "228px",
+          position: "absolute",
+          left: "0px",
+          top: "0px",
+          zIndex: 10,
+          pointerEvents: "none"
+        }
+      },
+      {
+        tag: "div",
+        attribute: {
+          id: "bubble-0"
+        },
+        style: {
+          width: "10px",
+          height: "10px",
+          display: "none",
+          position: "absolute",
+          left: "20px",
+          top: "150px",
+          border: "1px solid white",
+          borderRadius: "50%"
+        }
+      },
+      {
+        tag: "div",
+        attribute: {
+          id: "bubble-1"
+        },
+        style: {
+          width: "12px",
+          height: "12px",
+          display: "none",
+          position: "absolute",
+          left: "20px",
+          top: "150px",
+          border: "1px solid white",
+          borderRadius: "50%"
+        }
+      },
+      {
+        tag: "div",
+        attribute: {
+          id: "bubble-2"
+        },
+        style: {
+          width: "8px",
+          height: "8px",
+          display: "none",
+          position: "absolute",
+          left: "20px",
+          top: "150px",
+          border: "1px solid white",
+          borderRadius: "50%"
+        }
+      }
+    ]
   }
 ];
 
@@ -234,7 +434,7 @@ const labDomSteps = [
     wave: true,
     twinkle: true,
     toLocation: {
-      left: "15px",
+      left: "-5px",
       top: "-110px"
     },
     toConfig: {
@@ -266,12 +466,152 @@ const labDomSteps = [
     wave: true,
     twinkle: true,
     toLocation: {
-      left: "155px",
-      top: "-110px"
+      left: "175px",
+      top: "-160px"
     },
     toConfig: {
       action: 0
     }
+  },
+  {
+    id: "tube-set",
+    style: {
+      display: "block"
+    },
+    call: "before"
+  },
+  {
+    id: "tube-set",
+    wave: true,
+    twinkle: true,
+    toLocation: {
+      left: "795px",
+      top: "315px"
+    },
+    toConfig: {
+      action: 0
+    }
+  },
+  {
+    id: "cotton",
+    animeConfig: {
+      duration: 800,
+    },
+    animeEndStyle: {
+      display: "none"
+    },
+    call: "after"
+  },
+  {
+    id: "clip",
+    animeConfig: {
+      duration: 800,
+    },
+    animeEndStyle: {
+      display: "none"
+    },
+    call: "after"
+  },
+  {
+    id: "beaker-set",
+    wave: true,
+    twinkle: true,
+    style: {
+      display: "block"
+    },
+    toLocation: {
+      left: "610px",
+      top: "140px"
+    }
+  },
+  {
+    id: "beaker-set",
+    animeConfig: {
+      rotate: "-85deg",
+      duration: 1800,
+    },
+    animeEndStyle: {
+      display: "none"
+    },
+    call: "after"
+  },
+  {
+    id: "water",
+    style: {
+      display: "block"
+    },
+    call: "before"
+  },
+  {
+    id: "bubble-0",
+    style: {
+      display: "block",
+      top: "150px",
+      left: "20px",
+    },
+    animeConfig: {
+      opacity: 1,
+      top: "85px",
+      left: "25px",
+      duration: 4200
+    },
+    animeEndStyle: {
+      top: "85px",
+      left: "25px",
+      display: "none",
+    },
+    call: "before",
+  },
+  {
+    id: "bubble-1",
+    style: {
+      display: "block",
+      top: "155px",
+      left: "18px",
+    },
+    animeConfig: {
+      opacity: 1,
+      top: "85px",
+      left: "22px",
+      duration: 2800
+    },
+    animeEndStyle: {
+      top: "85px",
+      left: "22px",
+      display: "none",
+    },
+    call: "before",
+  },
+  {
+    id: "bubble-2",
+    style: {
+      display: "block",
+      top: "145px",
+      left: "22px",
+    },
+    animeConfig: {
+      opacity: 1,
+      top: "85px",
+      left: "17px",
+      duration: 3500
+    },
+    animeEndStyle: {
+      top: "85px",
+      left: "17px",
+      display: "none",
+    },
+    call: "before",
+  },
+  {
+    id: "limewater",
+    animeConfig: {
+      opacity: 1,
+      duration: 5000,
+    },
+    animeEndStyle: {
+      opacity: 1
+    },
+    call: "after"
   }
 ];
 

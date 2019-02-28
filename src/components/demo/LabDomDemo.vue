@@ -251,6 +251,13 @@ export default {
     }
   },
   beforeDestroy() {
+    this.hideWaveDom();
+    this.waveDom.release();
+    this.waveDom = null;
+
+    this.hideTwinkleEl();
+    this.twinkleEl = null;
+
     this.labContainer.release();
   }
 };

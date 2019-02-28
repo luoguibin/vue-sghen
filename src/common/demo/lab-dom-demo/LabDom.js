@@ -54,8 +54,8 @@ export default class LabDom {
         this.setConfig(o.config);
         this.setChildren(o.children);
 
-        this._oldStyle = JSON.parse(JSON.stringify(o.style));
-        this._oldConfig = JSON.parse(JSON.stringify(o.config))
+        this._oldStyle = JSON.parse(JSON.stringify(o.style || {}));
+        this._oldConfig = JSON.parse(JSON.stringify(o.config || {}))
     }
 
     setConfig(object) {
