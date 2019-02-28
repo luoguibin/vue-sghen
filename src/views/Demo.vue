@@ -75,7 +75,9 @@ export default {
           });
         }
       } else {
-        this.compName = "list";
+        // this.compName = "list";
+        // 已对compName进行watch，并调用了次方法，则不能手动赋值
+        this.$router.push({ path: "/demo/list" });
       }
     },
     onBack() {
