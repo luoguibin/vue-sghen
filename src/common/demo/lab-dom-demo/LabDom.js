@@ -1,8 +1,9 @@
 // 数据规范
-const o = {
+const object = {
     tag: "div",
     config: {
-        action: 0 // 0表示不可点击， 1表示可点击， 2表示可拖动并点击
+        action: 0, // 0表示不可点击， 1表示可点击， 2表示可拖动并点击
+        zIndex: 100  // 点击、拖动则提升元素zIndex
     },
     attribute: {
         id: "lab-wave",//节点属性id，唯一
@@ -19,9 +20,43 @@ const o = {
         zIndex: 100,
         pointerEvents: "none"
     },
+    innerHTML: "", // 可选
     children: [
         // 孩子节点，数据规范同上
     ]
+}
+
+// 步骤规范
+const step = {
+    id: "cap-set",    // 必须属性
+
+    /* 步骤开始时的属性设置 */
+    // config: {},
+    // attribute: {},
+    // style: {},
+    wave: true,       // 可选，是否波纹提示自身
+    config: {
+        action: 2
+    },
+
+    /* 步骤过程中的属性设置 */
+    twinkle: true,    // 可选，是否闪烁提示目标位置，配合style_使用，用于拖动元素至style_指定的位置
+    // limit: 30,     // 可选，拖动到指定位置与目标位置的距离容差
+    // follow: {         // 可选，跟随的元素，暂时只设置位置属性
+    //   id: "cap-set-1",
+    //   style: {},      
+    //   style_: {}
+    // },
+
+    /*　步骤结束前的属性设置 */
+    config_: {        // 可选，拖动至目标位置后，设置配置参数（配置参数见LabDom中定义）
+        action: 0
+    },
+    style_: {         // 可选,一步骤结束前、或拖动到指定位置后设置样式
+        left: "530px",
+        top: "250px"
+    },
+    // attribute: {}
 }
 
 export default class LabDom {
@@ -31,7 +66,8 @@ export default class LabDom {
     el = null;
 
     config = {
-        action: 0
+        action: 0,
+        zIndex: 100
     };
     style = {};
     attribute = {};
@@ -43,22 +79,25 @@ export default class LabDom {
      */
     constructor(container, o) {
         const el = document.createElement(o.tag);
+        if (o.innerHTML) el.innerHTML = o.innerHTML;
         this.el = el;
 
-        this.setStyle(o.style);
         const attr = { id: container.newId(), ...o.attribute };
         this.id = attr.id;
-        this.container = container;
         container.addToMap(this);
-        this.setAttribute(attr);
+        this.container = container;
+
         this.setConfig(o.config);
+        this.setStyle(o.style);
+        this.setAttribute(attr);
         this.setChildren(o.children);
 
         this._oldStyle = JSON.parse(JSON.stringify(o.style || {}));
-        this._oldConfig = JSON.parse(JSON.stringify(o.config || {}))
+        this._oldConfig = JSON.parse(JSON.stringify(o.config || {}));
     }
 
     setConfig(object) {
+        if (!object) return;
         const config = this.config;
         for (const key in object) {
             if (config.hasOwnProperty(key)) {
@@ -80,13 +119,6 @@ export default class LabDom {
 
         if (clear) {
             el.style.cssText = "";
-            // for (const key in style) {
-            //     if (style.hasOwnProperty(key)) {
-            //         if (object[key] === undefined) {
-            //             el.style[key] = undefined;
-            //         }
-            //     }
-            // }
             this.style = {};
             style = this.style;
         }
@@ -120,6 +152,14 @@ export default class LabDom {
      */
     getStyle(key) {
         return this.style[key];
+    }
+
+    getWidthLeft() {
+        const result = {};
+        ["width", "height", "left", "top"].forEach(key => {
+            result[key] = parseInt(this.getStyle(key)) || 0;
+        });
+        return result;
     }
 
     resetStyle(clear) {

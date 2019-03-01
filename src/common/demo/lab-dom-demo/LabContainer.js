@@ -165,7 +165,7 @@ export default class LabContainer {
             if (!curLabDom.canDown()) return;
             
             // 注意：这里设置了zIndex，将会影响层叠上下文
-            curLabDom.setStyle({ zIndex: 100 + (curLabDom.getStyle("zIndex") || 0) });
+            curLabDom.setStyle({ zIndex: curLabDom.config.zIndex + (curLabDom.getStyle("zIndex") || 0) });
 
             this.curLabDom = curLabDom;
             this.curPoint = this._getEventPoint(e);
@@ -188,13 +188,18 @@ export default class LabContainer {
             curPoint = this.curPoint,
             leftVal = parseInt(curLabDom.getStyle("left")),
             topVal = parseInt(curLabDom.getStyle("top"));
+
+        const addLeft = curPoint_.x - curPoint.x,
+            addTop = curPoint_.y - curPoint.y;
         curLabDom.setStyle({
-            left: leftVal + curPoint_.x - curPoint.x + "px",
-            top: topVal + curPoint_.y - curPoint.y + "px"
+            left: leftVal + addLeft + "px",
+            top: topVal + addTop + "px"
         });
 
         this.isMove = true;
         this.curPoint = curPoint_;
+
+        this.moveCall && this.moveCall(curLabDom, addLeft, addTop);
     }
 
     /**
@@ -214,7 +219,7 @@ export default class LabContainer {
         if (!curLabDom) return;
 
         // console.log("_onMouseUp() " + this.curLabDom.id + " isMove=" + this.isMove);
-        curLabDom.setStyle({ zIndex: curLabDom.getStyle("zIndex") - 100 });
+        curLabDom.setStyle({ zIndex: curLabDom.getStyle("zIndex") - curLabDom.config.zIndex });
 
         this.upCall && this.upCall(curLabDom, this.isMove);
 
