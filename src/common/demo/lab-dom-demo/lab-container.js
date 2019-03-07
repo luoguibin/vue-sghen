@@ -1,4 +1,4 @@
-import LabDom from "./LabDom";
+import LabDom from "./lab-dom";
 
 export default class LabContainer {
 
@@ -19,10 +19,12 @@ export default class LabContainer {
 
     /**
      * 构造函数
-     * @param {HTMLElement} el 
+     * @param {HTMLElement} el
+     * @param {Object} root
      */
-    constructor(el) {
+    constructor(el, root) {
         this.el = el;
+        this.root = root;
         this._addListener(true);
     }
 
@@ -62,6 +64,7 @@ export default class LabContainer {
             if (object.hasOwnProperty(key)) {
                 const o = object[key];
                 o.resetStyle(true);
+                o.resetAttribute();
                 o.resetConfig();
             }
         }
@@ -185,15 +188,14 @@ export default class LabContainer {
         if (!curLabDom.canMove()) return;
 
         const curPoint_ = this._getEventPoint(this.isTouch ? e.touches[0] : e),
-            curPoint = this.curPoint,
-            leftVal = parseInt(curLabDom.getStyle("left")),
-            topVal = parseInt(curLabDom.getStyle("top"));
+            curPoint = this.curPoint;
+        const { left, top } = curLabDom.getWidthLeft();;
 
         const addLeft = curPoint_.x - curPoint.x,
             addTop = curPoint_.y - curPoint.y;
         curLabDom.setStyle({
-            left: leftVal + addLeft + "px",
-            top: topVal + addTop + "px"
+            left: left + addLeft + "px",
+            top: top + addTop + "px"
         });
 
         this.isMove = true;
@@ -230,10 +232,9 @@ export default class LabContainer {
     }
 
     _getEventPoint(e) {
-        const el = this.el,
-            rect = el.getBoundingClientRect(),
-            scale = this.labScale || 1;
-
+        const rect = this.el.getBoundingClientRect(),
+            scale = this.root.$root.labScale || 1;
+            
         const x = (e.clientX - rect.left) / scale,
             y = (e.clientY - rect.top) / scale;
         return { x, y };
@@ -243,6 +244,8 @@ export default class LabContainer {
         this.downCall = null;
         this.moveCall = null;
         this.upCall = null;
+
+        this.root = null;
         
         Object.keys(this.labDomMap).forEach(key => {
             this.removeLabDomById(key, true);

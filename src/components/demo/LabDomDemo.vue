@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import LabContainer from "../../common/demo/lab-dom-demo/LabContainer";
-import LabDom from "../../common/demo/lab-dom-demo/LabDom";
+import LabContainer from "../../common/demo/lab-dom-demo/lab-container";
+import LabDom from "../../common/demo/lab-dom-demo/lab-dom";
 import {
   waveConfig,
   labDomDatas0,
@@ -33,7 +33,7 @@ export default {
     window.labDomDemo = this;
 
     // 初始化LabContainer
-    const labContainer = new LabContainer(this.$el);
+    const labContainer = new LabContainer(this.$el, this);
     this.labContainer = labContainer;
 
     // 初始化waveDom

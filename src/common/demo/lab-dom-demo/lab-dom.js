@@ -2,14 +2,15 @@
 const object = {
     tag: "div",
     config: {
-        action: 0, // 0表示不可点击， 1表示可点击， 2表示可拖动并点击
-        zIndex: 100  // 点击、拖动则提升元素zIndex
+        action: 0,      // 0表示不可点击， 1表示可点击， 2表示可拖动并点击
+        zIndex: 100,    // 点击、拖动则提升元素zIndex
+        back: true      // 若没有拖至目标位置，回退到原来位置
     },
     attribute: {
-        id: "lab-wave",//节点属性id，唯一
-        "my-data": 2019//可自定义节点属性
+        id: "lab-wave", // 节点属性id，唯一
+        "my-data": 2019 // 可自定义节点属性
     },
-    style: {　//标准css属性，部分仅支持像素附加单位，例如width=100不支持
+    style: {            // 标准css属性，部分仅支持像素附加单位，例如width=100不支持
         width: "100px",
         height: "100px",
         position: "absolute",
@@ -20,43 +21,47 @@ const object = {
         zIndex: 100,
         pointerEvents: "none"
     },
-    innerHTML: "", // 可选
-    children: [
-        // 孩子节点，数据规范同上
-    ]
+    innerHTML: "",      // 可选
+    children: []        // 孩子节点，数据规范同上
 }
 
 // 步骤规范
+// 定义元素过程状态，因点击或拖动元素时自动添加了z-index属性，故需熟知z-index改变造成的影响
+// 总的过程分为三种：anime动画过程，鼠标点击或拖动过程，自动设置样式、配置参数过程
 const step = {
-    id: "cap-set",    // 必须属性
+    id: "cap-set",      // 必须属性
+    tip: "hello",       // 可选，步骤描述
 
     /* 步骤开始时的属性设置 */
-    // config: {},
-    // attribute: {},
-    // style: {},
-    wave: true,       // 可选，是否波纹提示自身
-    config: {
-        action: 2
-    },
+    config: {},
+    attribute: {},
+    style: {},
+    wave: true,         // 可选，是否波纹提示自身
 
     /* 步骤过程中的属性设置 */
-    twinkle: true,    // 可选，是否闪烁提示目标位置，配合style_使用，用于拖动元素至style_指定的位置
-    // limit: 30,     // 可选，拖动到指定位置与目标位置的距离容差
-    // follow: {         // 可选，跟随的元素，暂时只设置位置属性
-    //   id: "cap-set-1",
-    //   style: {},      
-    //   style_: {}
-    // },
+    twinkle: true,      // 可选，是否闪烁提示目标位置，配合style_使用，用于拖动元素至style_指定的位置
+    limit: 30,          // 可选，拖动到指定位置与目标位置的距离容差，负数为反向距离
+    follow: {           // 可选，跟随的元素，暂时只设置位置属性
+        id: "cap-set-1",
+        style: {},
+        style_: {}
+    },
+
+    anime: {},          // 可选，anime动画参数
 
     /*　步骤结束前的属性设置 */
-    config_: {        // 可选，拖动至目标位置后，设置配置参数（配置参数见LabDom中定义）
-        action: 0
+    config_: {          // 可选，拖动至目标位置后，设置配置参数（配置参数见LabDom中定义）
+        action: 0,
     },
-    style_: {         // 可选,一步骤结束前、或拖动到指定位置后设置样式
+    style_: {           // 可选，一步骤结束前、或拖动到指定位置后设置样式
         left: "530px",
         top: "250px"
     },
-    // attribute: {}
+    attribute: {},
+
+    // 可选的回调入口：｀before｀步骤开始前，｀after｀步骤开始后，和自定义`before::myFunc?v0&v1`
+    call: "before",
+    time: 0,            // 可选，进入下一步骤的时间      
 }
 
 export default class LabDom {
@@ -67,10 +72,12 @@ export default class LabDom {
 
     config = {
         action: 0,
+        back: true,
         zIndex: 100
     };
     style = {};
     attribute = {};
+    parentId = null;
 
     /**
      * constructor
@@ -90,10 +97,13 @@ export default class LabDom {
         this.setConfig(o.config);
         this.setStyle(o.style);
         this.setAttribute(attr);
+
+        this.parentId = attr.parentId
         this.setChildren(o.children);
 
-        this._oldStyle = JSON.parse(JSON.stringify(o.style || {}));
-        this._oldConfig = JSON.parse(JSON.stringify(o.config || {}));
+        this._oldStyle = JSON.parse(JSON.stringify(o.style || this.style));
+        this._oldAttribute = JSON.parse(JSON.stringify(attr || this.attribute));
+        this._oldConfig = JSON.parse(JSON.stringify(o.config || this.config));
     }
 
     setConfig(object) {
@@ -157,13 +167,17 @@ export default class LabDom {
     getWidthLeft() {
         const result = {};
         ["width", "height", "left", "top"].forEach(key => {
-            result[key] = parseInt(this.getStyle(key)) || 0;
+            result[key] = parseFloat(this.getStyle(key)) || 0;
         });
         return result;
     }
 
     resetStyle(clear) {
         this.setStyle(this._oldStyle, clear);
+    }
+
+    resetAttribute() {
+        this.setAttribute(this._oldAttribute);
     }
 
     resetConfig() {
@@ -191,12 +205,14 @@ export default class LabDom {
      */
     setChildren(children) {
         if (!children || !children instanceof Array) return;
-        if (this.attribute.parentId) return;
-
+        if (this.parentId) return;
+        
+        const container = this.container,
+            id = this.id;
         children.forEach(o => {
             if (!o.attribute) o.attribute = {};
-            o.attribute.parentId = this.id;
-            this.appendChild(new LabDom(this.container, o));
+            o.attribute.parentId = id;
+            this.appendChild(new LabDom(container, o));
         });
     }
 
