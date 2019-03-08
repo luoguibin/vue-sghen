@@ -36,7 +36,6 @@
 
 <script>
 import Vue from "vue";
-import getDynamicComponent from "../dynamic/index";
 
 export default {
   data() {
@@ -66,7 +65,7 @@ export default {
       if (this.hasDMixTest) return;
       const name = this.dMixTestName;
 
-      getDynamicComponent(name).then(o => {
+      this.getDynaComp(name).then(o => {
         if (Vue.component(name)) return;
         
         const comp = o.default;

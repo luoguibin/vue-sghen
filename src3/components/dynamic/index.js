@@ -1,5 +1,5 @@
-const getDynamicComponent = function (name) {
+const getDynaComp = function (name) {
     return import('./' + name + ".vue");
 }
 
-export default getDynamicComponent;
+export default getDynaComp;

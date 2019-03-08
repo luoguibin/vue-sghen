@@ -42,8 +42,7 @@ export default {
   },
   mounted() {
     window.vApp = this;
-    this.$root
-      .getDynamicComponent("dyna0")
+    this.getDynaComp("dyna0")
       .then(o => {
         Vue.component("dyna0", o.default);
       })
