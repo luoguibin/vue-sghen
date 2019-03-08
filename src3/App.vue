@@ -1,10 +1,11 @@
 <template>
   <div class="app">
-    <Tabs value="g-css" class="tabs">
+    <Tabs value="g-vue" class="tabs">
 
       <TabPane label="Vue" name="g-vue">
         <g-vue d-data="123" :d-data1="321" v-bind="val2"></g-vue>
         <g-render>day day up</g-render>
+        <global-mixins></global-mixins>
       </TabPane>
 
       <TabPane label="JavaScript" name="g-js">

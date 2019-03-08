@@ -27,15 +27,23 @@
       <p>
         <span class="bold">keep-alive</span> 要求同时只有一个子元素被渲染</p>
       <p>父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的。</p>
+
+      <button @click="onLoadDMixTest">onLoadDMixTest</button>
+      <component v-if="hasDMixTest" :is="dMixTestName"></component>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from "vue";
+import getDynamicComponent from "../dynamic/index";
+
 export default {
   data() {
     return {
-      txt: "g-hello"
+      txt: "g-hello",
+      hasDMixTest: false,
+      dMixTestName: "d-mix-test"
     };
   },
   inject: {
@@ -53,7 +61,33 @@ export default {
       obj = null;
     });
   },
-  methods: {}
+  methods: {
+    onLoadDMixTest() {
+      if (this.hasDMixTest) return;
+      const name = this.dMixTestName;
+
+      getDynamicComponent(name).then(o => {
+        if (Vue.component(name)) return;
+        
+        const comp = o.default;
+        if (name.indexOf("d-mix-") === 0) {
+          let mixins = comp.mixins;
+          if (!mixins) {
+            mixins = [];
+            comp.mixins = mixins;
+          }
+          mixins.push({
+            created() {
+              console.log("mixins::created()");
+            }
+          });
+        }
+
+        Vue.component(name, comp);
+        this.hasDMixTest = true;
+      });
+    }
+  }
 };
 </script>
 
