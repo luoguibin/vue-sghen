@@ -91,7 +91,7 @@ export default {
   name: "GRender",
   data() {
     return {
-      items: [{ name: "0" }, { name: "1" }, { name: "2" }]
+      items: [{ name: "This is" }, { name: "a render test" }, { name: "..." }]
     };
   },
   /**
