@@ -4,7 +4,10 @@
 
       <TabPane label="Vue" name="g-vue">
         <g-vue d-data="123" :d-data1="321" v-bind="val2"></g-vue>
-        <g-render>day day up</g-render>
+        <fieldset>
+          <legend>render test</legend>
+          <g-render>day day up</g-render>
+        </fieldset>
         <global-mixins></global-mixins>
       </TabPane>
 

@@ -22,8 +22,13 @@
             <span class="bold">Object</span>(对象)， var obj = new Object(); obj[1] === obj["1"]; 方括号中的所有键都将转换为字符串类型，因为JavaScript中的对象只能使用String类型作为键类型。自定义get和set方法：①var obj = {_a: 0, set a(v) {this._a = v}, get a(){return this._a;}}　②Object.defineProperties(obj, { "b": { get: function () { return this.a + 1; } } });
         </p>
         <p>删除obj的a属性：delete obj.a;　如果一个全局变量不是用 var 关键字声明的话，可以用 delete 删除它</p>
-        <p style="white-space: pre-wrap;">
-            <span class="bold">寄生组合继承</span>{{strData.jicheng}}</p>
+        <fieldset>
+            <legend>
+                <span class="bold">寄生组合继承</span>
+            </legend>
+            <p style="white-space: pre-wrap;">
+                {{strData.jicheng}}</p>
+        </fieldset>
         <p>
             <span class="bold">es6 class直接定义继承</span>
         </p>
