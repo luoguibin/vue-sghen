@@ -9,6 +9,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@types/pixi.js": "^4.8.6",
     "animejs": "^3.0.1",
     "iview": "^3.2.2",
     "pathfinding": "^0.4.18",

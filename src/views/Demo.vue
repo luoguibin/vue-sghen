@@ -25,7 +25,8 @@ export default {
         LabDomDemo: false,
         LineAdsorption: false,
         ShapeCut: false,
-        WorkerDemo: false
+        WorkerDemo: false,
+        PixiDemo: false
       }
     };
   },
