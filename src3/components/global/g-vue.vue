@@ -24,12 +24,10 @@
         <bdi>keep-alive</bdi> 要求同时只有一个子元素被渲染</p>
       <p>父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的。</p>
 
-      <fieldset>
-        <legend>
-          <button @click="onLoadDMixTest">onLoadDMixTest</button>
-        </legend>
+      <div>
+        <button @click="onLoadDMixTest">onLoadDMixTest</button>
         <component v-if="hasDMixTest" :is="dMixTestName"></component>
-      </fieldset>
+      </div>
     </div>
   </div>
 </template>

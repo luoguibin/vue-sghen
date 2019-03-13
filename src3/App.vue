@@ -3,12 +3,18 @@
     <Tabs value="g-vue" class="tabs">
 
       <TabPane label="Vue" name="g-vue">
-        <g-vue d-data="123" :d-data1="321" v-bind="val2"></g-vue>
+        <fieldset>
+          <legend>vue</legend>
+          <g-vue d-data="123" :d-data1="321" v-bind="val2"></g-vue>
+        </fieldset>
         <fieldset>
           <legend>render test</legend>
           <g-render>day day up</g-render>
         </fieldset>
-        <global-mixins></global-mixins>
+        <fieldset>
+          <legend>extend与mixins</legend>
+          <global-mixins></global-mixins>
+        </fieldset>
       </TabPane>
 
       <TabPane label="JavaScript" name="g-js">
