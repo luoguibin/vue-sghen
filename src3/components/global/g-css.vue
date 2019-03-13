@@ -12,6 +12,10 @@
         <span class="bold">position:fixed</span> 定位的错位，其祖先节点的可能有以下CSS属性： 1.transform 属性值不为 none 的元素 2.perspective 值不为 none 的元素 3.在 will-change 中指定了任意 CSS 属性
       </p>
     </fieldset>
+    <fieldset>
+      <legend>html语义化</legend>
+      <p>使用正确、合适的标签来规范要显示的内容，当去掉或者丢失其样式时仍能够让页面呈现出清晰的结构，有利于SEO(搜索引擎优化)，有利于爬虫抓取更多的信息，统一规范后增加可读性，便于开发、维护，减少差异性，便于其他设备的解析</p>
+    </fieldset>
   </div>
 </template>
 

@@ -90,4 +90,13 @@ body {
   height: calc(100% - 52px);
   overflow-y: auto;
 }
+
+.app fieldset {
+  margin-bottom: 20px;
+  padding: 10px;
+}
+.app fieldset legend {
+  font-size: 20px;
+  margin-left: 10px;
+}
 </style>
