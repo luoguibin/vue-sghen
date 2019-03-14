@@ -25,13 +25,27 @@
             </p>
             <p>删除obj的a属性：delete obj.a;　如果一个全局变量不是用 var 关键字声明的话，可以用 delete 删除它</p>
         </fieldset>
+        <p>
+            <span class="bold">es6 class直接定义继承</span>
+        </p>
         <fieldset>
             <legend>寄生组合继承</legend>
             <p style="white-space: pre-wrap; text-indent: initial;">{{strData.jicheng}}</p>
         </fieldset>
-        <p>
-            <span class="bold">es6 class直接定义继承</span>
-        </p>
+        <fieldset>
+            <legend>bind、apply 、call</legend>
+            <p>bind 是返回对应函数，便于稍后调用；apply 、call 则是立即调用 </p>
+            <p>call 需要把参数按顺序传递进去，而 apply 则是把参数放在数组里。</p>
+        </fieldset>
+        <fieldset>
+            <legend>JS性能测试工具</legend>
+        </fieldset>
+        <fieldset>
+            <legend>浅谈对Node的理解</legend>
+        </fieldset>
+        <fieldset>
+            <legend>http状态吗</legend>
+        </fieldset>
     </div>
 </template>
 
