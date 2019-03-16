@@ -1,7 +1,10 @@
+import Fire from "./fire";
+
 class HunterGame {
 
     app = null;
     direction = "";
+    fire = null;
 
     /**
      * constructor
@@ -11,7 +14,7 @@ class HunterGame {
         this.vueEl = vueEl;
         this.initPixi();
         this.initEvents();
-
+    
         window.cheLab = this;
     }
 
@@ -76,14 +79,16 @@ class HunterGame {
             app.stage.addChild(blob);
         }
 
+        this.fire = new Fire(this.app);
+
         const explorer = new PIXI.Sprite(textures["explorer.png"]);
         explorer.position.set(32, 16);
         explorer.v = 2;
         explorer.name = "explorer";
         app.stage.addChild(explorer);
-
+        
         this.gameLoop = this.gameLoop.bind(this);
-        app.ticker.add(this.gameLoop);
+        this.app.ticker.add(this.gameLoop);
     }
 
     initEvents() {
@@ -151,6 +156,8 @@ class HunterGame {
                 explorer.y += explorer.v;
                 break;
         }
+        this.fire.setPosition(explorer.x + explorer.width * 0.4, explorer.y + explorer.height * 0.4);
+        this.fire.update(delta);
     }
 
     release() {
