@@ -25,6 +25,7 @@
             </p>
             <p>删除obj的a属性：delete obj.a;　如果一个全局变量不是用 var 关键字声明的话，可以用 delete 删除它</p>
             <p>+加号的优先级高于三目运算</p>
+            <p>this的值要等到代码真正执行时才能确定</p>
         </fieldset>
         <p>
             <span class="bold">es6 class直接定义继承</span>
