@@ -1,10 +1,12 @@
 import Fire from "./fire";
+import Fire3 from "./fire3";
 
 class HunterGame {
 
     app = null;
     direction = "";
     fire = null;
+    fire3 = null;
 
     /**
      * constructor
@@ -79,10 +81,11 @@ class HunterGame {
             app.stage.addChild(blob);
         }
 
-        this.fire = new Fire(this.app);
+        this.fire = new Fire(app);
+        this.fire3 = new Fire3(app);
 
         const explorer = new PIXI.Sprite(textures["explorer.png"]);
-        explorer.position.set(32, 16);
+        explorer.position.set(32 * 2, 16 * 12);
         explorer.v = 2;
         explorer.name = "explorer";
         app.stage.addChild(explorer);
@@ -158,6 +161,8 @@ class HunterGame {
         }
         this.fire.setPosition(explorer.x + explorer.width * 0.4, explorer.y + explorer.height * 0.4);
         this.fire.update(delta);
+
+        this.fire3.update(delta);
     }
 
     release() {

@@ -59,7 +59,7 @@ class Fire {
         this.sprites = sprites;
 
         this.init();
-        this.initGUI();
+        // this.initGUI();
     }
 
     init() {
