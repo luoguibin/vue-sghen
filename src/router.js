@@ -16,18 +16,18 @@ const router = new Router({
     {
       path: "/game",
       name: "game",
-      component: () => import(/* webpackChunkName: "game-entrance" */ "./views/Game")
+      component: () => import(/* webpackChunkName: "[request]" */ "./views/Game")
     },
     {
       path: "/new-year",
       alias: "/newyear",  // 别名，可为数组
       name: "new-year",
-      component: () => import(/* webpackChunkName: "year" */ "./views/NewYear")
+      component: () => import(/* webpackChunkName: "[request]" */ "./views/NewYear")
     },
     {
       path: "/demo/:name",
       name: "demo",
-      component: () => import(/* webpackChunkName: "demo" */ "./views/Demo"),
+      component: () => import(/* webpackChunkName: "[request]" */ "./views/Demo"),
       // props: true,
       props: (route) => ({ compName: route.params.name }),
       // beforeEnter: (to, from, next) => {

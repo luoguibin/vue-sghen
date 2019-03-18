@@ -1,5 +1,5 @@
 const getDynaComp = function (name) {
-    return import('./' + name + ".vue");
+    return import(/* webpackChunkName: "[request]" */'./' + name);
 }
 
 export default getDynaComp;

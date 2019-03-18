@@ -8,7 +8,7 @@
 export default {
   name: "home",
   components: {
-    "home-bg": () => import("@/components/home/HomeBg")
+    "home-bg": () => import(/* webpackChunkName: "[request]" */"@/components/home/HomeBg")
   },
   data() {
     return {};

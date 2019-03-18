@@ -40,7 +40,7 @@ export default {
       let compName = "Year";
       if (year) compName += year;
       if (compName && this.componentMap[compName]) {
-        import("@/components/year/" + compName).then(o => {
+        import(/* webpackChunkName: "[request]" */"@/components/year/" + compName).then(o => {
           if (!Vue.component(compName)) {
             Vue.component(compName, o.default);
           }
