@@ -1,15 +1,12 @@
 <template>
   <div class="home">
-    <home-bg></home-bg>
+    <a href="./#/demo/list">demo</a>
   </div>
 </template>
 
 <script>
 export default {
   name: "home",
-  components: {
-    "home-bg": () => import(/* webpackChunkName: "home-bg" */"@/components/home/HomeBg")
-  },
   data() {
     return {};
   },
