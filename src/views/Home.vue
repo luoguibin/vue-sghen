@@ -1,6 +1,16 @@
 <template>
   <div class="home">
-    <a href="./#/demo/list">demo</a>
+    <ul>
+      <li>
+        <a href="./#/demo/list">demo</a>
+      </li>
+      <li>
+        <a href="./#/new-year">year-2019</a>
+      </li>
+      <li>
+        <a href="./#/game">game</a>
+      </li>
+    </ul>
   </div>
 </template>
 

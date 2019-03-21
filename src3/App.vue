@@ -13,7 +13,7 @@
         </fieldset>
         <fieldset>
           <legend>extend与mixins</legend>
-          <global-mixins></global-mixins>
+          <g-mixins></g-mixins>
         </fieldset>
       </TabPane>
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="global-mixins">
+    <div class="g-mixins">
         <p>
             <span class="bold">extends</span>和
             <span class="bold">mixins</span>：// 打开调试窗口查看生命周期日志打印</p>
@@ -82,7 +82,7 @@ export default {
 </script>
 
 <style scoped>
-.global-mixins > p {
+.g-mixins > p {
   text-indent: 2em;
   font-size: 16px;
 }

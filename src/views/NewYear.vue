@@ -1,51 +1,41 @@
 <template>
-    <div class="new-year">
-        <component v-if="compName" :is="compName"></component>
-        <div v-else class="year-none">
-            <h1 style="margin-bottom: 5%;">不知天上宫阙，今夕是
-                <span v-if="!showAnimeYear" class="he-anime" ref="heEl">何</span>
-                <year-num v-else></year-num>
-                年～</h1>
-        </div>
-
+  <div class="new-year">
+    <year2019 v-if="compName"></year2019>
+    <div v-else class="year-none">
+      <h1 style="margin-bottom: 5%;">不知天上宫阙，今夕是
+        <span v-if="!showAnimeYear" class="he-anime" ref="heEl">何</span>
+        <year-num v-else></year-num>
+        年～</h1>
     </div>
+
+  </div>
 </template>
 
 <script>
 import Vue from "vue";
 import YearNum from "@/components/year/YearNum";
+import Year2019 from "@/components/year/Year2019";
 
 export default {
   name: "NearYear",
   components: {
-    "year-num": YearNum
+    "year-num": YearNum,
+    year2019: Year2019
   },
   data() {
     return {
       compName: "",
-      showAnimeYear: false,
-      componentMap: {
-        Year2019: true
-      }
+      showAnimeYear: false
     };
   },
   mounted() {
     window.newYear = this;
-    setTimeout(() => {
-      this.init(this.$route.query.year);
-    }, 0);
+    this.init(this.$route.query.year);
   },
   methods: {
     init(year) {
-      let compName = "Year";
-      if (year) compName += year;
-      if (compName && this.componentMap[compName]) {
-        import(/* webpackChunkName: "[request]" */"@/components/year/" + compName).then(o => {
-          if (!Vue.component(compName)) {
-            Vue.component(compName, o.default);
-          }
-          this.compName = compName;
-        });
+      if (year == "2019") {
+        this.compName = year;
       } else {
         if (!this.showAnimeYear) {
           const style = this.$refs.heEl.style;
