@@ -166,6 +166,7 @@ class HunterGame {
     }
 
     release() {
+        this.fire3.release();
         this.app.ticker.remove(this.gameLoop);
         window.removeEventListener("keydown", this._onKeyDown);
         window.removeEventListener("keyup", this._onKeyUp);

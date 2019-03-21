@@ -87,6 +87,8 @@ class Fire {
             this.resetDudes();
         };
         el.insertBefore(button, el.lastElementChild);
+
+        this.gui = gui;
     }
 
     setCount(count) {
@@ -138,7 +140,7 @@ class Fire {
             dude.vx = config.vxBase - (0.5 - Math.random()) * config.vxRange;
             dude.vy = config.vyBase - (0.5 - Math.random()) * config.vyRange;
         }
-       
+
         dude.scale.set(config.scaleMax, config.scaleMax);
         dude.alpha = config.alphaMax;
 
@@ -158,7 +160,7 @@ class Fire {
                 dude.x -= dude.vx * index;
                 dude.y -= dude.vy * index;
             }
-            
+
             dude.scaleStep = (config.scaleMax - config.scaleMin) / this.count;
             const curScale = config.scaleMax - dude.scaleStep * index;
             dude.scale.set(curScale, curScale);
@@ -218,6 +220,12 @@ class Fire {
             if (dude.alpha < config.alphaMin || scale < config.scaleMin) {
                 this.resetDude(dude);
             }
+        }
+    }
+
+    release() {
+        if (this.gui) {
+            this.gui.domElement.remove();
         }
     }
 }
