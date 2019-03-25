@@ -30,8 +30,10 @@ class Fire {
         // 粒子速度为base±range
         vxBase: 0,
         vxRange: 0.3,
+        xRange: 0,
         vyBase: 1.35,
         vyRange: 2,
+        yRange: 0,
         tint: 6850
     }
 
@@ -69,6 +71,7 @@ class Fire {
         gui.add(config, "alphaMax", 0.2, 3).step(0.1);
         gui.add(config, "vxBase", -15, 15).step(0.05);
         gui.add(config, "vxRange", 0, 10).step(0.05);
+        gui.add(config, "xRange", 0, 300);
         gui.add(config, "vyBase", -15, 15).step(0.05);
         gui.add(config, "vyRange", 0, 10).step(0.05);
         gui.add(config, "tint", 0, 0xffffff).step(10000);
@@ -91,6 +94,10 @@ class Fire {
         this.gui = gui;
     }
 
+    /**
+     * 设置粒子个数
+     * @param {Number} count 
+     */
     setCount(count) {
         if (count < 10 || count > this.countMax) return;
 
@@ -116,6 +123,24 @@ class Fire {
     }
 
     /**
+     * 设置粒子颜色渐变
+     * @param {Number} r 
+     * @param {Number} g 
+     * @param {Number} b 
+     * @param {Number} a 
+     */
+    setColor(r, g, b, a) {
+        const img = this.newImage(r, g, b, a),
+            texture = PIXI.Texture.from(img);
+
+        const children = this.container.children;
+        children.forEach(child => {
+            child.texture = texture;
+        });
+        this.img = img;
+    }
+
+    /**
      * 强制更新参数
      */
     resetDudes() {
@@ -133,7 +158,8 @@ class Fire {
         const config = this.config,
             position = this.position;
 
-        dude.x = position.x;
+        const sign = Math.random() > 0.5 ? 1 : -1;
+        dude.x = position.x + sign * Math.random() * config.xRange;
         dude.y = position.y;
 
         if (!dude.fixed) {
@@ -170,6 +196,12 @@ class Fire {
         }
     }
 
+
+    /**
+     * 设置粒子位置
+     * @param {Number} x 
+     * @param {Number} y 
+     */
     setPosition(x, y) {
         this.position.x = x || 200;
         this.position.y = y || 200;
@@ -179,7 +211,13 @@ class Fire {
      * 绘制火焰粒子位图
      * @param {CanvasRenderingContext2D} ctx0
      */
-    newImage(ctx0) {
+    newImage(r, g, b, a, ctx0) {
+        if (!r) {
+            r = 210;
+            g = 100;
+            b = 33;
+            a = 0.4;
+        }
         const width = 100, height = width;
         const canvas = document.createElement("CANVAS");
         canvas.setAttribute("width", width + "px");
@@ -187,8 +225,8 @@ class Fire {
 
         const ctx = canvas.getContext("2d");
         const gradient = ctx.createRadialGradient(width / 2, height * 0.5, 0, width / 2, height * 0.5, width / 2);
-        gradient.addColorStop(0, "rgba(210, 100, 33, 0.4)");
-        gradient.addColorStop(0.7, "rgba(210, 33, 33, 0)");
+        gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${a})`);
+        gradient.addColorStop(0.7, `rgba(${r}, ${g}, ${b}, 0)`);
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, width, height);
