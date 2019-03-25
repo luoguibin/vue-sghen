@@ -39,9 +39,10 @@ class Fire {
 
     /**
      * 构造函数
-     * @param {PIXI.Application} app 
+     * @param {PIXI.Application} app
+     * @param {Number} count
      */
-    constructor(app) {
+    constructor(app, count) {
         window.fire3 = this;
 
         const container = new PIXI.particles.ParticleContainer(this.countMax, {
@@ -58,7 +59,10 @@ class Fire {
         this.container = container;
 
         this.img = this.newImage();
-        this.setCount(60);
+        if (!count) {
+            count = 60;
+        }
+        this.setCount(count);
         this.initGUI();
     }
 
@@ -74,7 +78,7 @@ class Fire {
         gui.add(config, "xRange", 0, 300);
         gui.add(config, "vyBase", -15, 15).step(0.05);
         gui.add(config, "vyRange", 0, 10).step(0.05);
-        gui.add(config, "tint", 0, 0xffffff).step(10000);
+        gui.add(config, "tint", 0, 0xffffff).step(10000); // 1677,7215
 
         const el = gui.domElement,
             style = el.style;
@@ -138,6 +142,14 @@ class Fire {
             child.texture = texture;
         });
         this.img = img;
+    }
+
+    /**
+     * 设置孩子
+     * @param {Fire3} fire 
+     */
+    setChild(fire) {
+        
     }
 
     /**
