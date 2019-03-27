@@ -13,21 +13,21 @@ const router = new Router({
       name: "home",
       component: Home
     },
-    // {
-    //   path: "/game",
-    //   alias: "/Game",  // 别名，可为数组
-    //   name: "game",
-    //   component: () => import(/* webpackChunkName: "v-game" */ "./views/Game")
-    // },
-    // {
-    //   path: "/demo/:name",
-    //   name: "demo",
-    //   component: () => import(/* webpackChunkName: "v-demo" */ "./views/Demo"),
-    //   // props: true,
-    //   props: (route) => ({ compName: route.params.name }),
-    //   // beforeEnter: (to, from, next) => {
-    //   // }
-    // },
+    {
+      path: "/game",
+      alias: "/Game",  // 别名，可为数组
+      name: "game",
+      component: () => import(/* webpackChunkName: "v-game" */ "./views/Game")
+    },
+    {
+      path: "/demo/:name",
+      name: "demo",
+      component: () => import(/* webpackChunkName: "v-demo" */ "./views/Demo"),
+      // props: true,
+      props: (route) => ({ compName: route.params.name }),
+      // beforeEnter: (to, from, next) => {
+      // }
+    },
     {
       path: "/*",
       redirect: "/"
