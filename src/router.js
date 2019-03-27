@@ -15,14 +15,9 @@ const router = new Router({
     },
     {
       path: "/game",
+      alias: "/Game",  // 别名，可为数组
       name: "game",
       component: () => import(/* webpackChunkName: "v-game" */ "./views/Game")
-    },
-    {
-      path: "/new-year",
-      alias: "/newyear",  // 别名，可为数组
-      name: "new-year",
-      component: () => import(/* webpackChunkName: "v-new-year" */ "./views/NewYear")
     },
     {
       path: "/demo/:name",
