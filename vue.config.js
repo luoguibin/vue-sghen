@@ -10,13 +10,13 @@ module.exports = {
       template: './public/index.html',
       filename: 'index.html'
     },
-    app2: {
+    index2: {
       entry: './src2/main',
     },
     app3: {
       entry: './src3/main',
-      template: './public/vue.html',
-      filename: 'vue.html'
+      template: './public/index3.html',
+      filename: 'index3.html'
     }
   },
 
