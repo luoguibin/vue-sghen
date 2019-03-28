@@ -26,8 +26,7 @@ export default {
         LineAdsorption: false,
         ShapeCut: false,
         WorkerDemo: false,
-        PixiDemo: false,
-        RotateDemo: false
+        PixiDemo: false
       }
     };
   },

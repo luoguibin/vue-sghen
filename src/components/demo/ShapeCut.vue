@@ -35,7 +35,11 @@
 </template>
 
 <script>
-import { BaseShape, Cirlce, Ellipse } from "../../common/demo/shapecut/shape.js";
+import {
+  BaseShape,
+  Cirlce,
+  Ellipse
+} from "../../common/demo/shapecut/shape.js";
 import { Point } from "../../common/demo/shapecut/point.js";
 
 /**
@@ -85,12 +89,15 @@ export default {
      * 初始化画布
      */
     initCanvas: function() {
-      this.$refs.canvas.width = this.$el.clientWidth;
-      this.$refs.canvas.height = this.$el.clientHeight - 120;
+      const el = this.$el,
+        canvas = this.$refs.canvas;
 
-      this.ctx = this.$refs.canvas.getContext("2d");
-      this.ctx.width = this.$el.clientWidth;
-      this.ctx.height = this.$el.clientHeight - 120;
+      canvas.width = el.clientWidth;
+      canvas.height = el.clientHeight;
+
+      this.ctx = canvas.getContext("2d");
+      this.ctx.width = el.clientWidth;
+      this.ctx.height = el.clientHeight;
     },
 
     /**
@@ -477,18 +484,13 @@ export default {
 
 <style scoped>
 .shape-cut {
-  width: 100%;
   height: 100%;
   overflow: hidden;
 }
 
-.shape-cut canvas {
-  background-color: white;
-}
-
 .cut-menu {
   width: 100%;
-  height: 120px;
+  position: absolute;
 }
 </style>
 

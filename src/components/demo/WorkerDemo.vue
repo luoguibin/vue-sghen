@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <p>SharedWorker test</p>
+            <p>SharedWorker test(在另一个标签中打开此链接，进行通信)</p>
             <input v-model="inputStr" />
             <button @click="onSend">send</button>
             <div ref="result"></div>
