@@ -68,10 +68,9 @@ export default {
       const compName = this.compName;
       if (compName && this.componentMap[compName] !== undefined) {
         if (!this.componentMap[compName]) {
-          import(/* webpackChunkName: "[request]" */"@/components/demo/" + compName).then(o => {
-            if (!Vue.component(compName)) {
-              Vue.component(compName, o.default);
-            }
+          import(/* webpackChunkName: "[request]" */ "@/components/demo/" +
+            compName).then(o => {
+            Vue.component(compName, o.default);
             this.componentMap[compName] = true;
           });
         }

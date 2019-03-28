@@ -1,13 +1,16 @@
 <template>
-    <div>
-        <game v-if="isReady"></game>
-    </div>
+  <div>
+    <game v-if="isReady"></game>
+  </div>
 </template>
 
 <script>
-import Vue from "vue";
+import Game from "@/components/game/Game";
 
 export default {
+  components: {
+    game: Game
+  },
   data() {
     return {
       isReady: false
@@ -16,10 +19,7 @@ export default {
   mounted() {
     this.loadJs(["stats.min.js", "three.min.js", "tween.min.js"], () => {
       this.loadJs(["gltf-loader.js"], () => {
-        import(/* webpackChunkName: "game-entrance" */"../components/game/Game").then(e => {
-          Vue.component("game", e.default);
-          this.isReady = true;
-        });
+        this.isReady = true;
       });
     });
   },
@@ -47,6 +47,6 @@ export default {
 
 <style scoped>
 div {
-    height: 100%;
+  height: 100%;
 }
 </style>

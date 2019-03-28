@@ -33,10 +33,10 @@ import { mapState, mapActions } from "vuex";
 import PlayerPanel from "@/components/game/PlayerPanel";
 import MsgBox from "@/components/game/MsgBox";
 
-import http from "../../common/game/http";
-import GameScene from "../../common/game/game-scene";
-import GameWS from "../../common/game/game-ws";
-import OrderCenter from "../../common/game/order-center";
+import http from "@/common/game/http";
+import GameScene from "@/common/game/game-scene";
+import GameWS from "@/common/game/game-ws";
+import OrderCenter from "@/common/game/order-center";
 
 export default {
   name: "game",

@@ -10,7 +10,7 @@ module.exports = {
       template: './public/index.html',
       filename: 'index.html'
     },
-    index2: {
+    app2: {
       entry: './src2/main',
     },
     app3: {

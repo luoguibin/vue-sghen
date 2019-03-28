@@ -19,9 +19,9 @@
 </template>
 
 <script>
-import GameWS from "../../common/game/game-ws";
-import GameScene from "../../common/game/game-scene";
-import OrderCenter from "../../common/game/order-center";
+import GameWS from "@/common/game/game-ws";
+import GameScene from "@/common/game/game-scene";
+import OrderCenter from "@/common/game/order-center";
 
 export default {
   name: "MsgBox",

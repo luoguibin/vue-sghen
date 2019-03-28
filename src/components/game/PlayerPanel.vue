@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import GameScene from '../../common/game/game-scene';
+import GameScene from "@/common/game/game-scene";
 
 export default {
   name: "PlayerPanel",

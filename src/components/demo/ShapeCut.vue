@@ -39,8 +39,8 @@ import {
   BaseShape,
   Cirlce,
   Ellipse
-} from "../../common/demo/shapecut/shape.js";
-import { Point } from "../../common/demo/shapecut/point.js";
+} from "@/common/demo/shapecut/shape";
+import { Point } from "@/common/demo/shapecut/point";
 
 /**
  * @info:Canvas 2D形状切割<end>
