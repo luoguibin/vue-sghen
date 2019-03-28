@@ -1,6 +1,6 @@
 import Vue from "vue"
 import Router from "vue-router"
-import Home from "./views/Home.vue"
+import Home from "./views/home"
 
 Vue.use(Router)
 
@@ -20,14 +20,14 @@ const router = new Router({
     },
     {
       path: "/game",
-      alias: "/Game",  // 别名，可为数组
+      // alias: "/Game",  // 别名，可为数组
       name: "game",
-      component: () => import(/* webpackChunkName: "v-game" */ "./views/Game")
+      component: () => import(/* webpackChunkName: "home-game" */ "./views/home-game")
     },
     {
       path: "/demo/:name",
       name: "demo",
-      component: () => import(/* webpackChunkName: "v-demo" */ "./views/Demo"),
+      component: () => import(/* webpackChunkName: "home-demo" */ "./views/home-demo"),
       // props: true,
       props: (route) => ({ compName: route.params.name }),
       // beforeEnter: (to, from, next) => {

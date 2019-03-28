@@ -1,6 +1,6 @@
 <template>
   <div class="demo">
-    <div v-show="isCompReady" class="demo-back" @click.stop="onBack">back</div>
+    <div class="demo-back" @click.stop="onBack">back</div>
     <component v-if="isCompReady" :is="compName"></component>
     <div v-else style="padding-top: 10px;">
       <router-link v-for="(val, key) in componentMap" :key="key" :to="'/demo/' + key" class="a-link">{{key}}</router-link>

@@ -9,9 +9,6 @@ export default {
   name: "app",
   mounted() {
     window.app = this;
-    document.body.oncontextmenu = function() {
-      return false;
-    };
   }
 };
 </script>
