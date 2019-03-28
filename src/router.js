@@ -14,6 +14,11 @@ const router = new Router({
       component: Home
     },
     {
+      path: "/peotry",
+      name: "peotry",
+      component: () => import(/* webpackChunkName: "home-peotry" */ "./views/home-peotry")
+    },
+    {
       path: "/game",
       alias: "/Game",  // 别名，可为数组
       name: "game",

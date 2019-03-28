@@ -29,5 +29,8 @@ body {
 
 #app {
   height: 100%;
+  font-family: "SimSun";
+  background-image: url('./assets/img/qiangzhi00.jpg');
+  background-repeat: repeat;
 }
 </style>
