@@ -3,7 +3,8 @@
 </template>
 
 <script>
-import HunterGame from "../../common/demo/pixi-demo/hunter-game";
+import HunterGame from "@/common/demo/pixi-demo/hunter-game";
+
 export default {
   name: "Chemistry",
   mounted() {

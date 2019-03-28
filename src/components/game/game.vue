@@ -30,8 +30,8 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import PlayerPanel from "@/components/game/PlayerPanel";
-import MsgBox from "@/components/game/MsgBox";
+import PlayerPanel from "@/components/game/player-panel";
+import MsgBox from "@/components/game/msg-box";
 
 import http from "@/common/game/http";
 import GameScene from "@/common/game/game-scene";

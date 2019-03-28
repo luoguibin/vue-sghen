@@ -1,5 +1,5 @@
 import Vue from "vue";
-import AppTip from "./AppTip";
+import AppTip from "./app-tip";
 
 const appTip = {
     constructor: Vue.extend(AppTip),

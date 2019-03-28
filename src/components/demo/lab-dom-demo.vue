@@ -3,15 +3,15 @@
 </template>
 
 <script>
-import LabContainer from "../../common/demo/lab-dom-demo/lab-container";
-import LabDom from "../../common/demo/lab-dom-demo/lab-dom";
+import LabContainer from "@/common/demo/lab-dom-demo/lab-container";
+import LabDom from "@/common/demo/lab-dom-demo/lab-dom";
 import {
   waveConfig,
   labDomDatas0,
   labDomSteps0,
   labDomDatas1,
   labDomSteps1
-} from "../../common/demo/lab-dom-demo/data-config";
+} from "@/common/demo/lab-dom-demo/data-config";
 import anime from "animejs";
 
 export default {

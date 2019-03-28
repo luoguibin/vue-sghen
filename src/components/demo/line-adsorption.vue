@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Adsorption  from "../../common/demo/line-adsorption/adsorption";
+import Adsorption  from "@/common/demo/line-adsorption/adsorption";
 
 /**
  * @info:线段吸附测试<end>

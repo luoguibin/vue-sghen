@@ -22,11 +22,11 @@ export default {
   data() {
     return {
       componentMap: {
-        LabDomDemo: false,
-        LineAdsorption: false,
-        ShapeCut: false,
-        WorkerDemo: false,
-        PixiDemo: false
+        "lab-dom-demo": false,
+        "line-adsorption": false,
+        "shape-cut": false,
+        "worker-demo": false,
+        "pixi-demo": false
       }
     };
   },

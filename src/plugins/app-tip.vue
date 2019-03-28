@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: "app-tip",
+  name: "AppTip",
   data() {
     return {
       msgHtml: ""
