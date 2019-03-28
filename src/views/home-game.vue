@@ -5,21 +5,26 @@
 </template>
 
 <script>
-import Game from "@/components/game/game";
+import Vue from "vue";
 
 export default {
-  components: {
-    game: Game
-  },
   data() {
     return {
       isReady: false
     };
   },
   mounted() {
+    window.homeGame = this;
     this.loadJs(["stats.min.js", "three.min.js", "tween.min.js"], () => {
       this.loadJs(["gltf-loader.js"], () => {
-        this.isReady = true;
+        import(/* webpackChunkName: "game" */ "@/components/game/game")
+          .then(o => {
+            Vue.component("game", o.default);
+            this.isReady = true;
+          })
+          .catch(e => {
+            this.$appTip("@/components/game/game 加载失败");
+          });
       });
     });
   },

@@ -10,9 +10,6 @@ export default {
       msgHtml: ""
     };
   },
-  mounted() {
-    this.$root.AppTip = this;
-  },
   methods: {
     show(msgHtml) {
       if (!msgHtml) return;
@@ -26,9 +23,6 @@ export default {
         this.handle = null;
       }, 2000);
     }
-  },
-  beforeDestroy() {
-    this.$root.AppTip = null;
   }
 };
 </script>
