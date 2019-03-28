@@ -1,5 +1,5 @@
 <template>
-  <div class="app-tip-hidden" v-html="msgHtml"></div>
+  <div v-show="showMsg" class="app-tip" v-html="msgHtml"></div>
 </template>
 
 <script>
@@ -7,31 +7,36 @@ export default {
   name: "AppTip",
   data() {
     return {
+      showMsg: false,
       msgHtml: ""
     };
   },
   methods: {
-    show(msgHtml) {
+    show(msgHtml, duration) {
       if (!msgHtml) return;
 
       this.msgHtml = msgHtml;
-      const classList = this.$el.classList;
-      classList.add("app-tip");
+      this.showMsg = true;
+      this.hide();
 
       this.handle = setTimeout(() => {
-        classList.remove("app-tip");
+        this.showMsg = false;
         this.handle = null;
-      }, 2000);
+      }, duration || 2000);
+    },
+    hide() {
+      if (this.handle) {
+        clearTimeout(this.handle);
+      }
     }
+  },
+  beforeDestroy() {
+    this.hide();
   }
 };
 </script>
 
 <style scoped>
-.app-tip-hidden {
-  display: none;
-}
-
 .app-tip {
   display: block;
   width: 100%;
