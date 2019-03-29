@@ -12,8 +12,8 @@
         <div class="peot">{{peotry.user.name}}--{{peotry.time}}</div>
 
         <!-- `white-wrap: pre-wrap` and code's format -->
-        <div class="content" :class="{'content-edit': contentEditable}" ref="contentEl" @click.stop="onContent" :contenteditable="contentEditable">{{peotry.content}}</div>
-        <button v-if="contentEditable" class="save" @click.stop="onSave">保存</button>
+        <div class="content" :class="{'content-edit': contentEditable}" ref="contentEl" @click.stop="onContent" :contenteditable="contentEditable" v-html="peotry.content"></div>
+        <button v-if="contentEditable" class="save" @click.stop="onSave(true)">保存</button>
         <div>{{peotry.end}}</div>
         <div class="images" v-if="peotry.image && peotry.image.count">
             <span style="color: gray;">peotry images has been removed.</span>
@@ -51,16 +51,24 @@ export default {
       }
       this.clickTime = time;
     },
-    onSave() {
+    onSave(real) {
       this.contentEditable = false;
       document.removeEventListener("click", this.onContentLeave);
+
+      const el = this.$refs.contentEl;
+      if (real) {
+        const content = el.innerText;
+        this.peotry.content = content;
+        this.$emit('on-save', this.peotry);
+      } else {
+        el.innerHTML = this.peotry.content;
+      }
     },
 
     onContentLeave() {
       if (this.contentEditable) {
         this.$appTip("放弃修改");
-        this.contentEditable = false;
-        document.removeEventListener("click", this.onContentLeave);
+        this.onSave(false);
       }
     },
     beforeDestroy() {

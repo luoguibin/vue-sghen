@@ -11,7 +11,7 @@
     </div>
 
     <div class="list" ref="listEl">
-      <peotry v-for="(peotry, index) in peotries" :key="peotry.id" :peotry="peotry" class="peotry">
+      <peotry v-for="(peotry, index) in peotries" :key="peotry.id" :peotry="peotry" class="peotry" @on-save="onSave">
         <template>{{(curPage - 1) * limit + index + 1}}</template>
       </peotry>
     </div>
@@ -122,6 +122,32 @@ export default {
             this.peotries = data.data;
 
             this.$refs.listEl.scrollTop = 0;
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+        })
+        .catch(e => {
+          this.$appTip(e.message);
+        });
+    },
+    onSave(peotry) {
+      if (!peotry || !peotry.id) return;
+
+      axios
+        .get("http://localhost:8088/v1/peotry/update", {
+          params: {
+            token: this.userInfo.token,
+            pId: peotry.id,
+            uId: this.userInfo.id,
+            sId: peotry.set.id,
+            title: peotry.title,
+            content: peotry.content,
+            end: peotry.end
+          }
+        })
+        .then(resp => {
+          if (resp.data.code === 1000) {
+            this.$appTip("保存成功");
           } else {
             this.$appTip(resp.data.msg);
           }
