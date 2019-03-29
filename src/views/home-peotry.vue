@@ -8,6 +8,14 @@
         <input v-model="account.pw" type="password" />
         <button @click.stop="onLogin">login</button>
       </div>
+      
+      <div v-if="showSelf" class="user-self">
+        <div contenteditable="true">选集*标题</div>
+        <div contenteditable="true" style="min-height: 120px;">内容</div>
+        <div contenteditable="true">结尾</div>
+
+        <button disabled @click.stop="onCreate">创建</button>
+      </div>
     </div>
 
     <div class="list" ref="listEl">
@@ -36,6 +44,7 @@ export default {
   data() {
     return {
       showLogin: false,
+      showSelf: false,
       account: {
         uId: 15625045984,
         pw: "123456"
@@ -82,7 +91,7 @@ export default {
       if (!this.userInfo.name) {
         this.showLogin = !this.showLogin;
       } else {
-        this.$appTip("hello, " + this.userInfo.name);
+        this.showSelf = !this.showSelf;
       }
     },
     onLogin() {
@@ -157,6 +166,10 @@ export default {
         });
     },
 
+    onCreate() {
+      this.showSelf = false;
+    },
+
     ...mapActions({
       setUserInfo: "setUser"
     })
@@ -184,12 +197,11 @@ export default {
 }
 
 .header .user-login {
-  width: 20rem;
-  height: 10rem;
+  width: 300px;
   position: absolute;
   top: 50%;
   left: 50%;
-  padding: 1rem;
+  padding: 10px;
   transform: translate(-50%, -50%);
   background-color: rgb(255, 180, 118);
   z-index: 100;
@@ -200,6 +212,25 @@ export default {
   padding: 0.3rem;
   font-size: 18px;
   box-sizing: border-box;
+}
+
+.header .user-self {
+  width: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 10px;
+  transform: translate(-50%, -50%);
+  background-color: rgb(255, 180, 118);
+  z-index: 100;
+}
+
+.user-self > div {
+  max-height: 220px;
+  margin: 10px 0;
+  border: 2px solid rgb(69, 150, 255);
+  border-radius: 5px;
+  overflow-y: auto;
 }
 
 .user-login button {
