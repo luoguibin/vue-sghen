@@ -8,6 +8,9 @@ class HunterGame {
     fire = null;
     fire3 = null;
 
+    rPoints = [];
+    strip = null;
+
     /**
      * constructor
      * @param {Vue} vueEl 
@@ -99,11 +102,33 @@ class HunterGame {
             explorer.off('pointermove', this.onMove);
         })
         this.onMove = e => {
-            var newPosition = e.data.getLocalPosition(explorer.parent);
+            const newPosition = e.data.getLocalPosition(explorer.parent);
             explorer.position.set(newPosition.x, newPosition.y);
         }
 
         app.stage.addChild(explorer);
+
+        const rPoints = this.rPoints;
+        this.ropeLength = 406 / 10;
+        for (let i = 0; i < 10; i++) {
+            rPoints.push(new PIXI.Point(i * this.ropeLength, 0));
+        }
+
+        const imgUrl = require("@/assets/img/fire-02.png");
+        const strip = new PIXI.mesh.Rope(PIXI.Texture.fromImage(imgUrl), rPoints);
+        // strip.rotation = -Math.PI / 2;
+        // strip.pivot.set(200, 203);
+        strip.x = 300;
+        strip.y = 400;
+
+        app.stage.addChild(strip);
+        this.strip = strip;
+
+        const g = new PIXI.Graphics();
+        g.x = strip.x;
+        g.y = strip.y;
+        app.stage.addChild(g);
+        this.g = g;
 
         this.gameLoop = this.gameLoop.bind(this);
         this.app.ticker.add(this.gameLoop);
@@ -178,6 +203,37 @@ class HunterGame {
         this.fire.update(delta);
 
         this.fire3.update(delta);
+
+        const rPoints = this.rPoints,
+            ropeLength = this.ropeLength;
+        for (let i = 1; i < rPoints.length; i++) {
+            rPoints[i].y = -(i * ropeLength + Math.random() * 10);
+            rPoints[i].x = Math.random() > 0.5 ? Math.random() * 5 : -Math.random() * 5;
+        }
+        // this.renderPoints();
+    }
+
+    renderPoints() {
+        const g = this.g,
+            rPoints = this.rPoints;
+
+        g.clear();
+        g.lineStyle(2, 0xffc2c2);
+        g.moveTo(rPoints[0].x, rPoints[0].y);
+
+        for (let i = 1; i < rPoints.length; i++) {
+            g.lineTo(rPoints[i].x, rPoints[i].y);
+        }
+
+        for (let i = 1; i < rPoints.length; i++) {
+            if (i === 1) {
+                g.beginFill(0xffff22);  
+            } else {
+                g.beginFill(0xff0022);
+            }
+            g.drawCircle(rPoints[i].x, rPoints[i].y, 10);
+            g.endFill();
+        }
     }
 
     release() {
