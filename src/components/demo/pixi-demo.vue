@@ -6,7 +6,7 @@
 import HunterGame from "@/common/demo/pixi-demo/hunter-game";
 
 export default {
-  name: "Chemistry",
+  name: "PixiDemo",
   mounted() {
     const script = document.createElement("SCRIPT");
     script.onload = e => {

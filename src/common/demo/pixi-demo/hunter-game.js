@@ -16,7 +16,7 @@ class HunterGame {
         this.vueEl = vueEl;
         this.initPixi();
         this.initEvents();
-    
+
         window.cheLab = this;
     }
 
@@ -86,10 +86,25 @@ class HunterGame {
 
         const explorer = new PIXI.Sprite(textures["explorer.png"]);
         explorer.position.set(32 * 2, 16 * 12);
+        explorer.anchor.set(0.5);
         explorer.v = 2;
         explorer.name = "explorer";
+        explorer.interactive = true;
+        explorer.buttonMode = true;
+
+        explorer.on('pointerdown', e => {
+            explorer.on('pointermove', this.onMove);
+        });
+        explorer.on('pointerup', e => {
+            explorer.off('pointermove', this.onMove);
+        })
+        this.onMove = e => {
+            var newPosition = e.data.getLocalPosition(explorer.parent);
+            explorer.position.set(newPosition.x, newPosition.y);
+        }
+
         app.stage.addChild(explorer);
-        
+
         this.gameLoop = this.gameLoop.bind(this);
         this.app.ticker.add(this.gameLoop);
     }
@@ -159,7 +174,7 @@ class HunterGame {
                 explorer.y += explorer.v;
                 break;
         }
-        this.fire.setPosition(explorer.x + explorer.width * 0.4, explorer.y + explorer.height * 0.4);
+        this.fire.setPosition(explorer.x, explorer.y);
         this.fire.update(delta);
 
         this.fire3.update(delta);
