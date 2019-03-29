@@ -22,6 +22,9 @@ export default {
   },
   mounted() {
     window.home = this;
+    document.body.oncontextmenu = function() {
+      return false;
+    }
   }
 };
 </script>

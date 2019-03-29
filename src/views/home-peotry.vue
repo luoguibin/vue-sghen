@@ -1,6 +1,7 @@
 <template>
   <div class="home-peotry">
     <div class="header">
+      <button @click="$router.go(-1)">返回</button>
       <button class="user" @click="onShowLogin">{{userInfo.name ? userInfo.name : "登录"}}</button>
 
       <div v-if="showLogin" class="user-login">
@@ -78,7 +79,12 @@ export default {
     window.homePeotry = this;
     const infoStr = sessionStorage.getItem("sghen_user_info");
     if (infoStr) {
-      this.setUserInfo(JSON.parse(infoStr));
+      const info = JSON.parse(infoStr);
+      if (info.id === this.userInfo.id) {
+        this.getPeotries();
+      } else {
+        this.setUserInfo(info);
+      }
     }
   },
   watch: {

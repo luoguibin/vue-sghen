@@ -27,9 +27,6 @@ export default {
           });
       });
     });
-    document.body.oncontextmenu = function() {
-      return false;
-    }
   },
   methods: {
     loadJs(jsNames, call) {
