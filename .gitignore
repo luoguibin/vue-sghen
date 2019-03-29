@@ -10,6 +10,7 @@ node_modules
 
 # tools
 buildToHtml.sh
+buildToDocker.sh
 Dockerfile
 
 # Log files
