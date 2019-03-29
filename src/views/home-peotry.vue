@@ -8,13 +8,21 @@
         <input v-model="account.pw" type="password" />
         <button @click.stop="onLogin">login</button>
       </div>
-      
-      <div v-if="showSelf" class="user-self">
-        <div contenteditable="true">选集*标题</div>
-        <div contenteditable="true" style="min-height: 120px;">内容</div>
-        <div contenteditable="true">结尾</div>
 
-        <button disabled @click.stop="onCreate">创建</button>
+      <div v-if="showSelf" class="peotry-create">
+        <div>
+          <span>
+            选集:
+          </span>
+          <select v-model="newPeotry.sId">
+            <option v-for="set in peotrySets" :key="set.id" :value="set.id">{{set.name}}</option>
+          </select>
+          <input class="title" placeholder="标题" v-model="newPeotry.title" />
+        </div>
+        <textarea class="content" placeholder="内容，不少于5个字符" v-model="newPeotry.content"></textarea>
+        <textarea class="end" placeholder="结尾" v-model="newPeotry.end"></textarea>
+
+        <button @click.stop="onCreate">创建</button>
       </div>
     </div>
 
@@ -55,7 +63,15 @@ export default {
       curPage: 1,
       totalPage: 1,
       totalCount: 0,
-      peotries: []
+      peotries: [],
+
+      peotrySets: [],
+      newPeotry: {
+        sId: 10001,
+        title: "",
+        content: "",
+        end: ""
+      }
     };
   },
   created() {
@@ -92,6 +108,9 @@ export default {
         this.showLogin = !this.showLogin;
       } else {
         this.showSelf = !this.showSelf;
+        if (this.showSelf) {
+          this.getPeotrySets();
+        }
       }
     },
     onLogin() {
@@ -143,9 +162,9 @@ export default {
       if (!peotry || !peotry.id) return;
 
       axios
-        .get("http://localhost:8088/v1/peotry/update", {
-          params: {
-            token: this.userInfo.token,
+        .post(
+          "http://localhost:8088/v1/peotry/update?token=" + this.userInfo.token,
+          {
             pId: peotry.id,
             uId: this.userInfo.id,
             sId: peotry.set.id,
@@ -153,7 +172,7 @@ export default {
             content: peotry.content,
             end: peotry.end
           }
-        })
+        )
         .then(resp => {
           if (resp.data.code === 1000) {
             this.$appTip("保存成功");
@@ -167,7 +186,69 @@ export default {
     },
 
     onCreate() {
-      this.showSelf = false;
+      const newPeotry = this.newPeotry;
+      if (!newPeotry.title) {
+        this.$appTip("请输入标题");
+        return;
+      }
+
+      if (!newPeotry.content) {
+        this.$appTip("请输入内容");
+        return;
+      } else if (newPeotry.content.length < 5) {
+        this.$appTip("内容不能少于5个字符");
+        return;
+      }
+
+      const data = {
+        uId: this.userInfo.id,
+        ...newPeotry
+      };
+      axios
+        .post(
+          "http://localhost:8088/v1/peotry/create?token=" + this.userInfo.token,
+          data
+        )
+        .then(resp => {
+          if (resp.data.code === 1000) {
+            this.$appTip("创建成功");
+            this.showSelf = false;
+            newPeotry.title = "";
+            newPeotry.content = "";
+            newPeotry.end = "";
+
+            if (this.totalCount % this.limit === 0) {
+              this.totalPage++;
+            }
+            this.curPage = this.totalPage;
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+        })
+        .catch(e => {
+          this.$appTip(e.message);
+        });
+    },
+
+    getPeotrySets() {
+      axios
+        .get("http://localhost:8088/v1/peotry-set/query", {
+          params: {
+            token: this.userInfo.token,
+            uId: this.userInfo.id
+          }
+        })
+        .then(resp => {
+          if (resp.data.code === 1000) {
+            const data = resp.data;
+            this.peotrySets = data.data;
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+        })
+        .catch(e => {
+          this.$appTip(e.message);
+        });
     },
 
     ...mapActions({
@@ -214,7 +295,7 @@ export default {
   box-sizing: border-box;
 }
 
-.header .user-self {
+.header .peotry-create {
   width: 400px;
   position: absolute;
   top: 50%;
@@ -223,14 +304,49 @@ export default {
   transform: translate(-50%, -50%);
   background-color: rgb(255, 180, 118);
   z-index: 100;
+  border-radius: 5px;
+  box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);
 }
 
-.user-self > div {
+.peotry-create > textarea {
   max-height: 220px;
   margin: 10px 0;
   border: 2px solid rgb(69, 150, 255);
   border-radius: 5px;
   overflow-y: auto;
+  font-size: 16px;
+}
+
+.peotry-create .title {
+  width: 60%;
+  float: right;
+  max-height: 30px;
+  line-height: 30px;
+  padding: 0 3px;
+  font-size: 18px;
+  box-sizing: border-box;
+}
+
+.peotry-create .content {
+  width: 100%;
+  min-height: 120px;
+  max-height: 180px;
+  padding: 3px;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.peotry-create .end {
+  width: 100%;
+  min-height: 30px;
+  max-height: 80px;
+  padding: 3px;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.peotry-create button {
+  padding: 2px 5px;
 }
 
 .user-login button {
