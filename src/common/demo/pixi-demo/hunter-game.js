@@ -1,5 +1,6 @@
 import Fire from "./fire";
 import Fire3 from "./fire3";
+import { RopeFire } from "./rope-fire";
 
 class HunterGame {
 
@@ -8,8 +9,7 @@ class HunterGame {
     fire = null;
     fire3 = null;
 
-    rPoints = [];
-    strip = null;
+    rFires = [];
 
     /**
      * constructor
@@ -20,7 +20,7 @@ class HunterGame {
         this.initPixi();
         this.initEvents();
 
-        window.cheLab = this;
+        window.hunterGame = this;
     }
 
     initPixi() {
@@ -87,6 +87,13 @@ class HunterGame {
         this.fire = new Fire(app);
         this.fire3 = new Fire3(app);
 
+        for (let i = 0; i < 10; i++) {
+            const rFire = new RopeFire();
+            this.rFires.push(rFire);
+            rFire.setRatio(i, 10);
+            rFire.addToApp(app);
+        }
+
         const explorer = new PIXI.Sprite(textures["explorer.png"]);
         explorer.position.set(32 * 2, 16 * 12);
         explorer.anchor.set(0.5);
@@ -108,30 +115,14 @@ class HunterGame {
 
         app.stage.addChild(explorer);
 
-        const rPoints = this.rPoints;
-        this.ropeLength = 406 / 10;
-        for (let i = 0; i < 10; i++) {
-            rPoints.push(new PIXI.Point(i * this.ropeLength, 0));
-        }
-
-        const imgUrl = require("@/assets/img/fire-02.png");
-        const strip = new PIXI.mesh.Rope(PIXI.Texture.fromImage(imgUrl), rPoints);
-        // strip.rotation = -Math.PI / 2;
-        // strip.pivot.set(200, 203);
-        strip.x = 300;
-        strip.y = 400;
-
-        app.stage.addChild(strip);
-        this.strip = strip;
-
-        const g = new PIXI.Graphics();
-        g.x = strip.x;
-        g.y = strip.y;
-        app.stage.addChild(g);
-        this.g = g;
-
         this.gameLoop = this.gameLoop.bind(this);
         this.app.ticker.add(this.gameLoop);
+    }
+
+    setRopeXValue(v) {
+        this.rFires.forEach(rFire => {
+            rFire.rxValue = v;
+        });
     }
 
     initEvents() {
@@ -204,36 +195,9 @@ class HunterGame {
 
         this.fire3.update(delta);
 
-        const rPoints = this.rPoints,
-            ropeLength = this.ropeLength;
-        for (let i = 1; i < rPoints.length; i++) {
-            rPoints[i].y = -(i * ropeLength + Math.random() * 10);
-            rPoints[i].x = Math.random() > 0.5 ? Math.random() * 5 : -Math.random() * 5;
-        }
-        // this.renderPoints();
-    }
-
-    renderPoints() {
-        const g = this.g,
-            rPoints = this.rPoints;
-
-        g.clear();
-        g.lineStyle(2, 0xffc2c2);
-        g.moveTo(rPoints[0].x, rPoints[0].y);
-
-        for (let i = 1; i < rPoints.length; i++) {
-            g.lineTo(rPoints[i].x, rPoints[i].y);
-        }
-
-        for (let i = 1; i < rPoints.length; i++) {
-            if (i === 1) {
-                g.beginFill(0xffff22);  
-            } else {
-                g.beginFill(0xff0022);
-            }
-            g.drawCircle(rPoints[i].x, rPoints[i].y, 10);
-            g.endFill();
-        }
+        this.rFires.forEach(rFire => {
+            rFire.update(delta);
+        });
     }
 
     release() {
