@@ -253,7 +253,11 @@ export default {
             if (this.totalCount % this.limit === 0) {
               this.totalPage++;
             }
-            this.curPage = this.totalPage;
+            if (this.curPage !== this.totalPage) {
+              this.curPage = this.totalPage;
+            } else {
+              this.getPeotries();
+            }
           } else {
             this.$appTip(resp.data.msg);
           }
