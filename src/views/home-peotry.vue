@@ -28,7 +28,7 @@
     </div>
 
     <div class="list" ref="listEl">
-      <peotry v-for="(peotry, index) in peotries" :key="peotry.id" :peotry="peotry" class="peotry" @on-save="onSave">
+      <peotry v-for="(peotry, index) in peotries" :key="peotry.id" :peotry="peotry" class="peotry" @on-save="onSave" @on-delete="onDelete">
         <template>{{(curPage - 1) * limit + index + 1}}</template>
       </peotry>
     </div>
@@ -182,6 +182,33 @@ export default {
         .then(resp => {
           if (resp.data.code === 1000) {
             this.$appTip("保存成功");
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+        })
+        .catch(e => {
+          this.$appTip(e.message);
+        });
+    },
+    onDelete(peotry) {
+      if (!peotry || !peotry.id) return;
+
+      axios
+        .delete("http://localhost:8088/v1/peotry/delete", {
+          params: {
+            pId: peotry.id,
+            // uId: this.userInfo.id,
+            token: this.userInfo.token
+          }
+        })
+        .then(resp => {
+          if (resp.data.code === 1000) {
+            this.$appTip("删除成功");
+            if (this.peotries.length == 1) {
+              this.curPage--;
+            } else {
+              this.getPeotries();
+            }
           } else {
             this.$appTip(resp.data.msg);
           }
