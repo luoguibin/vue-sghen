@@ -35,6 +35,14 @@
             <p style="white-space: pre-wrap; text-indent: initial;">{{strData.jicheng}}</p>
         </fieldset>
         <fieldset>
+            <legend>RegExp</legend>
+            <p><span>eg-0:</span> replace(/([A-Z])/g, "$1--")  匹配大写字母，并在每个大写字母后添加字符穿"--"</p>
+        </fieldset>
+        <fieldset>
+            <legend>CMD</legend>
+            <p>find source/ -type f -exec cp {} dest/ \;</p>
+        </fieldset>
+        <fieldset>
             <legend>bind、apply 、call</legend>
             <p>bind 是返回对应函数，便于稍后调用；apply 、call 则是立即调用 </p>
             <p>call 需要把参数按顺序传递进去，而 apply 则是把参数放在数组里。</p>
