@@ -37,6 +37,7 @@
         <fieldset>
             <legend>RegExp</legend>
             <p><span>eg-0:</span> replace(/([A-Z])/g, "$1--")  匹配大写字母，并在每个大写字母后添加字符穿"--"</p>
+            <p>"eaabbcde".match(/([a-z])\1|([a-z])/g) =>Array(6) [ "e", "aa", "bb", "c", "d", "e" ]</p>
         </fieldset>
         <fieldset>
             <legend>CMD</legend>
