@@ -109,7 +109,7 @@ export default {
     },
 
     onLogin() {
-      http.post("http://localhost:8088/v1/user/login", this.account, resp => {
+      http.post("http://127.0.0.1:8088/v1/user/login", this.account, resp => {
         if (resp.data.code === 1000) {
           const info = resp.data.data;
           sessionStorage.setItem("sghen_user_info", JSON.stringify(info));

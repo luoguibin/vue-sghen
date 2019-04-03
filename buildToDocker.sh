@@ -1,5 +1,5 @@
-sudo docker build -t vue-sghen:1.3.4 .
-sudo docker service update --image vue-sghen:1.3.4 vue-sghen-service
+sudo docker build -t vue-sghen:1.3.5 .
+sudo docker service update --image vue-sghen:1.3.5 vue-sghen-service
 
 # docker images // 查看所有镜像
 sudo docker rmi $(docker images -f "dangling=true" -q) // 删除构建镜像时暂时的临时的空名字镜像

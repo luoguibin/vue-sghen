@@ -3,7 +3,7 @@ import OrderCenter from "./order-center";
 class GameWS {
 
     ws = null;
-    url = "ws://localhost:8088/ws";
+    url = "ws://127.0.0.1:8088/ws";
 
     connect(token) {
         const flag = "WebSocket" in window;

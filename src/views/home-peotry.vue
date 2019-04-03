@@ -121,7 +121,7 @@ export default {
     },
     onLogin() {
       axios
-        .post("http://localhost:8088/v1/user/login", this.account)
+        .post("http://127.0.0.1:8088/v1/user/login", this.account)
         .then(resp => {
           if (resp.data.code === 1000) {
             const info = resp.data.data;
@@ -141,7 +141,7 @@ export default {
     },
     getPeotries() {
       axios
-        .get("http://localhost:8088/v1/peotry/query", {
+        .get("http://127.0.0.1:8088/v1/peotry/query", {
           params: {
             limit: this.limit,
             page: this.curPage
@@ -169,7 +169,7 @@ export default {
 
       axios
         .post(
-          "http://localhost:8088/v1/peotry/update?token=" + this.userInfo.token,
+          "http://127.0.0.1:8088/v1/peotry/update?token=" + this.userInfo.token,
           {
             pId: peotry.id,
             uId: this.userInfo.id,
@@ -194,7 +194,7 @@ export default {
       if (!peotry || !peotry.id) return;
 
       axios
-        .delete("http://localhost:8088/v1/peotry/delete", {
+        .delete("http://127.0.0.1:8088/v1/peotry/delete", {
           params: {
             pId: peotry.id,
             // uId: this.userInfo.id,
@@ -239,7 +239,7 @@ export default {
       };
       axios
         .post(
-          "http://localhost:8088/v1/peotry/create?token=" + this.userInfo.token,
+          "http://127.0.0.1:8088/v1/peotry/create?token=" + this.userInfo.token,
           data
         )
         .then(resp => {
@@ -269,7 +269,7 @@ export default {
 
     getPeotrySets() {
       axios
-        .get("http://localhost:8088/v1/peotry-set/query", {
+        .get("http://127.0.0.1:8088/v1/peotry-set/query", {
           params: {
             token: this.userInfo.token,
             uId: this.userInfo.id
