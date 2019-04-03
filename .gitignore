@@ -9,9 +9,9 @@ node_modules
 .env.*.local
 
 # tools
-buildToHtml.sh
-buildToDocker.sh
-Dockerfile
+# buildToHtml.sh
+# buildToDocker.sh
+# Dockerfile
 
 # Log files
 npm-debug.log*
