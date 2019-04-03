@@ -202,7 +202,10 @@ class HunterGame {
 
     release() {
         this.fire3.release();
-        this.app.ticker.remove(this.gameLoop);
+        const ticker = this.app.ticker;
+        ticker.remove(this.gameLoop);
+        ticker.stop();
+        ticker.destroy();
         window.removeEventListener("keydown", this._onKeyDown);
         window.removeEventListener("keyup", this._onKeyUp);
     }
