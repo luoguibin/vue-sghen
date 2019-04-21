@@ -27,10 +27,14 @@
       </div>
     </div>
 
-    <div class="list" ref="listEl">
+    <div class="list" ref="listEl" @click="onClickImage($event)">
       <peotry v-for="(peotry, index) in peotries" :key="peotry.id" :peotry="peotry" class="peotry" @on-save="onSave" @on-delete="onDelete">
         <template>{{(curPage - 1) * limit + index + 1}}</template>
       </peotry>
+    </div>
+
+    <div class="image-show" v-show="showImageUrl"  @click.stop="onClickImage($event)">
+      <img :src="showImageUrl" />
     </div>
 
     <div class="footer" v-show="peotries.length">
@@ -60,6 +64,7 @@ export default {
       },
 
       peotryUrl: "",
+      showImageUrl: "",
       limit: 10,
       curPage: 1,
       totalPage: 1,
@@ -288,6 +293,15 @@ export default {
         });
     },
 
+    onClickImage(e) {
+      const el = e.srcElement;
+      if (el.tagName === "IMG") {
+        this.showImageUrl = this.showImageUrl ? "" : el.getAttribute("src");
+      } else {
+        this.showImageUrl = "";
+      }
+    },
+
     ...mapActions({
       setUserInfo: "setUser"
     })
@@ -407,6 +421,25 @@ export default {
   text-align: center;
   box-shadow: 0 -3px 10px 6px rgba(255, 255, 255, 0.5);
   background-color: rgba(255, 255, 255, 0.5);
+}
+
+.home-peotry .image-show {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.image-show img {
+  max-width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .footer .current-page {

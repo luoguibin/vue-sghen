@@ -1,1 +1,1 @@
-webpackChunkName: "[request]" 拆包问题
+webpackChunkName: "[request]" 遇到类继承时的拆包问题

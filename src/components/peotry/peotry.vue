@@ -16,9 +16,9 @@
     <div class="content" :class="{'content-edit': contentEditable}" ref="contentEl" @click.stop="onContent" :contenteditable="contentEditable" v-html="peotry.content"></div>
     <button v-if="contentEditable" class="save" @click.stop="onSave(true)">保存</button>
     <div>{{peotry.end}}</div>
-    <div class="images" v-if="peotry.image && peotry.image.count">
-      <span style="color: gray;">peotry images has been removed.</span>
-      <!-- <img v-for="value in peotry.image.images" alt="image error" :key="value" :src="peotryUrl + value" /> -->
+    <div class="images" v-if="peotryImages">
+      <!-- <span style="color: gray;">peotry images has been removed.</span> -->
+      <img v-for="value in peotryImages" alt="image error" :key="value" :src="peotryUrl + value" />
     </div>
   </div>
 </template>
@@ -35,7 +35,8 @@ export default {
     return {
       contentEditable: false,
       showDelete: false,
-      clickTime: 0
+      clickTime: 0,
+      peotryUrl: "http://127.0.0.1/vue-sghen/images/"
     };
   },
   created() {
@@ -93,6 +94,16 @@ export default {
       this.$emit("on-delete", this.peotry);
     }
   },
+  computed: {
+    peotryImages() {
+      const imageObj = this.peotry.image;
+      if (imageObj && imageObj.count) {
+        return JSON.parse(imageObj.images);
+      } else {
+        return undefined;
+      }
+    }
+  },
   beforeDestroy() {
     this.onContentLeave();
   }
@@ -102,6 +113,7 @@ export default {
 <style scoped>
 .peotry {
   position: relative;
+  max-width: 500px;
 }
 
 .peotry .order {
@@ -142,5 +154,6 @@ export default {
 
 .images img {
   margin: 5px;
+  width: 30%;
 }
 </style>
