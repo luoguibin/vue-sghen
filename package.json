@@ -12,6 +12,7 @@
     "@types/pixi.js": "^4.8.6",
     "animejs": "^3.0.1",
     "dat.gui": "^0.7.5",
+    "driver.js": "^0.9.5",
     "element-ui": "^2.8.2",
     "iview": "^3.2.2",
     "nprogress": "^0.2.0",

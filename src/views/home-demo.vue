@@ -27,7 +27,8 @@ export default {
         "shape-cut": false,
         "worker-demo": false,
         "pixi-demo": false,
-        "scrollbar-tree": false
+        "scrollbar-tree": false,
+        "driver-demo": false
       }
     };
   },
