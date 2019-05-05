@@ -141,6 +141,7 @@ export default {
     },
     handleCurrentChange(o0, o1, flag) {
       this.mainHeight = o0.contentHeight + "px";
+      this.$el.scrollTop = 0;
 
       if (flag) {
         setTimeout(() => {
@@ -160,9 +161,17 @@ export default {
     },
     handleNodeExpand(data, o, view) {},
     onScroll(e) {
-      const clientHeight = document.body.clientHeight;
-      const offsetTop = this.$refs.header.offsetTop;
-      this.scrollHeight = clientHeight - this.$refs.footer.clientHeight - (offsetTop > 0 ? offsetTop : 0);
+      const el = this.$el,
+        clientHeight = el.clientHeight;
+      const refs = this.$refs,
+        header = refs.header,
+        footer = refs.footer;
+
+      if (el.scrollTop < header.clientHeight) {
+        this.scrollHeight = clientHeight - (header.clientHeight - el.scrollTop) - 20;
+      } else {
+        this.scrollHeight = clientHeight - 40;
+      }
     }
   },
   destroyed() {
@@ -176,6 +185,7 @@ export default {
 <style scoped>
 .scrollbar-tree {
   height: 100%;
+  min-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #ccc;
