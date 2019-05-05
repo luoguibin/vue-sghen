@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
   publicPath: './',
   outputDir: 'dist',
@@ -25,12 +27,49 @@ module.exports = {
       .output
       .filename('js/[name].js?[hash]')
       .chunkFilename('js/[name].js?[hash]')
-      .end()
+      .end();
 
-    config.plugins.delete('prefetch-app')
-    config.plugins.delete('preload-app')
+    config.resolve.alias.set(
+      "images",
+      path.join(__dirname, "src/assets/img")
+    );
+
+    //忽略的打包文件
+    // config.externals({
+    //   vue: "Vue",
+    //   "vue-router": "VueRouter",
+    //   vuex: "Vuex",
+    //   axios: "axios",
+    //   "element-ui": "ELEMENT"
+    // });
+
+    const plugins = config.plugins;
+    ["app", "app2", "app3"].forEach(key => {
+      plugins.delete(`prefetch-${key}`)
+      plugins.delete(`preload-${key}`)
+    });
+
   },
   configureWebpack: () => {
+    if (process.env.NODE_ENV === "production") {
+      try {
+        const compress =
+          config.optimization.minimizer[0].options.terserOptions.compress;
+
+        config.optimization.minimizer[0].options.terserOptions.compress = {
+          ...compress,
+          drop_debugger: true,
+          pure_funcs: [
+            "console.log",
+            "console.info",
+            "console.debug",
+            "console.error"
+          ]
+        };
+      } catch (e) {
+        console.error(e);
+      }
+    }
   },
 
 
