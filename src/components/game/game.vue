@@ -69,10 +69,11 @@ export default {
         this.showLogin = false;
         GameWS.connect(token);
         GameScene.initDom(this.$el, flag => {
+          this.$NProgress.done();
           if (flag) {
             this.isReady = true;
           } else {
-            alert("load failed");
+            this.$appTip("load failed");
           }
         });
       } else {

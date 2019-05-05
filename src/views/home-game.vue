@@ -13,6 +13,9 @@ export default {
       isReady: false
     };
   },
+  created() {
+    this.$NProgress.start();
+  },
   mounted() {
     window.homeGame = this;
     this.loadJs(["stats.min.js", "three.min.js", "tween.min.js"], () => {
