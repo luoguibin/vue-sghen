@@ -37,7 +37,7 @@ export default class LabContainer {
      * @param {Array} datas 数据类型参照LabDom规范
      */
     setData(datas) {
-        if (!datas || !datas instanceof Array) return;
+        if (!datas || !(datas instanceof Array)) return;
         datas.forEach(o => {
             this.addLabDom(new LabDom(this, o));
         });
@@ -189,7 +189,7 @@ export default class LabContainer {
 
         const curPoint_ = this._getEventPoint(this.isTouch ? e.touches[0] : e),
             curPoint = this.curPoint;
-        const { left, top } = curLabDom.getWidthLeft();;
+        const { left, top } = curLabDom.getWidthLeft();
 
         const addLeft = curPoint_.x - curPoint.x,
             addTop = curPoint_.y - curPoint.y;

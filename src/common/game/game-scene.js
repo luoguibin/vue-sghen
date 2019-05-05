@@ -370,7 +370,7 @@ class GameMain {
         const statsEl = this.stats.domElement;
         if (statsEl.parentElement) {
             statsEl.remove();
-        };
+        }
         el.appendChild(statsEl);
 
         this.width = width;

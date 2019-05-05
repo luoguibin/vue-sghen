@@ -204,7 +204,7 @@ export default class LabDom {
      * @param {Array} children 
      */
     setChildren(children) {
-        if (!children || !children instanceof Array) return;
+        if (!children || !(children instanceof Array)) return;
         if (this.parentId) return;
         
         const container = this.container,

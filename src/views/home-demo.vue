@@ -26,7 +26,8 @@ export default {
         "line-adsorption": false,
         "shape-cut": false,
         "worker-demo": false,
-        "pixi-demo": false
+        "pixi-demo": false,
+        "scrollbar-tree": false
       }
     };
   },
