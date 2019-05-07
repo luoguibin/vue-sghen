@@ -105,6 +105,7 @@ export default class ViewControl {
      * @param {MouseEvent} e 
      */
     onMouseDown(e) {
+        if (e.srcElement.tagName !== "CANVAS") return;
         if (e.button === 2) {
             this.dom.addEventListener("mousemove", this.onMouseMove);
         }
@@ -133,6 +134,8 @@ export default class ViewControl {
      * @param {WheelEvent} e 
      */
     onWheel(e) {
+        if (e.srcElement !== e.target) return;
+
         this.radius += e.deltaY / Math.abs(e.deltaY) * this.WHELL_FACTOR;
         this.radius = Math.min(this.radius, this.MAX_RADIUS);
         this.radius = Math.max(this.radius, this.MIN_RADIUS);
@@ -141,6 +144,8 @@ export default class ViewControl {
     }
 
     onMouseUp(e) {
+        if (e.srcElement.tagName !== "CANVAS") return;
+
         const dom = this.dom;
         if (!this.hasMove) {
             const mPoint = this.getMousePoint(e),

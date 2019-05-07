@@ -7,7 +7,13 @@
     <msg-box ref="msgBox" v-if="isReady"></msg-box>
 
     <!-- normal order -->
-    <div class="normal-menus" v-if="isReady" @mouseup="onNothing" @mousedown="onNothing" @touchstart="onNothing">
+    <div
+      class="normal-menus"
+      v-if="isReady"
+      @mouseup="onNothing"
+      @mousedown="onNothing"
+      @touchstart="onNothing"
+    >
       <button @click.stop="onShowPlayerPlane()">人物</button>
       <button @click.stop="onDrug()">药物</button>
       <button @click.stop="onSkill(0)">单伤1</button>
@@ -17,14 +23,13 @@
 
     <!-- login panel -->
     <div v-if="showLogin" class="user-login">
-      <input v-model.number="account.uId" type="tel" />
-      <input v-model="account.pw" type="password" />
+      <input v-model.number="account.uId" type="tel">
+      <input v-model="account.pw" type="password">
       <button @click.stop="onLogin()">login</button>
     </div>
 
     <!-- exit -->
     <span v-else class="game-close" @click.stop="onCloseOrOpen()">×</span>
-
   </div>
 </template>
 
@@ -33,7 +38,7 @@ import { mapState, mapActions } from "vuex";
 import PlayerPanel from "@/components/game/player-panel";
 import MsgBox from "@/components/game/msg-box";
 
-import http from "@/common/game/http";
+import { loginByAccount } from "@/api";
 import GameScene from "@/common/game/game-scene";
 import GameWS from "@/common/game/game-ws";
 import OrderCenter from "@/common/game/order-center";
@@ -110,7 +115,7 @@ export default {
     },
 
     onLogin() {
-      http.post("http://127.0.0.1:8088/v1/user/login", this.account, resp => {
+      loginByAccount(this.account).then(resp => {
         if (resp.data.code === 1000) {
           const info = resp.data.data;
           sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
@@ -123,6 +128,7 @@ export default {
     },
     onCloseOrOpen() {
       GameWS.release();
+      this.$router.replace("/");
     },
     ...mapActions({
       setUserInfo: "setUser"

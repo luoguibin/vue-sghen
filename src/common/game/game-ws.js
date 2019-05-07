@@ -1,9 +1,10 @@
 import OrderCenter from "./order-center";
+import { wsUrl } from "@/api/config";
 
 class GameWS {
 
     ws = null;
-    url = "ws://127.0.0.1:8088/ws";
+    url = wsUrl;
 
     connect(token) {
         const flag = "WebSocket" in window;

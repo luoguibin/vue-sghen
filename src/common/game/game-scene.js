@@ -403,7 +403,7 @@ class GameMain {
 
 
     animate(time) {
-        this.isInit && requestAnimationFrame(this.animate);
+        this.isInit && (this.handle = requestAnimationFrame(this.animate));
         // this.isInit && setTimeout(this.animate, 1000 / 12);
 
         TWEEN.update();
@@ -423,7 +423,16 @@ class GameMain {
     }
 
     release() {
-        this.isInit = false
+        cancelAnimationFrame(this.handle);
+
+        this.isInit = false;
+        this.renderer.clear(true, true, true);
+        this.renderer.domElement.remove();
+        this.renderer.dispose();
+
+        this.renderer = null;
+        this.scene = null;
+        this.dom = null;
     }
 }
 

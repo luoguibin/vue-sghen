@@ -1,9 +1,10 @@
 import axios from "axios";
 import store from "@/store";
+import { baseUrl } from "./config";
 import { Message } from "element-ui";
 
 axios.defaults.timeout = 10000;
-axios.defaults.baseURL = process.env.NODE_ENV === "production" ? "http://localhost:8088" : "http://127.0.0.1:8088";
+axios.defaults.baseURL = baseUrl;
 
 axios.interceptors.request.use(
     config => {
