@@ -5,20 +5,18 @@
       <button class="user" @click="onShowLogin">{{userInfo.name ? userInfo.name : "登录"}}</button>
 
       <div v-if="showLogin" class="user-login">
-        <input v-model.number="account.uId" type="tel" />
-        <input v-model="account.pw" type="password" />
+        <input v-model.number="account.uId" type="tel">
+        <input v-model="account.pw" type="password">
         <button @click.stop="onLogin">login</button>
       </div>
 
       <div v-if="showSelf" class="peotry-create">
         <div>
-          <span>
-            选集:
-          </span>
+          <span>选集:</span>
           <select v-model="newPeotry.sId">
             <option v-for="set in peotrySets" :key="set.id" :value="set.id">{{set.name}}</option>
           </select>
-          <input class="title" placeholder="标题" v-model="newPeotry.title" />
+          <input class="title" placeholder="标题" v-model="newPeotry.title">
         </div>
         <textarea class="content" placeholder="内容，不少于5个字符" v-model="newPeotry.content"></textarea>
         <textarea class="end" placeholder="结尾" v-model="newPeotry.end"></textarea>
@@ -28,19 +26,30 @@
     </div>
 
     <div class="list" ref="listEl" @click="onClickImage($event)">
-      <peotry v-for="(peotry, index) in peotries" :key="peotry.id" :peotry="peotry" class="peotry" @on-save="onSave" @on-delete="onDelete">
+      <peotry
+        v-for="(peotry, index) in peotries"
+        :key="peotry.id"
+        :peotry="peotry"
+        class="peotry"
+        @on-save="onSave"
+        @on-delete="onDelete"
+      >
         <template>{{(curPage - 1) * limit + index + 1}}</template>
       </peotry>
     </div>
 
-    <div class="image-show" v-show="showImageUrl"  @click.stop="onClickImage($event)">
-      <img :src="showImageUrl" />
+    <div class="image-show" v-show="showImageUrl" @click.stop="onClickImage($event)">
+      <img :src="showImageUrl">
     </div>
 
     <div class="footer" v-show="peotries.length">
       <button @click.stop="onPage(-1)">←</button>
       <button @click.stop="onPage(1)">→</button>
-      <span>当前第<input class="current-page" v-model.number="curPage" />页，每页{{limit}}条，共{{totalPage}}页，一共{{totalCount}}条</span>
+      <span>
+        当前第
+        <input class="current-page" v-model.number="curPage">
+        页，每页{{limit}}条，共{{totalPage}}页，一共{{totalCount}}条
+      </span>
     </div>
   </div>
 </template>
@@ -48,6 +57,14 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import Peotry from "@/components/peotry/peotry";
+import {
+  loginByAccount,
+  queryPeotries,
+  queryPeotrySets,
+  createPeotry,
+  updatePeotry,
+  deletePeotry
+} from "../api";
 
 export default {
   name: "HomePeotry",
@@ -125,8 +142,7 @@ export default {
       }
     },
     onLogin() {
-      axios
-        .post("http://127.0.0.1:8088/v1/user/login", this.account)
+      loginByAccount(this.account)
         .then(resp => {
           if (resp.data.code === 1000) {
             const info = resp.data.data;
@@ -145,13 +161,10 @@ export default {
       this.curPage += value;
     },
     getPeotries() {
-      axios
-        .get("http://127.0.0.1:8088/v1/peotry/query", {
-          params: {
-            limit: this.limit,
-            page: this.curPage
-          }
-        })
+      queryPeotries({
+        limit: this.limit,
+        page: this.curPage
+      })
         .then(resp => {
           if (resp.data.code === 1000) {
             const data = resp.data;
@@ -172,18 +185,14 @@ export default {
     onSave(peotry) {
       if (!peotry || !peotry.id) return;
 
-      axios
-        .post(
-          "http://127.0.0.1:8088/v1/peotry/update?token=" + this.userInfo.token,
-          {
-            pId: peotry.id,
-            uId: this.userInfo.id,
-            sId: peotry.set.id,
-            title: peotry.title,
-            content: peotry.content,
-            end: peotry.end
-          }
-        )
+      updatePeotry({
+        pId: peotry.id,
+        uId: this.userInfo.id,
+        sId: peotry.set.id,
+        title: peotry.title,
+        content: peotry.content,
+        end: peotry.end
+      })
         .then(resp => {
           if (resp.data.code === 1000) {
             this.$appTip("保存成功");
@@ -198,14 +207,7 @@ export default {
     onDelete(peotry) {
       if (!peotry || !peotry.id) return;
 
-      axios
-        .delete("http://127.0.0.1:8088/v1/peotry/delete", {
-          params: {
-            pId: peotry.id,
-            // uId: this.userInfo.id,
-            token: this.userInfo.token
-          }
-        })
+      deletePeotry(peotry.id)
         .then(resp => {
           if (resp.data.code === 1000) {
             this.$appTip("删除成功");
@@ -242,11 +244,7 @@ export default {
         uId: this.userInfo.id,
         ...newPeotry
       };
-      axios
-        .post(
-          "http://127.0.0.1:8088/v1/peotry/create?token=" + this.userInfo.token,
-          data
-        )
+      createPeotry(data)
         .then(resp => {
           if (resp.data.code === 1000) {
             this.$appTip("创建成功");
@@ -273,13 +271,7 @@ export default {
     },
 
     getPeotrySets() {
-      axios
-        .get("http://127.0.0.1:8088/v1/peotry-set/query", {
-          params: {
-            token: this.userInfo.token,
-            uId: this.userInfo.id
-          }
-        })
+      queryPeotrySets(this.userInfo.id)
         .then(resp => {
           if (resp.data.code === 1000) {
             const data = resp.data;

@@ -35,13 +35,13 @@ module.exports = {
     );
 
     //忽略的打包文件
-    // config.externals({
-    //   vue: "Vue",
-    //   "vue-router": "VueRouter",
-    //   vuex: "Vuex",
-    //   axios: "axios",
-    //   "element-ui": "ELEMENT"
-    // });
+    config.externals({
+      // vue: "Vue",
+      // "vue-router": "VueRouter",
+      // vuex: "Vuex",
+      axios: "axios",
+      // "element-ui": "ELEMENT"
+    });
 
     const plugins = config.plugins;
     ["app", "app2", "app3"].forEach(key => {
