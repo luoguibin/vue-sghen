@@ -5,20 +5,25 @@
     </span>
     <div class="title">
       <button v-if="showDelete" @click.stop="onDelete">删除</button>
-      <span v-if="peotry.set">
-        {{peotry.set.name + (peotry.title ? "*" + peotry.title : "")}}
-      </span>
+      <span v-if="peotry.set">{{peotry.set.name + (peotry.title ? "*" + peotry.title : "")}}</span>
       <span v-else>{{peotry.title}}</span>
     </div>
     <div class="peot">{{peotry.user.name}}--{{peotry.time | time-format}}</div>
 
     <!-- `white-wrap: pre-wrap` and code's format -->
-    <div class="content" :class="{'content-edit': contentEditable}" ref="contentEl" @click.stop="onContent" :contenteditable="contentEditable" v-html="peotry.content"></div>
+    <div
+      class="content"
+      :class="{'content-edit': contentEditable}"
+      ref="contentEl"
+      @click.stop="onContent"
+      :contenteditable="contentEditable"
+      v-html="peotry.content"
+    ></div>
     <button v-if="contentEditable" class="save" @click.stop="onSave(true)">保存</button>
     <div>{{peotry.end}}</div>
     <div class="images" v-if="peotryImages">
       <!-- <span style="color: gray;">peotry images has been removed.</span> -->
-      <img v-for="value in peotryImages" alt="image error" :key="value" :src="peotryUrl + value" />
+      <img v-for="value in peotryImages" alt="image error" :key="value" :src="peotryUrl + value">
     </div>
   </div>
 </template>
@@ -110,50 +115,52 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+$size-content: 18px;
+
 .peotry {
   position: relative;
   max-width: 500px;
-}
 
-.peotry .order {
-  position: absolute;
-  right: calc(100% + 10px);
-  top: 5px;
-  cursor: pointer;
-  user-select: none;
-}
+  .order {
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 5px;
+    cursor: pointer;
+    user-select: none;
+  }
 
-.peotry .title {
-  font-size: 20px;
-}
+  .title {
+    font-size: 20px;
+  }
 
-.peotry .peot {
-  margin: 5px 0;
-}
+  .peot {
+    margin: 5px 0;
+  }
 
-.peotry .content {
-  display: inline-block;
-  font-size: 18px;
-  white-space: pre-wrap;
-}
+  .content {
+    display: inline-block;
+    font-size: $size-content;
+    white-space: pre-wrap;
+  }
 
-.peotry div[contenteditable="true"] {
-  position: relative;
-  padding: 10px 50px 10px 10px;
-  border: 1px solid salmon;
-}
+  div[contenteditable="true"] {
+    position: relative;
+    padding: 10px 50px 10px 10px;
+    border: 1px solid salmon;
+  }
 
-.peotry .save {
-  vertical-align: bottom;
-}
+  .save {
+    vertical-align: bottom;
+  }
 
-.peotry .images {
-  margin-top: 20px;
-}
+  .images {
+    margin-top: 20px;
 
-.images img {
-  margin: 5px;
-  width: 30%;
+    img {
+      margin: 5px;
+      width: 30%;
+    }
+  }
 }
 </style>

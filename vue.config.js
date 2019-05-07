@@ -51,25 +51,25 @@ module.exports = {
 
   },
   configureWebpack: () => {
-    if (process.env.NODE_ENV === "production") {
-      try {
-        const compress =
-          config.optimization.minimizer[0].options.terserOptions.compress;
+    // if (process.env.NODE_ENV === "production") {
+    //   try {
+    //     const compress =
+    //       config.optimization.minimizer[0].options.terserOptions.compress;
 
-        config.optimization.minimizer[0].options.terserOptions.compress = {
-          ...compress,
-          drop_debugger: true,
-          pure_funcs: [
-            "console.log",
-            "console.info",
-            "console.debug",
-            "console.error"
-          ]
-        };
-      } catch (e) {
-        console.error(e);
-      }
-    }
+    //     config.optimization.minimizer[0].options.terserOptions.compress = {
+    //       ...compress,
+    //       drop_debugger: true,
+    //       pure_funcs: [
+    //         "console.log",
+    //         "console.info",
+    //         "console.debug",
+    //         "console.error"
+    //       ]
+    //     };
+    //   } catch (e) {
+    //     console.error(e);
+    //   }
+    // }
   },
 
 
