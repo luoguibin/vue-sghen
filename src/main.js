@@ -8,8 +8,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI)
 
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 Vue.config.productionTip = false
 Vue.use(plugins)
