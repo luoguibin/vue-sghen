@@ -33,6 +33,7 @@
         class="peotry"
         @on-save="onSave"
         @on-delete="onDelete"
+        @on-comment="onComment"
       >
         <template>{{(curPage - 1) * limit + index + 1}}</template>
       </peotry>
@@ -63,7 +64,8 @@ import {
   queryPeotrySets,
   createPeotry,
   updatePeotry,
-  deletePeotry
+  deletePeotry,
+  createComment
 } from "../api";
 
 export default {
@@ -163,9 +165,11 @@ export default {
     getPeotries() {
       queryPeotries({
         limit: this.limit,
-        page: this.curPage
+        page: this.curPage,
+        needComment: true
       })
         .then(resp => {
+          console.log(resp.data)
           if (resp.data.code === 1000) {
             const data = resp.data;
             this.curPage = data.curPage;
@@ -216,6 +220,28 @@ export default {
             } else {
               this.getPeotries();
             }
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+        })
+        .catch(e => {
+          this.$appTip(e.message);
+        });
+    },
+
+    onComment(peotry) {
+      if (!peotry || !peotry.id) return;
+      createComment({
+        type: 1,
+        typeId: peotry.id,
+        fromId: this.userInfo.id,
+        toId: 1,
+        comment: peotry.comment
+      })
+        .then(resp => {
+          if (resp.data.code === 1000) {
+            this.$appTip("评论成功");
+            // todo
           } else {
             this.$appTip(resp.data.msg);
           }

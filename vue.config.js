@@ -83,7 +83,7 @@ module.exports = {
 
 
   devServer: {
-    port: 8080,
+    port: 8086,
     https: false,
     hotOnly: false,
     proxy: null

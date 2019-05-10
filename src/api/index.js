@@ -55,3 +55,10 @@ export const deletePeotry = pId =>
             pId
         }
     })
+
+export const createComment = data =>
+    request({
+        url: "/v1/comment/create",
+        method: "post",
+        data
+    })

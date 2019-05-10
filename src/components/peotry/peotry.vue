@@ -25,6 +25,34 @@
       <!-- <span style="color: gray;">peotry images has been removed.</span> -->
       <img v-for="value in peotryImages" alt="image error" :key="value" :src="peotryUrl + value">
     </div>
+    <div class="comment-menu" v-show="!contentEditable && !showDelete">
+      <span>
+        赞
+        <i class="el-icon-star-off"></i>
+      </span>
+      <span @click.stop="onToggleComment">
+        评论
+        <i class="el-icon-edit-outline"></i>
+      </span>
+    </div>
+    <div v-if="peotry.comments" class="comments">
+      <div v-for="comment in peotry.comments" :key="comment.id">
+        <span>{{comment.fromId}}</span>
+        <span v-if="comment.toId > 1">回复： {{comment.toId}}</span>
+        <span>: {{comment.content}}</span>
+      </div>
+    </div>
+    <div v-if="inComment" class="comment-input">
+      <el-input
+        type="textarea"
+        :autosize="{ maxRows: 4}"
+        placeholder="请输入内容"
+        v-model="peotry.comment"
+      ></el-input>
+      <el-button @click.stop="onComment" size="small" :disabled="!canComment">提交</el-button>
+    </div>
+
+    <el-divider></el-divider>
   </div>
 </template>
 
@@ -40,6 +68,7 @@ export default {
     return {
       contentEditable: false,
       showDelete: false,
+      inComment: false,
       clickTime: 0,
       peotryUrl: "http://127.0.0.1/vue-sghen/images/"
     };
@@ -97,6 +126,16 @@ export default {
     },
     onDelete() {
       this.$emit("on-delete", this.peotry);
+    },
+    onToggleComment() {
+      this.inComment = !this.inComment;
+      if (this.inComment && this.peotry.comment === undefined) {
+        this.$set(this.peotry, "comment", "");
+      }
+    },
+    onComment() {
+      this.$emit("on-comment", this.peotry);
+      this.inComment = false;
     }
   },
   computed: {
@@ -107,6 +146,9 @@ export default {
       } else {
         return undefined;
       }
+    },
+    canComment() {
+      return this.peotry.comment.trim().length > 0;
     }
   },
   beforeDestroy() {
@@ -160,6 +202,29 @@ $size-content: 18px;
     img {
       margin: 5px;
       width: 30%;
+    }
+  }
+
+  .comment-menu {
+    margin: 18px 0 5px 0;
+    color: #333;
+    span {
+      cursor: pointer;
+      &:hover {
+        color: #148acf;
+      }
+    }
+  }
+
+  .comments {
+    padding: 5px 5px 5px 20px;
+  }
+
+  .comment-input {
+    text-align: right;
+    max-width: 330px;
+    .el-button {
+      margin-top: 5px;
     }
   }
 }
