@@ -7,6 +7,16 @@ export const loginByAccount = account =>
         data: account
     });
 
+export const updateUser = data =>
+    request({
+        url: "/v1/user/update",
+        method: "post",
+        params: {
+            token: true
+        },
+        data
+    });
+
 
 export const queryPeotries = params =>
     request({
@@ -26,7 +36,7 @@ export const queryPeotrySets = uId =>
     })
 
 
-export const createPeotry = peotry => 
+export const createPeotry = peotry =>
     request({
         url: "/v1/peotry/create",
         method: "post",
@@ -36,7 +46,7 @@ export const createPeotry = peotry =>
         data: peotry,
     })
 
-export const updatePeotry = peotry => 
+export const updatePeotry = peotry =>
     request({
         url: "/v1/peotry/update",
         method: "post",
@@ -46,7 +56,7 @@ export const updatePeotry = peotry =>
         data: peotry,
     })
 
-export const deletePeotry = pId => 
+export const deletePeotry = pId =>
     request({
         url: "/v1/peotry/delete",
         method: "delete",
@@ -60,5 +70,8 @@ export const createComment = data =>
     request({
         url: "/v1/comment/create",
         method: "post",
+        params: {
+            token: true
+        },
         data
     })

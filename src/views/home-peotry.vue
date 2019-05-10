@@ -2,7 +2,39 @@
   <div class="home-peotry">
     <div class="header">
       <button @click="$router.go(-1)">返回</button>
-      <button class="user" @click="onShowLogin">{{userInfo.name ? userInfo.name : "登录"}}</button>
+      <button v-if="!userInfo.token" class="user" @click="onShowLogin">登录</button>
+
+      <el-dropdown v-else class="user" @command="handleCommand">
+        <span>
+          <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
+          <img :src="myIconUrl" style="width: 33px; vertical-align: middle;">
+        </span>
+        <el-dropdown-menu>
+          <el-dropdown-item command="personal">个人中心</el-dropdown-item>
+          <el-dropdown-item command="peotry">创建诗词</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <el-dialog title="个人信息" :visible.sync="showUserInfo">
+        <el-upload
+          class="upload-demo"
+          ref="upload"
+          action="http://localhost:8088/v1/upload"
+          :data="{'pathType': 'icon', 'token': userInfo.token}"
+          :file-list="fileList"
+          :auto-upload="false"
+          :on-success="onIconUploadSuccess"
+        >
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <el-button
+            style="margin-left: 10px;"
+            size="small"
+            type="success"
+            @click="submitUpload"
+          >上传到服务器</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
+      </el-dialog>
 
       <div v-if="showLogin" class="user-login">
         <input v-model.number="account.uId" type="tel">
@@ -60,6 +92,7 @@ import { mapState, mapActions } from "vuex";
 import Peotry from "@/components/peotry/peotry";
 import {
   loginByAccount,
+  updateUser,
   queryPeotries,
   queryPeotrySets,
   createPeotry,
@@ -67,6 +100,7 @@ import {
   deletePeotry,
   createComment
 } from "../api";
+import { baseUrl } from "../api/config";
 
 export default {
   name: "HomePeotry",
@@ -75,8 +109,11 @@ export default {
   },
   data() {
     return {
+      baseUrl: baseUrl,
       showLogin: false,
       showSelf: false,
+      showUserInfo: false,
+      fileList: [],
       account: {
         uId: 15625045984,
         pw: "123456"
@@ -128,20 +165,54 @@ export default {
     }
   },
   computed: {
+    myIconUrl() {
+      const info = this.userInfo;
+      return info.iconUrl ? this.baseUrl + info.iconUrl.substr(1) : "./favicon.ico";
+    },
     ...mapState({
       userInfo: state => state.user
     })
   },
   methods: {
-    onShowLogin() {
-      if (!this.userInfo.name) {
-        this.showLogin = !this.showLogin;
-      } else {
+    handleCommand(e) {
+      if (e === "peotry") {
         this.showSelf = !this.showSelf;
         if (this.showSelf) {
           this.getPeotrySets();
         }
+      } else if (e === "personal") {
+        this.showUserInfo = !this.showUserInfo;
       }
+    },
+    onShowLogin() {
+      this.showLogin = !this.showLogin;
+    },
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
+    onIconUploadSuccess(response, file, fileList) {
+      if (response.code !== 1000) return;
+
+      updateUser({ iconUrl: response.data[0], uId: this.userInfo.id })
+        .then(resp => {
+          if (resp.data.code === 1000) {
+            this.$appTip("更新头像成功");
+            
+            const info = this.userInfo;
+            info.iconUrl = response.data[0];
+            sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
+            this.setUserInfo(info);
+            
+            this.showUserInfo = false;
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+          this.fileList = [];
+        })
+        .catch(e => {
+          this.$appTip(e.message);
+          this.fileList = [];
+        });
     },
     onLogin() {
       loginByAccount(this.account)
@@ -169,7 +240,6 @@ export default {
         needComment: true
       })
         .then(resp => {
-          console.log(resp.data)
           if (resp.data.code === 1000) {
             const data = resp.data;
             this.curPage = data.curPage;
@@ -344,6 +414,7 @@ export default {
 .header .user {
   float: right;
   margin-right: 30px;
+  cursor: pointer;
 }
 
 .header .user-login {
