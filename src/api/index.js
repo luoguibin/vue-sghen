@@ -1,8 +1,10 @@
 import request from "./axios";
-import hmacSHA512 from 'crypto-js/hmac-sha512';
-import Base64 from 'crypto-js/enc-base64';
+import CryptoJS from 'crypto-js';
 
-const encryption = value => Base64.stringify(hmacSHA512(value, "sghen-morge"));
+const baseHmacMd5 = (data, key) => {
+    return CryptoJS.enc.Base64.stringify(CryptoJS.HmacMD5(data, key));
+}
+const privateKey = CryptoJS.enc.Utf8.parse("sghenmorge");
 
 export const loginByAccount = ({ uId, pw }) =>
     request({
@@ -10,7 +12,7 @@ export const loginByAccount = ({ uId, pw }) =>
         method: "post",
         data: {
             uId,
-            pw: pw
+            pw: baseHmacMd5(pw, privateKey)
         }
     });
 
