@@ -5,11 +5,7 @@
     </div>
 
     <div ref="container" style="position: relative;" :style="{height: mainHeight}">
-      <el-scrollbar
-        ref="scrollbar"
-        :style="{height: scrollHeight + 'px'}"
-        style="width: 200px; position: sticky; top: 20px; bottom: 50px;"
-      >
+      <el-scrollbar ref="scrollbar" :style="scrollbarStyle">
         <el-tree
           ref="tree"
           :data="treeData"
@@ -50,7 +46,10 @@ export default {
       checkedKeys: [],
       tokenLog: "",
       mainHeight: "100px",
-      scrollHeight: 100
+
+      scrollHeight: 100,
+      scrollbarPosition: "initial",
+      scrollbarTop: "0px"
     };
   },
   created() {
@@ -167,11 +166,39 @@ export default {
         header = refs.header,
         footer = refs.footer;
 
+      // ①滚动条在最顶，或展开tree某个节点，tree布局表现为默认
       if (el.scrollTop < header.clientHeight) {
-        this.scrollHeight = clientHeight - (header.clientHeight - el.scrollTop) - 20;
+        this.scrollbarPosition = "initial";
+        this.scrollHeight =
+          clientHeight - (header.clientHeight - el.scrollTop) - 20;
       } else {
-        this.scrollHeight = clientHeight - 40;
+        // ②隐藏header，tree布局表现为fixed
+        this.scrollbarPosition = "fixed";
+        this.scrollbarTop = 20;
+
+        // ③footer展现，tree布局表现为默认
+        const y = el.clientHeight + el.scrollTop - footer.offsetTop;
+        if (y > 0) {
+          this.scrollbarTop = -y;
+        }
       }
+
+      // if (el.scrollTop < header.clientHeight) {
+      //   this.scrollHeight = clientHeight - (header.clientHeight - el.scrollTop) - 20;
+      // } else {
+      //   this.scrollHeight = clientHeight - 40;
+      // }
+    }
+  },
+  computed: {
+    scrollbarStyle() {
+      return {
+        width: "200px",
+        height: this.scrollHeight + "px",
+        position: this.scrollbarPosition,
+        top: this.scrollbarTop + "px",
+        bottom: "0px"
+      };
     }
   },
   destroyed() {
@@ -195,7 +222,7 @@ export default {
 
 <style>
 .el-scrollbar__wrap {
-  /*overflow-x: hidden;*/
+  overflow-x: hidden;
 }
 
 .el-tree-node__content {
