@@ -1,10 +1,17 @@
 import request from "./axios";
+import hmacSHA512 from 'crypto-js/hmac-sha512';
+import Base64 from 'crypto-js/enc-base64';
 
-export const loginByAccount = account =>
+const encryption = value => Base64.stringify(hmacSHA512(value, "sghen-morge"));
+
+export const loginByAccount = ({ uId, pw }) =>
     request({
         url: "/v1/user/login",
         method: "post",
-        data: account
+        data: {
+            uId,
+            pw: pw
+        }
     });
 
 export const updateUser = data =>
