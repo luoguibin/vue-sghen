@@ -43,19 +43,31 @@
         <button @click.stop="onLogin">login</button>
       </div>
 
-      <div v-if="showSelf" class="peotry-create">
-        <div>
-          <span>选集:</span>
-          <select v-model="newPeotry.sId">
-            <option v-for="set in peotrySets" :key="set.id" :value="set.id">{{set.name}}</option>
-          </select>
-          <input class="title" placeholder="标题" v-model="newPeotry.title">
-        </div>
-        <textarea class="content" placeholder="内容，不少于5个字符" v-model="newPeotry.content"></textarea>
-        <textarea class="end" placeholder="结尾" v-model="newPeotry.end"></textarea>
+      <el-dialog title="创建诗词" :visible.sync="showSelf">
+        <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
+          <el-form-item label="选集" prop="sId">
+            <el-select v-model="newPeotry.sId" placeholder="请选择">
+              <el-option v-for="set in peotrySets" :key="set.id" :value="set.id" :label="set.name"></el-option>
+            </el-select>
+          </el-form-item>
 
-        <button @click.stop="onCreate">创建</button>
-      </div>
+          <el-form-item label="标题" prop="title">
+            <el-input placeholder="标题" v-model="newPeotry.title"></el-input>
+          </el-form-item>
+
+          <el-form-item label="标题" prop="content">
+            <el-input type="textarea" placeholder="内容，不少于5个字符" v-model="newPeotry.content"></el-input>
+          </el-form-item>
+
+          <el-form-item label="标题" prop="end">
+            <el-input type="textarea" placeholder="结尾" v-model="newPeotry.end"></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click.stop="onCreate">创建</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </div>
 
     <el-carousel trigger="click" type="card" height="200px">
@@ -140,6 +152,22 @@ export default {
         title: "",
         content: "",
         end: ""
+      },
+      formRules: {
+        sId: [{ required: true, message: "请选择选集", trigger: "click" }],
+        title: [
+          { required: true, message: "请输入标题", trigger: "blur" },
+          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
+        ],
+        content: [
+          { required: true, message: "请选输入诗词内容", trigger: "change" },
+          {
+            min: 5,
+            max: 1000,
+            message: "长度在 5 到 1000 个字符",
+            trigger: "blur"
+          }
+        ]
       }
     };
   },
@@ -317,42 +345,33 @@ export default {
     },
 
     onCreate() {
-      const newPeotry = this.newPeotry;
-      if (!newPeotry.title) {
-        this.$appTip("请输入标题");
-        return;
-      }
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          const newPeotry = this.newPeotry;
+          const data = {
+            uId: this.userInfo.id,
+            ...newPeotry
+          };
+          createPeotry(data).then(resp => {
+            if (resp.data.code === 1000) {
+              this.$appTip("创建成功");
+              this.$refs.ruleForm.resetFields();
+              this.showSelf = false;
 
-      if (!newPeotry.content) {
-        this.$appTip("请输入内容");
-        return;
-      } else if (newPeotry.content.length < 5) {
-        this.$appTip("内容不能少于5个字符");
-        return;
-      }
-
-      const data = {
-        uId: this.userInfo.id,
-        ...newPeotry
-      };
-      createPeotry(data).then(resp => {
-        if (resp.data.code === 1000) {
-          this.$appTip("创建成功");
-          this.showSelf = false;
-          newPeotry.title = "";
-          newPeotry.content = "";
-          newPeotry.end = "";
-
-          if (this.totalCount % this.limit === 0) {
-            this.totalPage++;
-          }
-          if (this.curPage !== this.totalPage) {
-            this.curPage = this.totalPage;
-          } else {
-            this.getPeotries();
-          }
+              if (this.totalCount % this.limit === 0) {
+                this.totalPage++;
+              }
+              if (this.curPage !== this.totalPage) {
+                this.curPage = this.totalPage;
+              } else {
+                this.getPeotries();
+              }
+            } else {
+              this.$appTip(resp.data.msg);
+            }
+          });
         } else {
-          this.$appTip(resp.data.msg);
+          this.$appTip("请输入表单内容");
         }
       });
     },
@@ -420,60 +439,6 @@ export default {
   padding: 0.3rem;
   font-size: 18px;
   box-sizing: border-box;
-}
-
-.header .peotry-create {
-  width: 400px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  padding: 10px;
-  transform: translate(-50%, -50%);
-  background-color: rgb(255, 180, 118);
-  z-index: 100;
-  border-radius: 5px;
-  box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);
-}
-
-.peotry-create > textarea {
-  max-height: 220px;
-  margin: 10px 0;
-  border: 2px solid rgb(69, 150, 255);
-  border-radius: 5px;
-  overflow-y: auto;
-  font-size: 16px;
-}
-
-.peotry-create .title {
-  width: 60%;
-  float: right;
-  max-height: 30px;
-  line-height: 30px;
-  padding: 0 3px;
-  font-size: 18px;
-  box-sizing: border-box;
-}
-
-.peotry-create .content {
-  width: 100%;
-  min-height: 120px;
-  max-height: 180px;
-  padding: 3px;
-  box-sizing: border-box;
-  resize: none;
-}
-
-.peotry-create .end {
-  width: 100%;
-  min-height: 30px;
-  max-height: 80px;
-  padding: 3px;
-  box-sizing: border-box;
-  resize: none;
-}
-
-.peotry-create button {
-  padding: 2px 5px;
 }
 
 .user-login button {
