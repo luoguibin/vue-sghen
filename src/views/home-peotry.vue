@@ -12,6 +12,7 @@
         <el-dropdown-menu>
           <el-dropdown-item command="personal">个人中心</el-dropdown-item>
           <el-dropdown-item command="peotry">创建诗词</el-dropdown-item>
+          <el-dropdown-item command="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
 
@@ -167,21 +168,34 @@ export default {
   computed: {
     myIconUrl() {
       const info = this.userInfo;
-      return info.iconUrl ? this.baseUrl + info.iconUrl.substr(1) : "./favicon.ico";
+      return info.iconUrl
+        ? this.baseUrl + info.iconUrl.substr(1)
+        : "./favicon.ico";
     },
     ...mapState({
       userInfo: state => state.user
     })
   },
   methods: {
-    handleCommand(e) {
-      if (e === "peotry") {
-        this.showSelf = !this.showSelf;
-        if (this.showSelf) {
-          this.getPeotrySets();
-        }
-      } else if (e === "personal") {
-        this.showUserInfo = !this.showUserInfo;
+    handleCommand(key) {
+      switch (key) {
+        case "peotry":
+          this.showSelf = !this.showSelf;
+          if (this.showSelf) {
+            this.getPeotrySets();
+          }
+          break;
+        case "personal":
+          this.showUserInfo = !this.showUserInfo;
+          break;
+        case "logout":
+          sessionStorage.removeItem("sghen_user_info");
+          setTimeout(() => {
+            this.$router.go(0);
+          }, 200);
+          break;
+        default:
+          break;
       }
     },
     onShowLogin() {
@@ -193,42 +207,33 @@ export default {
     onIconUploadSuccess(response, file, fileList) {
       if (response.code !== 1000) return;
 
-      updateUser({ iconUrl: response.data[0], uId: this.userInfo.id })
-        .then(resp => {
-          if (resp.data.code === 1000) {
-            this.$appTip("更新头像成功");
-            
-            const info = this.userInfo;
-            info.iconUrl = response.data[0];
-            sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
-            this.setUserInfo(info);
-            
-            this.showUserInfo = false;
-          } else {
-            this.$appTip(resp.data.msg);
-          }
-          this.fileList = [];
-        })
-        .catch(e => {
-          this.$appTip(e.message);
-          this.fileList = [];
-        });
+      updateUser({ iconUrl: response.data[0] }).then(resp => {
+        if (resp.data.code === 1000) {
+          this.$appTip("更新头像成功");
+
+          const info = this.userInfo;
+          info.iconUrl = response.data[0];
+          sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
+          this.setUserInfo(info);
+
+          this.showUserInfo = false;
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+        this.fileList = [];
+      });
     },
     onLogin() {
-      loginByAccount(this.account)
-        .then(resp => {
-          if (resp.data.code === 1000) {
-            const info = resp.data.data;
-            sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
-            this.setUserInfo(info);
-            this.showLogin = false;
-          } else {
-            this.$appTip(resp.data.msg);
-          }
-        })
-        .catch(e => {
-          this.$appTip(e.message);
-        });
+      loginByAccount(this.account).then(resp => {
+        if (resp.data.code === 1000) {
+          const info = resp.data.data;
+          sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
+          this.setUserInfo(info);
+          this.showLogin = false;
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
     },
     onPage(value) {
       this.curPage += value;
@@ -238,23 +243,19 @@ export default {
         limit: this.limit,
         page: this.curPage,
         needComment: true
-      })
-        .then(resp => {
-          if (resp.data.code === 1000) {
-            const data = resp.data;
-            this.curPage = data.curPage;
-            this.totalPage = data.totalPage;
-            this.totalCount = data.totalCount;
-            this.peotries = data.data;
+      }).then(resp => {
+        if (resp.data.code === 1000) {
+          const data = resp.data;
+          this.curPage = data.curPage;
+          this.totalPage = data.totalPage;
+          this.totalCount = data.totalCount;
+          this.peotries = data.data;
 
-            this.$refs.listEl.scrollTop = 0;
-          } else {
-            this.$appTip(resp.data.msg);
-          }
-        })
-        .catch(e => {
-          this.$appTip(e.message);
-        });
+          this.$refs.listEl.scrollTop = 0;
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
     },
     onSave(peotry) {
       if (!peotry || !peotry.id) return;
@@ -266,37 +267,29 @@ export default {
         title: peotry.title,
         content: peotry.content,
         end: peotry.end
-      })
-        .then(resp => {
-          if (resp.data.code === 1000) {
-            this.$appTip("保存成功");
-          } else {
-            this.$appTip(resp.data.msg);
-          }
-        })
-        .catch(e => {
-          this.$appTip(e.message);
-        });
+      }).then(resp => {
+        if (resp.data.code === 1000) {
+          this.$appTip("保存成功");
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
     },
     onDelete(peotry) {
       if (!peotry || !peotry.id) return;
 
-      deletePeotry(peotry.id)
-        .then(resp => {
-          if (resp.data.code === 1000) {
-            this.$appTip("删除成功");
-            if (this.peotries.length == 1) {
-              this.curPage--;
-            } else {
-              this.getPeotries();
-            }
+      deletePeotry(peotry.id).then(resp => {
+        if (resp.data.code === 1000) {
+          this.$appTip("删除成功");
+          if (this.peotries.length == 1) {
+            this.curPage--;
           } else {
-            this.$appTip(resp.data.msg);
+            this.getPeotries();
           }
-        })
-        .catch(e => {
-          this.$appTip(e.message);
-        });
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
     },
 
     onComment(peotry) {
@@ -307,18 +300,14 @@ export default {
         fromId: this.userInfo.id,
         toId: 1,
         comment: peotry.comment
-      })
-        .then(resp => {
-          if (resp.data.code === 1000) {
-            this.$appTip("评论成功");
-            // todo
-          } else {
-            this.$appTip(resp.data.msg);
-          }
-        })
-        .catch(e => {
-          this.$appTip(e.message);
-        });
+      }).then(resp => {
+        if (resp.data.code === 1000) {
+          this.$appTip("评论成功");
+          // todo
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
     },
 
     onCreate() {
@@ -340,45 +329,37 @@ export default {
         uId: this.userInfo.id,
         ...newPeotry
       };
-      createPeotry(data)
-        .then(resp => {
-          if (resp.data.code === 1000) {
-            this.$appTip("创建成功");
-            this.showSelf = false;
-            newPeotry.title = "";
-            newPeotry.content = "";
-            newPeotry.end = "";
+      createPeotry(data).then(resp => {
+        if (resp.data.code === 1000) {
+          this.$appTip("创建成功");
+          this.showSelf = false;
+          newPeotry.title = "";
+          newPeotry.content = "";
+          newPeotry.end = "";
 
-            if (this.totalCount % this.limit === 0) {
-              this.totalPage++;
-            }
-            if (this.curPage !== this.totalPage) {
-              this.curPage = this.totalPage;
-            } else {
-              this.getPeotries();
-            }
-          } else {
-            this.$appTip(resp.data.msg);
+          if (this.totalCount % this.limit === 0) {
+            this.totalPage++;
           }
-        })
-        .catch(e => {
-          this.$appTip(e.message);
-        });
+          if (this.curPage !== this.totalPage) {
+            this.curPage = this.totalPage;
+          } else {
+            this.getPeotries();
+          }
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
     },
 
     getPeotrySets() {
-      queryPeotrySets(this.userInfo.id)
-        .then(resp => {
-          if (resp.data.code === 1000) {
-            const data = resp.data;
-            this.peotrySets = data.data;
-          } else {
-            this.$appTip(resp.data.msg);
-          }
-        })
-        .catch(e => {
-          this.$appTip(e.message);
-        });
+      queryPeotrySets(this.userInfo.id).then(resp => {
+        if (resp.data.code === 1000) {
+          const data = resp.data;
+          this.peotrySets = data.data;
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
     },
 
     onClickImage(e) {
