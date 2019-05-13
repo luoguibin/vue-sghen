@@ -1,10 +1,18 @@
 <template>
   <div class="demo">
-    <div class="demo-back" @click.stop="onBack">back</div>
-    <component v-if="isCompReady" :is="compName"></component>
-    <div v-else style="padding-top: 10px;">
-      <router-link v-for="(val, key) in componentMap" :key="key" :to="'/demo/' + key" class="a-link">{{key}}</router-link>
+    <el-button class="demo-back" @click.stop="onBack">
+      <i class="el-icon-back"></i>
+    </el-button>
+    <div v-if="!isCompReady" class="link-list">
+      <el-link
+        type="primary"
+        v-for="(val, key) in componentMap"
+        :key="key"
+        :underline="false"
+        :href="'#/demo/' + key"
+      >{{key}}</el-link>
     </div>
+    <component v-else :is="compName"></component>
   </div>
 </template>
 
@@ -91,15 +99,27 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .demo {
   height: 100%;
   position: relative;
 }
 
-.a-link {
-  padding: 10px;
-  margin: 5px;
+.link-list {
+  padding-top: 10px;
+
+  a {
+    font-size: 22px;
+    border: 1px solid #2ba5b8;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px;
+
+    &:hover {
+      background-color: #72979c;
+      color: white;
+    }
+  }
 }
 
 .demo-back {
@@ -107,7 +127,8 @@ export default {
   right: 0;
   top: 0;
   padding: 10px;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.3);
+  border-bottom-left-radius: 50%;
   color: white;
   cursor: pointer;
   z-index: 100;
