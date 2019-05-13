@@ -58,6 +58,12 @@
       </div>
     </div>
 
+    <el-carousel trigger="click" type="card" height="200px">
+      <el-carousel-item v-for="v in 5" :key="v">
+        <div>{{v}}</div>
+      </el-carousel-item>
+    </el-carousel>
+
     <div class="list" ref="listEl" @click="onClickImage($event)">
       <peotry
         v-for="(peotry, index) in peotries"

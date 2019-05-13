@@ -6,6 +6,7 @@ import plugins from './plugins/index'
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import './style/element-ui.css'
 Vue.use(ElementUI)
 
 import NProgress from 'nprogress';
