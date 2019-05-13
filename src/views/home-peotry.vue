@@ -1,10 +1,10 @@
 <template>
-  <div class="home-peotry">
-    <div class="header">
-      <button @click="$router.go(-1)">返回</button>
-      <button v-if="!userInfo.token" class="user" @click="onShowLogin">登录</button>
+  <el-container class="home-peotry">
+    <el-header>
+      <el-button @click="$router.go(-1)" icon="el-icon-back" circle></el-button>
+      <el-button v-if="!userInfo.token" class="float-right" @click="onShowLogin">登录</el-button>
 
-      <el-dropdown v-else class="user" @command="handleCommand">
+      <el-dropdown v-else class="float-right" @command="handleCommand">
         <span>
           <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
           <img :src="myIconUrl" style="width: 33px; vertical-align: middle;">
@@ -15,6 +15,18 @@
           <el-dropdown-item command="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+
+      <el-dialog title="登录" :visible.sync="showLogin">
+        <el-form label-width="50px" class="user-login">
+          <el-form-item label="账 号">
+            <el-input v-model.number="account.uId" type="tel"></el-input>
+          </el-form-item>
+          <el-form-item label="密 码">
+            <el-input v-model="account.pw" type="password"></el-input>
+          </el-form-item>
+          <el-button type="primary" @click.stop="onLogin">登录</el-button>
+        </el-form>
+      </el-dialog>
 
       <el-dialog title="个人信息" :visible.sync="showUserInfo">
         <el-upload
@@ -37,12 +49,6 @@
         </el-upload>
       </el-dialog>
 
-      <div v-if="showLogin" class="user-login">
-        <input v-model.number="account.uId" type="tel">
-        <input v-model="account.pw" type="password">
-        <button @click.stop="onLogin">login</button>
-      </div>
-
       <el-dialog title="创建诗词" :visible.sync="showSelf">
         <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
           <el-form-item label="选集" prop="sId">
@@ -56,7 +62,12 @@
           </el-form-item>
 
           <el-form-item label="标题" prop="content">
-            <el-input type="textarea" placeholder="内容，不少于5个字符" v-model="newPeotry.content"></el-input>
+            <el-input
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 10}"
+              placeholder="内容，不少于5个字符"
+              v-model="newPeotry.content"
+            ></el-input>
           </el-form-item>
 
           <el-form-item label="标题" prop="end">
@@ -68,42 +79,47 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-    </div>
+    </el-header>
 
-    <el-carousel trigger="click" type="card" height="200px">
-      <el-carousel-item v-for="v in 5" :key="v">
-        <div>{{v}}</div>
-      </el-carousel-item>
-    </el-carousel>
+    <el-main>
+      <el-carousel trigger="click" type="card" height="230px">
+        <el-carousel-item v-for="v in 5" :key="v">
+          <div>{{v}}</div>
+        </el-carousel-item>
+      </el-carousel>
 
-    <div class="list" ref="listEl" @click="onClickImage($event)">
-      <peotry
-        v-for="(peotry, index) in peotries"
-        :key="peotry.id"
-        :peotry="peotry"
-        class="peotry"
-        @on-save="onSave"
-        @on-delete="onDelete"
-        @on-comment="onComment"
-      >
-        <template>{{(curPage - 1) * limit + index + 1}}</template>
-      </peotry>
-    </div>
+      <div class="list" ref="listEl" @click="onClickImage($event)">
+        <peotry
+          v-for="(peotry, index) in peotries"
+          :key="peotry.id"
+          :peotry="peotry"
+          class="peotry"
+          @on-save="onSave"
+          @on-delete="onDelete"
+          @on-comment="onComment"
+        >
+          <template>{{(curPage - 1) * limit + index + 1}}</template>
+        </peotry>
+      </div>
 
-    <div class="image-show" v-show="showImageUrl" @click.stop="onClickImage($event)">
-      <img :src="showImageUrl">
-    </div>
+      <el-dialog title="图片" :visible.sync="showImage" class="show-image" :show-close="false" center>
+        <img :src="showImageUrl">
+      </el-dialog>
+    </el-main>
 
-    <div class="footer" v-show="peotries.length">
-      <button @click.stop="onPage(-1)">←</button>
-      <button @click.stop="onPage(1)">→</button>
-      <span>
-        当前第
-        <input class="current-page" v-model.number="curPage">
-        页，每页{{limit}}条，共{{totalPage}}页，一共{{totalCount}}条
-      </span>
-    </div>
-  </div>
+    <el-footer>
+      <el-pagination
+        v-show="peotries.length"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="curPage"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="totalCount"
+      ></el-pagination>
+    </el-footer>
+  </el-container>
 </template>
 
 <script>
@@ -139,6 +155,7 @@ export default {
       },
 
       peotryUrl: "",
+      showImage: false,
       showImageUrl: "",
       limit: 10,
       curPage: 1,
@@ -189,14 +206,6 @@ export default {
       handler() {
         this.getPeotries();
       }
-    },
-    curPage(newVal, oldVal) {
-      if (newVal < 1 || newVal > this.totalPage) {
-        this.curPage = oldVal;
-        return;
-      }
-      if (!oldVal) return;
-      this.getPeotries();
     }
   },
   computed: {
@@ -232,6 +241,14 @@ export default {
           break;
       }
     },
+    handleCurrentChange(val) {
+      this.curPage = val;
+      this.getPeotries();
+    },
+    handleSizeChange(val) {
+      this.limit = val;
+      this.getPeotries();
+    },
     onShowLogin() {
       this.showLogin = !this.showLogin;
     },
@@ -241,21 +258,23 @@ export default {
     onIconUploadSuccess(response, file, fileList) {
       if (response.code !== 1000) return;
 
-      updateUser({ iconUrl: response.data[0] }).then(resp => {
-        if (resp.data.code === 1000) {
-          this.$appTip("更新头像成功");
+      updateUser({ iconUrl: response.data[0], uId: this.userInfo.id }).then(
+        resp => {
+          if (resp.data.code === 1000) {
+            this.$appTip("更新头像成功");
 
-          const info = this.userInfo;
-          info.iconUrl = response.data[0];
-          sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
-          this.setUserInfo(info);
+            const info = this.userInfo;
+            info.iconUrl = response.data[0];
+            sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
+            this.setUserInfo(info);
 
-          this.showUserInfo = false;
-        } else {
-          this.$appTip(resp.data.msg);
+            this.showUserInfo = false;
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+          this.fileList = [];
         }
-        this.fileList = [];
-      });
+      );
     },
     onLogin() {
       loginByAccount(this.account).then(resp => {
@@ -268,9 +287,6 @@ export default {
           this.$appTip(resp.data.msg);
         }
       });
-    },
-    onPage(value) {
-      this.curPage += value;
     },
     getPeotries() {
       queryPeotries({
@@ -394,6 +410,7 @@ export default {
       } else {
         this.showImageUrl = "";
       }
+      this.showImage = this.showImageUrl ? true : false;
     },
 
     ...mapActions({
@@ -403,88 +420,61 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .home-peotry {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
 
-.home-peotry .header {
-  padding: 5px 0;
-  box-shadow: 0 3px 10px 6px rgba(255, 255, 255, 0.5);
-  background-color: rgba(255, 255, 255, 0.5);
-}
+  .el-header {
+    padding-top: 12px;
 
-.header .user {
-  float: right;
-  margin-right: 30px;
-  cursor: pointer;
-}
+    .float-right {
+      float: right;
+    }
+  }
 
-.header .user-login {
-  width: 300px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  padding: 10px;
-  transform: translate(-50%, -50%);
-  background-color: rgb(255, 180, 118);
-  z-index: 100;
-}
-.user-login input {
-  display: block;
-  width: 100%;
-  padding: 0.3rem;
-  font-size: 18px;
-  box-sizing: border-box;
-}
+  .el-main {
+    .list {
+      // overflow-y: auto;
+      padding-left: 30%;
 
-.user-login button {
-  margin: 0.3rem auto 0;
-}
+      .peotry {
+        position: relative;
+        margin-bottom: 30px;
+      }
 
-.home-peotry .list {
-  flex: 1;
-  overflow-y: auto;
-  padding-left: 40%;
-}
+      .image-show {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
 
-.list .peotry {
-  position: relative;
-  margin-bottom: 30px;
+        img {
+          max-width: 100%;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+  }
 }
+</style>
 
-.home-peotry .footer {
-  height: 50px;
-  line-height: 50px;
-  text-align: center;
-  box-shadow: 0 -3px 10px 6px rgba(255, 255, 255, 0.5);
-  background-color: rgba(255, 255, 255, 0.5);
-}
+<style lang="scss">
+.home-peotry {
+  .show-image {
+    .el-dialog__body {
+      text-align: center !important;
+    }
+  }
 
-.home-peotry .image-show {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.image-show img {
-  max-width: 100%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.footer .current-page {
-  max-width: 30px;
-  text-align: center;
+  .user-login {
+    text-align: center;
+  }
 }
 </style>
