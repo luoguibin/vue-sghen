@@ -22,7 +22,7 @@
             <el-input v-model.number="account.uId" type="tel"></el-input>
           </el-form-item>
           <el-form-item label="密 码">
-            <el-input v-model="account.pw" type="password"></el-input>
+            <el-input v-model="account.pw" show-password></el-input>
           </el-form-item>
           <el-button type="primary" @click.stop="onLogin">登录</el-button>
         </el-form>
@@ -32,7 +32,7 @@
         <el-upload
           class="upload-demo"
           ref="upload"
-          action="http://localhost:8088/v1/upload"
+          action="uploadUrl"
           :data="{'pathType': 'icon', 'token': userInfo.token}"
           :file-list="fileList"
           :auto-upload="false"
@@ -135,7 +135,7 @@ import {
   deletePeotry,
   createComment
 } from "../api";
-import { baseUrl } from "../api/config";
+import { baseUrl, uploadUrl } from "../api/config";
 
 export default {
   name: "HomePeotry",
@@ -144,7 +144,8 @@ export default {
   },
   data() {
     return {
-      baseUrl: baseUrl,
+      baseUrl,
+      uploadUrl,
       showLogin: false,
       showSelf: false,
       showUserInfo: false,

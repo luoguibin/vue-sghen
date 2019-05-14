@@ -167,7 +167,7 @@ export default {
         footer = refs.footer;
 
       // ①滚动条在最顶，或展开tree某个节点，tree布局表现为默认
-      if (el.scrollTop < header.clientHeight) {
+      if (el.scrollTop < header.clientHeight - 20) {
         this.scrollbarPosition = "initial";
         this.scrollHeight =
           clientHeight - (header.clientHeight - el.scrollTop) - 20;
@@ -175,11 +175,12 @@ export default {
         // ②隐藏header，tree布局表现为fixed
         this.scrollbarPosition = "fixed";
         this.scrollbarTop = 20;
+        this.scrollHeight = el.clientHeight - 40;
 
         // ③footer展现，tree布局表现为默认
         const y = el.clientHeight + el.scrollTop - footer.offsetTop;
         if (y > 0) {
-          this.scrollbarTop = -y;
+          this.scrollbarTop = -y + 20;
         }
       }
 
