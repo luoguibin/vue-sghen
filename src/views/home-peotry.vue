@@ -29,24 +29,37 @@
       </el-dialog>
 
       <el-dialog title="个人信息" :visible.sync="showUser">
-        <el-upload
-          class="upload-demo"
-          ref="upload"
-          :action="baseUrl + '/v1/upload'"
-          :data="{'pathType': 'icon', 'token': userInfo.token}"
-          :file-list="fileList"
-          :auto-upload="false"
-          :on-success="onIconUploadSuccess"
-        >
-          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-          <el-button
-            style="margin-left: 10px;"
-            size="small"
-            type="success"
-            @click="submitUpload"
-          >上传到服务器</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-        </el-upload>
+        <el-form label-width="60px">
+          <el-form-item label="ID">
+            <el-input readonly v-model="userInfo.id"></el-input>
+          </el-form-item>
+
+          <el-form-item label="昵称">
+            <el-input readonly v-model="userInfo.name"></el-input>
+          </el-form-item>
+
+          <el-form-item label="头像">
+            <img :src="myIconUrl" style="max-width: 50px; vertical-align: top;">
+            <el-upload
+              class="upload-icon"
+              ref="upload"
+              :action="baseUrl + '/v1/upload'"
+              :data="{'pathType': 'icon', 'token': userInfo.token}"
+              :file-list="fileList"
+              :auto-upload="true"
+              :on-success="onIconUploadSuccess"
+            >
+              <el-button slot="trigger" size="small" type="primary">选取头像</el-button>
+              <!-- <el-button
+                style="margin-left: 10px;"
+                size="small"
+                type="success"
+                @click="submitUpload"
+              >上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+            </el-upload>
+          </el-form-item>
+        </el-form>
       </el-dialog>
 
       <el-dialog title="创建诗词" :visible.sync="showCreate">
@@ -263,8 +276,6 @@ export default {
             info.iconUrl = response.data[0];
             sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
             this.setUserInfo(info);
-
-            this.showUser = false;
           } else {
             this.$appTip(resp.data.msg);
           }
@@ -526,6 +537,11 @@ export default {
 
   .user-login {
     text-align: center;
+  }
+
+  .upload-icon {
+    display: inline-block;
+    margin-left: 10px;
   }
 }
 </style>
