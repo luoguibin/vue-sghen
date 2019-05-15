@@ -186,10 +186,14 @@ export default {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
             type: "warning"
-          }).then(() => {
-            this.inComment = false;
-            this.$emit("on-comment-delete", commentId, this.peotry.id);
-          });
+          })
+            .then(() => {
+              this.inComment = false;
+              this.$emit("on-comment-delete", commentId, this.peotry.id);
+            })
+            .catch(e => {
+              console.log(e);
+            });
         }
       }
     },
