@@ -81,7 +81,7 @@
       </el-dialog>
     </el-header>
 
-    <el-main>
+    <el-main ref="mainEl">
       <el-carousel trigger="click" type="card" height="230px">
         <el-carousel-item v-for="v in 5" :key="v">
           <div>{{v}}</div>
@@ -289,7 +289,7 @@ export default {
         }
       });
     },
-    getPeotries() {
+    getPeotries(bottom) {
       queryPeotries({
         limit: this.limit,
         page: this.curPage,
@@ -302,7 +302,10 @@ export default {
           this.totalCount = data.totalCount;
           this.peotries = data.data;
 
-          this.$refs.listEl.scrollTop = 0;
+          this.$nextTick(() => {
+            const main = this.$refs.mainEl.$el;
+            main.scrollTop = bottom ? main.scrollHeight : 0;
+          });
         } else {
           this.$appTip(resp.data.msg);
         }
@@ -380,9 +383,8 @@ export default {
               }
               if (this.curPage !== this.totalPage) {
                 this.curPage = this.totalPage;
-              } else {
-                this.getPeotries();
               }
+              this.getPeotries(true);
             } else {
               this.$appTip(resp.data.msg);
             }
