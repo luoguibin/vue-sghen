@@ -30,33 +30,41 @@
         赞
         <i class="el-icon-star-off"></i>
       </span>
-      <span @click.stop="onToggleComment">
+      <span @click.stop="onToggleComment(1)">
         评论
         <i class="el-icon-edit-outline"></i>
       </span>
     </div>
     <div v-if="peotry.comments" class="comments">
-      <div v-for="comment in peotry.comments" :key="comment.id" @click.stop="onCommentUser($event)">
-        <span
-          class="user"
-          :user-id="comment.fromId"
-        >{{userMap[comment.fromId] ? userMap[comment.fromId].name : comment.fromId}}</span>
-        <span v-if="comment.toId > 1">
-          回复
+      <div
+        v-for="comment in peotry.comments"
+        class="comment"
+        :key="comment.id"
+        @click.stop="onCommentUser($event)"
+      >
+        <div class="users">
           <span
             class="user"
+            :user-id="comment.fromId"
+          >{{userMap[comment.fromId] ? userMap[comment.fromId].name : comment.fromId}}</span>
+          <span v-if="comment.toId > 1" style="padding: 0 5px;">回复</span>
+          <span
+            v-if="comment.toId > 1"
+            class="user"
             :user-id="comment.toId"
-          >{{userMap[comment.toId] ? userMap[comment.toId].name : comment.toId}}</span>
-        </span>
-        <span style="white-space: pre-wrap;">: {{comment.content}}</span>
+          >{{userMap[comment.toId] ? userMap[comment.toId].name : comment.toId}}:</span>
+          <span v-else>:</span>
+        </div>
+        <p>{{comment.content}}</p>
       </div>
     </div>
     <div v-if="inComment" class="comment-input">
       <h5
-        v-if="commentToId > 1"
+        v-if="peotry.comment.toId > 1"
         style="text-align: left;"
-      >回复：{{userMap[commentToId] ? userMap[commentToId].name : commentToId}}</h5>
+      >回复：{{userMap[peotry.comment.toId] ? userMap[peotry.comment.toId].name : peotry.comment.toId}}</h5>
       <el-input
+        ref="commentEl"
         type="textarea"
         :autosize="{ maxRows: 4}"
         placeholder="请输入内容"
@@ -70,6 +78,8 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   props: {
     peotry: {
@@ -83,7 +93,6 @@ export default {
       showDelete: false,
       inComment: false,
       clickTime: 0,
-      commentToId: 1,
       peotryUrl: "http://127.0.0.1/vue-sghen/images/"
     };
   },
@@ -142,27 +151,35 @@ export default {
     onDelete() {
       this.$emit("on-delete", this.peotry);
     },
-    onToggleComment(open) {
+    onToggleComment(toId, open) {
       this.inComment = open ? open : !this.inComment;
-      if (this.inComment && this.peotry.comment === undefined) {
-        this.$set(this.peotry, "comment", {
-          comment: "",
-          toId: 1
+      if (this.inComment) {
+        if (!this.peotry.comment) {
+          this.$set(this.peotry, "comment", {
+            comment: "",
+            type: 1,
+            typeId: this.peotry.id,
+            fromId: this.userInfo.id,
+            toId: toId
+          });
+        }
+        this.peotry.comment.toId = toId;
+        this.$nextTick(() => {
+          this.$refs.commentEl.focus();
         });
       }
     },
     onCommentUser(e) {
       const userId = e.srcElement.getAttribute("user-id");
       if (userId) {
-        this.commentToId = userId;
-        this.onToggleComment(true);
-      } else {
-        this.commentToId = 1;
+        const toId = parseInt(userId);
+        if (toId !== this.userInfo.id) {
+          this.onToggleComment(toId, true);
+        }
       }
     },
     onComment() {
-      this.peotry.comment.toId = parseInt(this.commentToId);
-      this.$emit("on-comment", this.peotry);
+      this.$emit("on-comment", this.peotry.comment);
       this.inComment = false;
     }
   },
@@ -177,7 +194,10 @@ export default {
     },
     canComment() {
       return this.peotry.comment.comment.trim().length > 0;
-    }
+    },
+    ...mapState({
+      userInfo: state => state.user
+    })
   },
   beforeDestroy() {
     this.onContentLeave();
@@ -247,10 +267,23 @@ $size-content: 18px;
   .comments {
     padding: 5px 5px 5px 20px;
 
-    .user {
-      cursor: pointer;
-      &:hover {
-        color: #148acf;
+    .comment {
+      background-color: #ddd;
+      margin-bottom: 8px;
+      padding: 5px 3px;
+      .users {
+        float: left;
+        background-color: #eee;
+        margin-right: 8px;
+        .user {
+          cursor: pointer;
+          &:hover {
+            color: #148acf;
+          }
+        }
+      }
+      p {
+        white-space: pre-line;
       }
     }
   }

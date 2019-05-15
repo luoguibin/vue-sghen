@@ -194,7 +194,7 @@ export default {
   provide() {
     return {
       userMap: this.userMap
-    }
+    };
   },
   created() {
     window.homePeotry = this;
@@ -375,23 +375,15 @@ export default {
       });
     },
 
-    onComment(peotry) {
+    onComment(comment) {
       if (!this.userInfo.token) {
         this.$appTip("请登录后再评论");
         this.showLogin = true;
         return;
       }
-      if (!peotry || !peotry.id) return;
-      createComment({
-        type: 1,
-        typeId: peotry.id,
-        fromId: this.userInfo.id,
-        toId: peotry.comment.toId,
-        comment: peotry.comment.comment
-      }).then(resp => {
+      createComment(comment).then(resp => {
         if (resp.data.code === 1000) {
           this.$appTip("评论成功");
-          // todo
           this.getPeotries();
         } else {
           this.$appTip(resp.data.msg);
