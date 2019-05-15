@@ -94,3 +94,13 @@ export const createComment = data =>
         },
         data
     })
+    
+export const deleteComment = data =>
+    request({
+        url: "/v1/comment/delete",
+        method: "delete",
+        params: {
+            token: true,
+            ...data
+        }
+    })

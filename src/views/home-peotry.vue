@@ -97,6 +97,7 @@
           @on-save="onSave"
           @on-delete="onDelete"
           @on-comment="onComment"
+          @on-comment-delete="onCommentDelete"
         >
           <template>{{(curPage - 1) * limit + index + 1}}</template>
         </peotry>
@@ -134,7 +135,8 @@ import {
   createPeotry,
   updatePeotry,
   deletePeotry,
-  createComment
+  createComment,
+  deleteComment
 } from "../api";
 import { baseUrl } from "../api/config";
 
@@ -385,6 +387,26 @@ export default {
         if (resp.data.code === 1000) {
           this.$appTip("评论成功");
           this.getPeotries();
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
+    },
+
+    onCommentDelete(id, peotryId) {
+      deleteComment({ id, fromId: this.userInfo.id }).then(resp => {
+        if (resp.data.code === 1000) {
+          this.$appTip("删除成功");
+          this.peotries.forEach(peotry => {
+            if (peotry.id === peotryId) {
+              const index = peotry.comments.findIndex(
+                comment => comment.id === id
+              );
+              if (index !== -1) {
+                peotry.comments.splice(index, 1);
+              }
+            }
+          });
         } else {
           this.$appTip(resp.data.msg);
         }

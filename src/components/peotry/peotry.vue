@@ -46,6 +46,7 @@
           <span
             class="user"
             :user-id="comment.fromId"
+            :comment-id="comment.id"
           >{{userMap[comment.fromId] ? userMap[comment.fromId].name : comment.fromId}}</span>
           <span v-if="comment.toId > 1" style="padding: 0 5px;">回复</span>
           <span
@@ -170,11 +171,25 @@ export default {
       }
     },
     onCommentUser(e) {
+      if (!this.userInfo.token) {
+        this.$appTip("请登录后再操作");
+        return;
+      }
       const userId = e.srcElement.getAttribute("user-id");
       if (userId) {
         const toId = parseInt(userId);
+        const commentId = parseInt(e.srcElement.getAttribute("comment-id"));
         if (toId !== this.userInfo.id) {
-          this.onToggleComment(toId, true);
+          this.onToggleComment(toId);
+        } else if (commentId) {
+          this.$confirm("是否删除该评论？", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            this.inComment = false;
+            this.$emit("on-comment-delete", commentId, this.peotry.id);
+          });
         }
       }
     },
