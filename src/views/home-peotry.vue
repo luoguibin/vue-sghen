@@ -28,11 +28,11 @@
         </el-form>
       </el-dialog>
 
-      <el-dialog title="个人信息" :visible.sync="showUserInfo">
+      <el-dialog title="个人信息" :visible.sync="showUser">
         <el-upload
           class="upload-demo"
           ref="upload"
-          action="uploadUrl"
+          :action="baseUrl + '/v1/upload'"
           :data="{'pathType': 'icon', 'token': userInfo.token}"
           :file-list="fileList"
           :auto-upload="false"
@@ -49,7 +49,7 @@
         </el-upload>
       </el-dialog>
 
-      <el-dialog title="创建诗词" :visible.sync="showSelf">
+      <el-dialog title="创建诗词" :visible.sync="showCreate">
         <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
           <el-form-item label="选集" prop="sId">
             <el-select v-model="newPeotry.sId" placeholder="请选择">
@@ -135,7 +135,7 @@ import {
   deletePeotry,
   createComment
 } from "../api";
-import { baseUrl, uploadUrl } from "../api/config";
+import { baseUrl } from "../api/config";
 
 export default {
   name: "HomePeotry",
@@ -145,32 +145,32 @@ export default {
   data() {
     return {
       baseUrl,
-      uploadUrl,
-      showLogin: false,
-      showSelf: false,
-      showUserInfo: false,
-      fileList: [],
       account: {
         uId: 15625045984,
         pw: "123456"
       },
+      fileList: [],
 
-      peotryUrl: "",
+      showLogin: false,
+      showCreate: false,
+      showUser: false,
       showImage: false,
       showImageUrl: "",
+
       limit: 10,
       curPage: 1,
       totalPage: 1,
       totalCount: 0,
       peotries: [],
-
       peotrySets: [],
+
       newPeotry: {
         sId: 10001,
         title: "",
         content: "",
         end: ""
       },
+
       formRules: {
         sId: [{ required: true, message: "请选择选集", trigger: "click" }],
         title: [
@@ -224,13 +224,13 @@ export default {
     handleCommand(key) {
       switch (key) {
         case "peotry":
-          this.showSelf = !this.showSelf;
-          if (this.showSelf) {
+          this.showCreate = !this.showCreate;
+          if (this.showCreate) {
             this.getPeotrySets();
           }
           break;
         case "personal":
-          this.showUserInfo = !this.showUserInfo;
+          this.showUser = !this.showUser;
           break;
         case "logout":
           sessionStorage.removeItem("sghen_user_info");
@@ -269,7 +269,7 @@ export default {
             sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
             this.setUserInfo(info);
 
-            this.showUserInfo = false;
+            this.showUser = false;
           } else {
             this.$appTip(resp.data.msg);
           }
@@ -373,7 +373,7 @@ export default {
             if (resp.data.code === 1000) {
               this.$appTip("创建成功");
               this.$refs.ruleForm.resetFields();
-              this.showSelf = false;
+              this.showCreate = false;
 
               if (this.totalCount % this.limit === 0) {
                 this.totalPage++;
@@ -413,7 +413,6 @@ export default {
       }
       this.showImage = this.showImageUrl ? true : false;
     },
-
     ...mapActions({
       setUserInfo: "setUser"
     })
