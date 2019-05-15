@@ -26,6 +26,16 @@ export const updateUser = data =>
         data
     });
 
+export const queryUsers = ids =>
+    request({
+        url: "/v1/user/query-list",
+        method: "get",
+        params: {
+            token: true,
+            idStrs: ids.toString()
+        }
+    });
+
 
 export const queryPeotries = params =>
     request({

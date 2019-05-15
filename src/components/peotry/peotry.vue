@@ -36,18 +36,31 @@
       </span>
     </div>
     <div v-if="peotry.comments" class="comments">
-      <div v-for="comment in peotry.comments" :key="comment.id">
-        <span>{{comment.fromId}}</span>
-        <span v-if="comment.toId > 1">回复： {{comment.toId}}</span>
-        <span>: {{comment.content}}</span>
+      <div v-for="comment in peotry.comments" :key="comment.id" @click.stop="onCommentUser($event)">
+        <span
+          class="user"
+          :user-id="comment.fromId"
+        >{{userMap[comment.fromId] ? userMap[comment.fromId].name : comment.fromId}}</span>
+        <span v-if="comment.toId > 1">
+          回复
+          <span
+            class="user"
+            :user-id="comment.toId"
+          >{{userMap[comment.toId] ? userMap[comment.toId].name : comment.toId}}</span>
+        </span>
+        <span style="white-space: pre-wrap;">: {{comment.content}}</span>
       </div>
     </div>
     <div v-if="inComment" class="comment-input">
+      <h5
+        v-if="commentToId > 1"
+        style="text-align: left;"
+      >回复：{{userMap[commentToId] ? userMap[commentToId].name : commentToId}}</h5>
       <el-input
         type="textarea"
         :autosize="{ maxRows: 4}"
         placeholder="请输入内容"
-        v-model="peotry.comment"
+        v-model="peotry.comment.comment"
       ></el-input>
       <el-button @click.stop="onComment" size="small" :disabled="!canComment">提交</el-button>
     </div>
@@ -70,9 +83,11 @@ export default {
       showDelete: false,
       inComment: false,
       clickTime: 0,
+      commentToId: 1,
       peotryUrl: "http://127.0.0.1/vue-sghen/images/"
     };
   },
+  inject: ["userMap"],
   created() {
     this.onContentLeave = this.onContentLeave.bind(this);
   },
@@ -127,13 +142,26 @@ export default {
     onDelete() {
       this.$emit("on-delete", this.peotry);
     },
-    onToggleComment() {
-      this.inComment = !this.inComment;
+    onToggleComment(open) {
+      this.inComment = open ? open : !this.inComment;
       if (this.inComment && this.peotry.comment === undefined) {
-        this.$set(this.peotry, "comment", "");
+        this.$set(this.peotry, "comment", {
+          comment: "",
+          toId: 1
+        });
+      }
+    },
+    onCommentUser(e) {
+      const userId = e.srcElement.getAttribute("user-id");
+      if (userId) {
+        this.commentToId = userId;
+        this.onToggleComment(true);
+      } else {
+        this.commentToId = 1;
       }
     },
     onComment() {
+      this.peotry.comment.toId = parseInt(this.commentToId);
       this.$emit("on-comment", this.peotry);
       this.inComment = false;
     }
@@ -148,7 +176,7 @@ export default {
       }
     },
     canComment() {
-      return this.peotry.comment.trim().length > 0;
+      return this.peotry.comment.comment.trim().length > 0;
     }
   },
   beforeDestroy() {
@@ -218,6 +246,13 @@ $size-content: 18px;
 
   .comments {
     padding: 5px 5px 5px 20px;
+
+    .user {
+      cursor: pointer;
+      &:hover {
+        color: #148acf;
+      }
+    }
   }
 
   .comment-input {

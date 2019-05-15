@@ -128,6 +128,7 @@ import Peotry from "@/components/peotry/peotry";
 import {
   loginByAccount,
   updateUser,
+  queryUsers,
   queryPeotries,
   queryPeotrySets,
   createPeotry,
@@ -150,6 +151,7 @@ export default {
         pw: "123456"
       },
       fileList: [],
+      userMap: {},
 
       showLogin: false,
       showCreate: false,
@@ -189,25 +191,18 @@ export default {
       }
     };
   },
+  provide() {
+    return {
+      userMap: this.userMap
+    }
+  },
   created() {
     window.homePeotry = this;
     const infoStr = sessionStorage.getItem("sghen_user_info");
     if (infoStr) {
-      const info = JSON.parse(infoStr);
-      if (info.id === this.userInfo.id) {
-        this.getPeotries();
-      } else {
-        this.setUserInfo(info);
-      }
+      this.setUserInfo(JSON.parse(infoStr));
     }
-  },
-  watch: {
-    userInfo: {
-      deep: true,
-      handler() {
-        this.getPeotries();
-      }
-    }
+    this.getPeotries();
   },
   computed: {
     myIconUrl() {
@@ -234,9 +229,7 @@ export default {
           break;
         case "logout":
           sessionStorage.removeItem("sghen_user_info");
-          setTimeout(() => {
-            this.$router.go(0);
-          }, 200);
+          this.setUserInfo();
           break;
         default:
           break;
@@ -289,6 +282,40 @@ export default {
         }
       });
     },
+    updateUsers() {
+      const idsSet = new Set();
+      this.peotries.forEach(peotry => {
+        const comments = peotry.comments;
+        if (comments && comments.length) {
+          comments.forEach(comment => {
+            if (comment.fromId > 1) {
+              idsSet.add(comment.fromId);
+            }
+            if (comment.toId > 1) {
+              idsSet.add(comment.toId);
+            }
+          });
+        }
+      });
+
+      if (idsSet.size) {
+        const ids = Array.from(idsSet);
+        queryUsers(ids).then(resp => {
+          if (resp.data.code === 1000) {
+            const users = resp.data.data;
+            const userMap = this.userMap;
+            users.forEach(user => {
+              if (!userMap[user.id]) {
+                userMap[user.id] = user;
+              }
+            });
+            this.$forceUpdate();
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+        });
+      }
+    },
     getPeotries(bottom) {
       queryPeotries({
         limit: this.limit,
@@ -301,6 +328,8 @@ export default {
           this.totalPage = data.totalPage;
           this.totalCount = data.totalCount;
           this.peotries = data.data;
+
+          this.updateUsers();
 
           this.$nextTick(() => {
             const main = this.$refs.mainEl.$el;
@@ -347,17 +376,23 @@ export default {
     },
 
     onComment(peotry) {
+      if (!this.userInfo.token) {
+        this.$appTip("请登录后再评论");
+        this.showLogin = true;
+        return;
+      }
       if (!peotry || !peotry.id) return;
       createComment({
         type: 1,
         typeId: peotry.id,
         fromId: this.userInfo.id,
-        toId: 1,
-        comment: peotry.comment
+        toId: peotry.comment.toId,
+        comment: peotry.comment.comment
       }).then(resp => {
         if (resp.data.code === 1000) {
           this.$appTip("评论成功");
           // todo
+          this.getPeotries();
         } else {
           this.$appTip(resp.data.msg);
         }

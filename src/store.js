@@ -20,7 +20,7 @@ export default new Vuex.Store({
         state.user.token = user.token
         state.user.iconUrl = user.iconUrl
       } else {
-        state.user.id = -1
+        state.user.id = 0
         state.user.name = ""
         state.user.token = ""
         state.user.iconUrl = ""
