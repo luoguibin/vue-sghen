@@ -26,13 +26,13 @@
       <img v-for="value in peotryImages" alt="image error" :key="value" :src="peotryUrl + value">
     </div>
     <div class="comment-menu" v-show="!contentEditable && !showDelete">
-      <span>
-        赞
-        <i class="el-icon-star-off"></i>
-      </span>
       <span @click.stop="onToggleComment(1)">
         评论
         <i class="el-icon-edit-outline"></i>
+      </span>
+      <span>
+        赞
+        <i class="el-icon-star-off"></i>
       </span>
     </div>
     <div v-if="peotry.comments" class="comments">
@@ -48,7 +48,7 @@
             :user-id="comment.fromId"
             :comment-id="comment.id"
           >{{userMap[comment.fromId] ? userMap[comment.fromId].name : comment.fromId}}</span>
-          <span v-if="comment.toId > 1" style="padding: 0 5px;">回复</span>
+          <span v-if="comment.toId > 1" style="padding: 0 5px; font-weight: initial;">回复</span>
           <span
             v-if="comment.toId > 1"
             class="user"
@@ -229,7 +229,6 @@ $size-content: 18px;
 
 .peotry {
   position: relative;
-  max-width: 500px;
 
   .order {
     position: absolute;
@@ -284,23 +283,42 @@ $size-content: 18px;
   }
 
   .comments {
+    position: relative;
+    margin-top: 15px;
     padding: 5px 5px 5px 20px;
+    background-color: #ddd;
+    border-radius: 8px;
+
+    &::before {
+      content: "";
+      width: 0;
+      height: 0;
+      position: absolute;
+      left: 8px;
+      top: -10px;
+      border: solid 10px transparent;
+      border-bottom-color: #ddd;
+      border-top-width: 0;
+    }
 
     .comment {
-      background-color: #ddd;
       margin-bottom: 8px;
       padding: 5px 3px;
+
       .users {
         float: left;
-        background-color: #eee;
+        font-weight: bold;
         margin-right: 8px;
+
         .user {
           cursor: pointer;
+
           &:hover {
             color: #148acf;
           }
         }
       }
+
       p {
         white-space: pre-line;
       }

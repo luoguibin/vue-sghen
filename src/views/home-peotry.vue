@@ -56,7 +56,7 @@
                 type="success"
                 @click="submitUpload"
               >上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
             </el-upload>
           </el-form-item>
         </el-form>
@@ -95,11 +95,11 @@
     </el-header>
 
     <el-main ref="mainEl">
-      <el-carousel trigger="click" type="card" height="230px">
+      <!-- <el-carousel trigger="click" type="card" height="230px">
         <el-carousel-item v-for="v in 5" :key="v">
           <div>{{v}}</div>
         </el-carousel-item>
-      </el-carousel>
+      </el-carousel>-->
 
       <div class="list" ref="listEl" @click="onClickImage($event)">
         <peotry
@@ -117,11 +117,16 @@
       </div>
 
       <el-dialog title="图片" :visible.sync="showImage" class="show-image" :show-close="false" center>
-        <img :src="showImageUrl">
+        <el-image :src="showImageUrl">
+          <div slot="error" class="image-error-slot">
+            <i class="el-icon-picture-outline"></i>
+            <p>图片加载失败</p>
+          </div>
+        </el-image>
       </el-dialog>
     </el-main>
 
-    <el-footer>
+    <el-footer height="auto">
       <el-pagination
         v-show="peotries.length"
         @size-change="handleSizeChange"
@@ -485,6 +490,7 @@ export default {
 <style lang="scss" scoped>
 .home-peotry {
   height: 100%;
+  overflow: hidden;
 
   .el-header {
     padding-top: 12px;
@@ -497,7 +503,8 @@ export default {
   .el-main {
     .list {
       // overflow-y: auto;
-      padding-left: 30%;
+      max-width: 500px;
+      margin: 0 auto;
 
       .peotry {
         position: relative;
@@ -513,14 +520,6 @@ export default {
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
-
-        img {
-          max-width: 100%;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
       }
     }
   }
@@ -542,6 +541,16 @@ export default {
   .upload-icon {
     display: inline-block;
     margin-left: 10px;
+  }
+
+  .el-pagination {
+    white-space: pre-wrap;
+  }
+
+  .image-error-slot {
+    .el-icon-picture-outline {
+      font-size: 50px;
+    }
   }
 }
 </style>
