@@ -17,6 +17,19 @@
 </template>
 
 <script>
+const requireComponent = require.context(
+  "../components/demo/",
+  false,
+  /\.vue$/
+);
+
+const componentMap = {};
+requireComponent.keys().forEach(fileName => {
+  const componentConfig = requireComponent(fileName);
+  const componentName = fileName.replace(/^\.\//, "").replace(/\.\w+$/, "");
+  componentMap[componentName] = false;
+});
+
 import Vue from "vue";
 
 export default {
@@ -29,15 +42,7 @@ export default {
   },
   data() {
     return {
-      componentMap: {
-        "lab-dom-demo": false,
-        "line-adsorption": false,
-        "shape-cut": false,
-        "worker-demo": false,
-        "pixi-demo": false,
-        "scrollbar-tree": false,
-        "driver-demo": false
-      }
+      componentMap
     };
   },
   mounted() {
