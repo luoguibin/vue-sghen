@@ -393,18 +393,38 @@ export default {
       });
     },
 
-    onComment(comment) {
+    onComment(comment, peotryId) {
       if (!this.userInfo.token) {
-        this.$appTip("请登录后再评论");
+        this.$appTip("请登录后再操作");
         this.showLogin = true;
         return;
       }
       createComment(comment).then(resp => {
         if (resp.data.code === 1000) {
-          this.$appTip("评论成功");
-          this.getPeotries();
+          if (comment.toId > 0) {
+            this.$appTip("评论成功");
+            this.getPeotries();
+          }
+          if (comment.comment.indexOf("unpraise") !== -1 && peotryId) {
+            this.spliceComment(peotryId, comment.id);
+          } else {
+            this.getPeotries();
+          }
         } else {
           this.$appTip(resp.data.msg);
+        }
+      });
+    },
+
+    spliceComment(peotryId, id) {
+      this.peotries.forEach(peotry => {
+        if (peotry.id === peotryId && peotry.comments) {
+          const index = peotry.comments.findIndex(comment => comment.id === id);
+          if (index !== -1) {
+            peotry.comments.splice(index, 1);
+          }
+          console.log(peotry.comments);
+          this.$forceUpdate();
         }
       });
     },
@@ -413,16 +433,7 @@ export default {
       deleteComment({ id, fromId: this.userInfo.id }).then(resp => {
         if (resp.data.code === 1000) {
           this.$appTip("删除成功");
-          this.peotries.forEach(peotry => {
-            if (peotry.id === peotryId) {
-              const index = peotry.comments.findIndex(
-                comment => comment.id === id
-              );
-              if (index !== -1) {
-                peotry.comments.splice(index, 1);
-              }
-            }
-          });
+          this.spliceComment(peotryId, id);
         } else {
           this.$appTip(resp.data.msg);
         }

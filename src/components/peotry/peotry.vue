@@ -23,21 +23,34 @@
     <div>{{peotry.end}}</div>
     <div class="images" v-if="peotryImages">
       <!-- <span style="color: gray;">peotry images has been removed.</span> -->
-      <img v-for="value in peotryImages" alt="image error" :key="value" :src="peotryUrl + value.replace('./', '')">
+      <img
+        v-for="value in peotryImages"
+        alt="image error"
+        :key="value"
+        :src="baseUrl + value.substr(1)"
+      >
     </div>
     <div class="comment-menu" v-show="!contentEditable && !showDelete">
-      <span @click.stop="onToggleComment(1)">
+      <span @click.stop="onToggleComment(userInfo.id)">
         评论
         <i class="el-icon-edit-outline"></i>
       </span>
-      <span>
+      <span @click.stop="onCommentPraise()" :style="{color: currentPraise ? '#148acf' : 'initial'}">
         赞
         <i class="el-icon-star-off"></i>
       </span>
     </div>
-    <div v-if="peotry.comments" class="comments">
+    <div v-if="praiseComments.length">
+      <img
+        v-for="comment in praiseComments"
+        :key="comment.id"
+        style="width: 18px;"
+        :src="getUserIconUrl(comment.fromId)"
+      >
+    </div>
+    <div v-if="realComments.length" class="comments">
       <div
-        v-for="comment in peotry.comments"
+        v-for="comment in realComments"
         class="comment"
         :key="comment.id"
         @click.stop="onCommentUser($event)"
@@ -48,9 +61,12 @@
             :user-id="comment.fromId"
             :comment-id="comment.id"
           >{{userMap[comment.fromId] ? userMap[comment.fromId].name : comment.fromId}}</span>
-          <span v-if="comment.toId > 1" style="padding: 0 5px; font-weight: initial;">回复</span>
           <span
-            v-if="comment.toId > 1"
+            v-if="comment.toId !== comment.fromId"
+            style="padding: 0 5px; font-weight: initial;"
+          >回复</span>
+          <span
+            v-if="comment.toId !== comment.fromId"
             class="user"
             :user-id="comment.toId"
           >{{userMap[comment.toId] ? userMap[comment.toId].name : comment.toId}}:</span>
@@ -61,7 +77,7 @@
     </div>
     <div v-if="inComment" class="comment-input">
       <h5
-        v-if="peotry.comment.toId > 1"
+        v-if="peotry.comment.toId !== userInfo.id"
         style="text-align: left;"
       >回复：{{userMap[peotry.comment.toId] ? userMap[peotry.comment.toId].name : peotry.comment.toId}}</h5>
       <el-input
@@ -80,6 +96,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { baseUrl } from "../../api/config";
 
 export default {
   props: {
@@ -94,7 +111,7 @@ export default {
       showDelete: false,
       inComment: false,
       clickTime: 0,
-      peotryUrl: "http://127.0.0.1:8088/"
+      baseUrl
     };
   },
   inject: ["userMap"],
@@ -152,19 +169,24 @@ export default {
     onDelete() {
       this.$emit("on-delete", this.peotry);
     },
+    checkComment(toId) {
+      if (!this.peotry.comment) {
+        this.$set(this.peotry, "comment", {
+          id: 0,
+          comment: "",
+          type: 1,
+          typeId: this.peotry.id,
+          fromId: this.userInfo.id,
+          toId: toId
+        });
+      }
+      this.peotry.comment.toId = toId;
+      this.peotry.comment.comment = "";
+    },
     onToggleComment(toId, open) {
       this.inComment = open ? open : !this.inComment;
       if (this.inComment) {
-        if (!this.peotry.comment) {
-          this.$set(this.peotry, "comment", {
-            comment: "",
-            type: 1,
-            typeId: this.peotry.id,
-            fromId: this.userInfo.id,
-            toId: toId
-          });
-        }
-        this.peotry.comment.toId = toId;
+        this.checkComment(toId);
         this.$nextTick(() => {
           this.$refs.commentEl.focus();
         });
@@ -197,9 +219,20 @@ export default {
         }
       }
     },
+    onCommentPraise() {
+      this.checkComment(-1);
+      const comment = this.peotry.comment;
+      comment.id = this.currentPraise ? this.myPraiseComment.id : comment.id;
+      comment.comment = this.currentPraise ? "unpraise" : "praise";
+      this.onComment();
+    },
     onComment() {
-      this.$emit("on-comment", this.peotry.comment);
+      this.$emit("on-comment", this.peotry.comment, this.peotry.id);
       this.inComment = false;
+    },
+    getUserIconUrl(id) {
+      const info = this.userMap[id];
+      return info && info.iconUrl ? this.baseUrl + info.iconUrl.substr(1) : "./favicon.ico";
     }
   },
   computed: {
@@ -210,6 +243,24 @@ export default {
       } else {
         return undefined;
       }
+    },
+    myPraiseComment() {
+      return this.praiseComments.find(
+        comment => comment.toId === -1 && comment.fromId === this.userInfo.id
+      );
+    },
+    currentPraise() {
+      return this.myPraiseComment && this.myPraiseComment.content === "praise";
+    },
+    praiseComments() {
+      if (!this.peotry.comments) return [];
+      return this.peotry.comments.filter(
+        comment => comment.toId === -1 && comment.content === "praise"
+      );
+    },
+    realComments() {
+      if (!this.peotry.comments) return [];
+      return this.peotry.comments.filter(comment => comment.toId > 0);
     },
     canComment() {
       return this.peotry.comment.comment.trim().length > 0;
