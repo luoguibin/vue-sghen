@@ -104,3 +104,15 @@ export const deleteComment = data =>
             ...data
         }
     })
+
+export const uploadFiles = (params, files) => 
+    request({
+        url: "/v1/upload",
+        method: "post",
+        params: {
+            token: true,
+            ...params
+        },
+        data: files,
+        headers: {"Content-Type": "multipart/form-data"}
+    })

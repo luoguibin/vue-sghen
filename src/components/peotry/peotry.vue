@@ -23,7 +23,7 @@
     <div>{{peotry.end}}</div>
     <div class="images" v-if="peotryImages">
       <!-- <span style="color: gray;">peotry images has been removed.</span> -->
-      <img v-for="value in peotryImages" alt="image error" :key="value" :src="peotryUrl + value">
+      <img v-for="value in peotryImages" alt="image error" :key="value" :src="peotryUrl + value.replace('./', '')">
     </div>
     <div class="comment-menu" v-show="!contentEditable && !showDelete">
       <span @click.stop="onToggleComment(1)">
@@ -94,7 +94,7 @@ export default {
       showDelete: false,
       inComment: false,
       clickTime: 0,
-      peotryUrl: "http://127.0.0.1/vue-sghen/images/"
+      peotryUrl: "http://127.0.0.1:8088/"
     };
   },
   inject: ["userMap"],
