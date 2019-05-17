@@ -240,16 +240,23 @@ export default {
     userInfo: {
       deep: true,
       handler() {
-        this.userMap[this.userInfo.id] = JSON.parse(
-          JSON.stringify(this.userInfo)
-        );
-
         // 重换登录后评论的fromId需要更新
         this.peotries.forEach(peotry => {
           if (peotry.comment) {
             peotry.comment.fromId = this.userInfo.id;
           }
         });
+        // 相应token清空
+        const userMap = this.userMap;
+        for (const key in userMap) {
+          if (userMap.hasOwnProperty(key)) {
+            userMap[key].token = "";
+          }
+        }
+
+        this.userMap[this.userInfo.id] = JSON.parse(
+          JSON.stringify(this.userInfo)
+        );
       }
     }
   },
