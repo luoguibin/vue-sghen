@@ -16,7 +16,7 @@ export default {
 
     // Using config rendering effect at 'element'.
     const cn = new CanvasNest(this.$refs.canvas, {
-      color: "#148acf",
+      color: "20,155,250",
       count: 88,
       zIndex: 0
     });

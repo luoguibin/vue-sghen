@@ -253,10 +253,12 @@ export default {
             userMap[key].token = "";
           }
         }
-
         this.userMap[this.userInfo.id] = JSON.parse(
           JSON.stringify(this.userInfo)
         );
+        if (this.showUserInfo.id) {
+          this.showUserInfo = this.userMap[this.showUserInfo.id];
+        }
       }
     }
   },
@@ -306,7 +308,9 @@ export default {
         resp => {
           if (resp.data.code === 1000) {
             this.$appTip("更新头像成功");
-            this.setUserInfo({ ...this.userInfo, iconUrl: response.data[0] });
+            const info = { ...this.userInfo, iconUrl: response.data[0] };
+            this.resetUserIconUrl(info);
+            this.setUserInfo(info);
           } else {
             this.$appTip(resp.data.msg);
           }
