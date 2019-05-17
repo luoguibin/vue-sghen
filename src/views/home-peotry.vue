@@ -5,9 +5,9 @@
       <el-button v-if="!userInfo.token" class="float-right" @click="onShowLogin">登录</el-button>
 
       <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
-        <span>
+        <span style="cursor: pointer;">
           <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
-          <img :src="myIconUrl" style="width: 33px; vertical-align: middle;">
+          <img :src="userInfo.iconUrl" style="width: 33px; vertical-align: middle;">
         </span>
         <el-dropdown-menu>
           <el-dropdown-item command="personal">个人中心</el-dropdown-item>
@@ -39,10 +39,7 @@
           </el-form-item>
 
           <el-form-item label="头像">
-            <img
-              :src="showUserInfo.token ? myIconUrl : showUserInfo.iconUrl"
-              style="max-width: 50px; vertical-align: top;"
-            >
+            <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;">
             <el-upload
               v-if="showUserInfo.token"
               class="upload-icon"
@@ -78,7 +75,7 @@
             <el-input placeholder="标题" v-model="newPeotry.title"></el-input>
           </el-form-item>
 
-          <el-form-item label="标题" prop="content">
+          <el-form-item label="内容" prop="content">
             <el-input
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 10}"
@@ -87,8 +84,8 @@
             ></el-input>
           </el-form-item>
 
-          <el-form-item label="标题" prop="end">
-            <el-input type="textarea" placeholder="结尾" v-model="newPeotry.end"></el-input>
+          <el-form-item label="尾注" prop="end">
+            <el-input type="textarea" placeholder="尾注" v-model="newPeotry.end"></el-input>
           </el-form-item>
 
           <el-form-item>
@@ -235,17 +232,33 @@ export default {
     this.getPeotries();
   },
   computed: {
-    myIconUrl() {
-      const info = this.userInfo;
-      return info.iconUrl
-        ? this.baseUrl + info.iconUrl.substr(1)
-        : "./favicon.ico";
-    },
     ...mapState({
       userInfo: state => state.user
     })
   },
+  watch: {
+    userInfo: {
+      deep: true,
+      handler() {
+        this.userMap[this.userInfo.id] = JSON.parse(
+          JSON.stringify(this.userInfo)
+        );
+
+        // 重换登录后评论的fromId需要更新
+        this.peotries.forEach(peotry => {
+          if (peotry.comment) {
+            peotry.comment.fromId = this.userInfo.id;
+          }
+        });
+      }
+    }
+  },
   methods: {
+    resetUserIconUrl(userInfo) {
+      userInfo.iconUrl = userInfo.iconUrl
+        ? this.baseUrl + userInfo.iconUrl.substr(1)
+        : "./favicon.ico";
+    },
     handleCommand(key) {
       switch (key) {
         case "peotry":
@@ -256,10 +269,9 @@ export default {
           break;
         case "personal":
           this.showUser = true;
-          this.showUserInfo = this.userInfo;
+          this.showUserInfo = this.userMap[this.userInfo.id];
           break;
         case "logout":
-          sessionStorage.removeItem("sghen_user_info");
           this.setUserInfo();
           break;
         default:
@@ -287,8 +299,6 @@ export default {
         resp => {
           if (resp.data.code === 1000) {
             this.$appTip("更新头像成功");
-
-            sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
             this.setUserInfo({ ...this.userInfo, iconUrl: response.data[0] });
           } else {
             this.$appTip(resp.data.msg);
@@ -301,7 +311,7 @@ export default {
       loginByAccount(this.account).then(resp => {
         if (resp.data.code === 1000) {
           const info = resp.data.data;
-          sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
+          this.resetUserIconUrl(info);
           this.setUserInfo(info);
           this.showLogin = false;
         } else {
@@ -309,9 +319,11 @@ export default {
         }
       });
     },
-    updateUsers() {
+    updatePeotriesData(datas) {
       const idsSet = new Set();
-      this.peotries.forEach(peotry => {
+      datas.forEach(peotry => {
+        idsSet.add(peotry.user.id);
+
         const comments = peotry.comments;
         if (comments && comments.length) {
           comments.forEach(comment => {
@@ -322,6 +334,8 @@ export default {
               idsSet.add(comment.toId);
             }
           });
+        } else {
+          peotry.comments = [];
         }
       });
 
@@ -331,13 +345,12 @@ export default {
           if (resp.data.code === 1000) {
             const users = resp.data.data;
             const userMap = this.userMap;
+
             users.forEach(user => {
-              if (user.iconUrl) {
-                user.iconUrl = this.baseUrl + user.iconUrl.substr(1);
-              } else {
-                user.iconUrl = "./favicon.ico";
+              if (!userMap[user.id]) {
+                this.resetUserIconUrl(user);
+                userMap[user.id] = user;
               }
-              userMap[user.id] = user;
             });
             this.$forceUpdate();
           } else {
@@ -357,9 +370,8 @@ export default {
           this.curPage = data.curPage;
           this.totalPage = data.totalPage;
           this.totalCount = data.totalCount;
+          this.updatePeotriesData(data.data);
           this.peotries = data.data;
-
-          this.updateUsers();
 
           this.$nextTick(() => {
             const main = this.$refs.mainEl.$el;
@@ -432,12 +444,9 @@ export default {
     addComment(peotryId, comment) {
       const peotry = this.peotries.find(o => o.id === peotryId);
       if (peotry) {
-        if (!peotry.comments) {
-          peotry.comments = [];
-        }
+        window.testPeotry = peotry;
         const newComment = JSON.parse(JSON.stringify(comment));
         newComment.createTime = new Date().toJSON();
-        console.log("addComment", comment, peotry);
         peotry.comments.push(newComment);
       }
     },
@@ -448,7 +457,6 @@ export default {
           if (index !== -1) {
             peotry.comments.splice(index, 1);
           }
-          // this.$forceUpdate();
         }
       });
     },

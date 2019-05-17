@@ -15,15 +15,17 @@ export default new Vuex.Store({
   mutations: {
     setUser(state, user) {
       if (user) {
+        sessionStorage.setItem("sghen_user_info", JSON.stringify(user));
         state.user.id = user.id
         state.user.name = user.name
         state.user.token = user.token
         state.user.iconUrl = user.iconUrl
       } else {
+        sessionStorage.removeItem("sghen_user_info");
         state.user.id = 0
         state.user.name = ""
         state.user.token = ""
-        state.user.iconUrl = ""
+        state.user.iconUrl = "./favicon.ico"
       }
     }
   },

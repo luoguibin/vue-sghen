@@ -1,11 +1,13 @@
 <template>
   <div class="peotry">
-    <span class="order" @click.stop="onOrder">
-      <slot/>
-    </span>
-    <div class="title">
-      <button v-if="showDelete" @click.stop="onDelete">删除</button>
-      <span v-if="peotry.set">{{peotry.set.name + (peotry.title ? "*" + peotry.title : "")}}</span>
+    <!-- <img :src="'./favicon.ico'" style="width: 23px; position: absolute; left: 0; top: 5px;"/> -->
+    <div class="title"  @click.stop="onOrder">
+      <i v-if="showDelete" @click.stop="onDelete" class="el-icon-delete" style="font"></i>
+      <span
+        v-if="peotry.set"
+        class="tooltip"
+        :tooltip="'选集：' + peotry.set.name"
+      >{{peotry.set.name + (peotry.title ? "*" + peotry.title : "")}}</span>
       <span v-else>{{peotry.title}}</span>
     </div>
     <div class="peot">{{peotry.user.name}}--{{peotry.time | time-format}}</div>
@@ -18,9 +20,16 @@
       @click.stop="onContent"
       :contenteditable="contentEditable"
       v-html="peotry.content"
+      :style="{height: contentHeight}"
     ></div>
-    <button v-if="contentEditable" class="save" @click.stop="onSave(true)">保存</button>
+    <div v-if="contentHeight !== 'auto'" class="content-expand" @click="contentHeight='auto'">
+      <p>...</p>
+      <span class="content-expand">展开全文</span>
+    </div>
+    <i v-if="contentEditable" class="save el-icon-finished" @click.stop="onSave(true)"></i>
+
     <div>{{peotry.end}}</div>
+
     <div class="images" v-if="peotryImages">
       <!-- <span style="color: gray;">peotry images has been removed.</span> -->
       <img
@@ -31,7 +40,7 @@
         :src="baseUrl + value.substr(1)"
       >
     </div>
-    <div class="comment-menu" v-show="!contentEditable && !showDelete">
+    <div class="comment-menu">
       <span @click.stop="onToggleComment(userInfo.id)">
         评论
         <i class="el-icon-edit-outline"></i>
@@ -112,12 +121,19 @@ export default {
       showDelete: false,
       inComment: false,
       clickTime: 0,
+      contentHeight: "auto",
       baseUrl
     };
   },
   inject: ["userMap"],
   created() {
     this.onContentLeave = this.onContentLeave.bind(this);
+  },
+  mounted() {
+    const contentEl = this.$refs.contentEl;
+    if (contentEl.clientHeight > 100) {
+      this.contentHeight = "100px";
+    }
   },
   filters: {
     timeFormat(v) {
@@ -281,17 +297,19 @@ $size-content: 18px;
 
 .peotry {
   position: relative;
-
-  .order {
-    position: absolute;
-    right: calc(100% + 10px);
-    top: 5px;
-    cursor: pointer;
-    user-select: none;
-  }
+  padding-left: 25px;
 
   .title {
     font-size: 20px;
+
+    i {
+      margin-right: 8px;
+      cursor: pointer;
+
+      &:hover {
+        color: #148acf;
+      }
+    }
   }
 
   .peot {
@@ -302,6 +320,18 @@ $size-content: 18px;
     display: inline-block;
     font-size: $size-content;
     white-space: pre-wrap;
+    overflow: hidden;
+  }
+
+  .content-expand {
+    margin-top: -10px;
+    font-size: $size-content;
+
+    span {
+      cursor: pointer;
+      color: gray;
+      font-size: 10px;
+    }
   }
 
   div[contenteditable="true"] {
@@ -311,7 +341,10 @@ $size-content: 18px;
   }
 
   .save {
-    vertical-align: bottom;
+    vertical-align: baseline;
+    margin-left: 5px;
+    color: #148acf;
+    cursor: pointer;
   }
 
   .images {
@@ -326,6 +359,8 @@ $size-content: 18px;
   .comment-menu {
     margin: 18px 0 5px 0;
     color: #333;
+    user-select: none;
+
     span {
       cursor: pointer;
       &:hover {
@@ -336,9 +371,11 @@ $size-content: 18px;
 
   .praise-users {
     line-height: 24px;
+    user-select: none;
 
     img {
       width: 18px;
+      height: 18px;
       margin-right: 3px;
       cursor: pointer;
 
@@ -369,7 +406,6 @@ $size-content: 18px;
     }
 
     .comment {
-      margin-bottom: 8px;
       padding: 5px 3px;
 
       .users {

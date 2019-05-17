@@ -1,4 +1,5 @@
 const isOver = span => {
+    if (span.getAttribute("tooltip")) return true;
     let ctx;
     if (window.tooltipCanvasCtx) {
         ctx = window.tooltipCanvasCtx;
@@ -45,7 +46,7 @@ export default {
     },
     data() {
         return {
-            classMatched: ["cell", "el-select-dropdown__item", "el-input__inner"],
+            classMatched: ["tooltip"],
             tpRef: null,
             tpCtn: "",
             tpKey: "",
@@ -62,7 +63,7 @@ export default {
             docEl.addEventListener("mouseenter", this.onMouseleave, true);
         },
         doTpShow(el) {
-            this.$set(this, "tpCtn", el.innerText || el.value);
+            this.$set(this, "tpCtn", el.getAttribute("tooltip") || el.innerText || el.value);
             this.$set(this, "tpRef", el);
             this.$set(this, "tpKey", Date.now());
             this.$set(this, "tpVisible", true);
