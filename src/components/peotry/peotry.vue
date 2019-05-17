@@ -26,6 +26,7 @@
       <img
         v-for="value in peotryImages"
         alt="image error"
+        img-type="picture"
         :key="value"
         :src="baseUrl + value.substr(1)"
       >
@@ -37,15 +38,15 @@
       </span>
       <span @click.stop="onCommentPraise()" :style="{color: currentPraise ? '#148acf' : 'initial'}">
         赞
-        <i class="el-icon-star-off"></i>
+        <i :class="[currentPraise ? 'el-icon-star-on' : 'el-icon-star-off']"></i>
       </span>
     </div>
-    <div v-if="praiseComments.length">
+    <div v-if="praiseComments.length" class="praise-users">
       <img
         v-for="comment in praiseComments"
         :key="comment.id"
-        style="width: 18px;"
-        :src="getUserIconUrl(comment.fromId)"
+        :img-type="'user-' + comment.fromId"
+        :src="userMap[comment.fromId] ? userMap[comment.fromId].iconUrl : './favicon.ico'"
       >
     </div>
     <div v-if="realComments.length" class="comments">
@@ -85,7 +86,7 @@
         type="textarea"
         :autosize="{ maxRows: 4}"
         placeholder="请输入内容"
-        v-model="peotry.comment.comment"
+        v-model="peotry.comment.content"
       ></el-input>
       <el-button @click.stop="onComment" size="small" :disabled="!canComment">提交</el-button>
     </div>
@@ -173,7 +174,7 @@ export default {
       if (!this.peotry.comment) {
         this.$set(this.peotry, "comment", {
           id: 0,
-          comment: "",
+          content: "",
           type: 1,
           typeId: this.peotry.id,
           fromId: this.userInfo.id,
@@ -181,7 +182,7 @@ export default {
         });
       }
       this.peotry.comment.toId = toId;
-      this.peotry.comment.comment = "";
+      this.peotry.comment.content = "";
     },
     onToggleComment(toId, open) {
       this.inComment = open ? open : !this.inComment;
@@ -223,16 +224,12 @@ export default {
       this.checkComment(-1);
       const comment = this.peotry.comment;
       comment.id = this.currentPraise ? this.myPraiseComment.id : comment.id;
-      comment.comment = this.currentPraise ? "unpraise" : "praise";
+      comment.content = this.currentPraise ? "unpraise" : "praise";
       this.onComment();
     },
     onComment() {
       this.$emit("on-comment", this.peotry.comment, this.peotry.id);
       this.inComment = false;
-    },
-    getUserIconUrl(id) {
-      const info = this.userMap[id];
-      return info && info.iconUrl ? this.baseUrl + info.iconUrl.substr(1) : "./favicon.ico";
     }
   },
   computed: {
@@ -254,16 +251,20 @@ export default {
     },
     praiseComments() {
       if (!this.peotry.comments) return [];
-      return this.peotry.comments.filter(
-        comment => comment.toId === -1 && comment.content === "praise"
-      );
+      return this.peotry.comments
+        .filter(comment => comment.toId === -1 && comment.content === "praise")
+        .sort(function(o0, o1) {
+          const time0 = new Date(o0.createTime).getTime(),
+            time1 = new Date(o1.createTime).getTime();
+          return time0 < time1 ? -1 : 1;
+        });
     },
     realComments() {
       if (!this.peotry.comments) return [];
       return this.peotry.comments.filter(comment => comment.toId > 0);
     },
     canComment() {
-      return this.peotry.comment.comment.trim().length > 0;
+      return this.peotry.comment.content.trim().length > 0;
     },
     ...mapState({
       userInfo: state => state.user
@@ -333,6 +334,21 @@ $size-content: 18px;
     }
   }
 
+  .praise-users {
+    line-height: 24px;
+
+    img {
+      width: 18px;
+      margin-right: 3px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+      }
+    }
+  }
+
   .comments {
     position: relative;
     margin-top: 15px;
@@ -379,6 +395,8 @@ $size-content: 18px;
   .comment-input {
     text-align: right;
     max-width: 330px;
+    margin-top: 5px;
+
     .el-button {
       margin-top: 5px;
     }

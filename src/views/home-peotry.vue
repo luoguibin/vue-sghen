@@ -4,7 +4,7 @@
       <el-button @click="$router.go(-1)" icon="el-icon-back" circle></el-button>
       <el-button v-if="!userInfo.token" class="float-right" @click="onShowLogin">登录</el-button>
 
-      <el-dropdown v-else class="float-right" @command="handleCommand">
+      <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
         <span>
           <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
           <img :src="myIconUrl" style="width: 33px; vertical-align: middle;">
@@ -30,17 +30,21 @@
 
       <el-dialog title="个人信息" :visible.sync="showUser">
         <el-form label-width="60px">
-          <el-form-item label="ID">
-            <el-input readonly v-model="userInfo.id"></el-input>
+          <el-form-item label="ID" v-if="showUserInfo.token">
+            <el-input readonly v-model="showUserInfo.id"></el-input>
           </el-form-item>
 
           <el-form-item label="昵称">
-            <el-input readonly v-model="userInfo.name"></el-input>
+            <el-input readonly v-model="showUserInfo.name"></el-input>
           </el-form-item>
 
           <el-form-item label="头像">
-            <img :src="myIconUrl" style="max-width: 50px; vertical-align: top;">
+            <img
+              :src="showUserInfo.token ? myIconUrl : showUserInfo.iconUrl"
+              style="max-width: 50px; vertical-align: top;"
+            >
             <el-upload
+              v-if="showUserInfo.token"
               class="upload-icon"
               ref="upload"
               :action="baseUrl + '/v1/upload'"
@@ -176,6 +180,12 @@ export default {
       showLogin: false,
       showCreate: false,
       showUser: false,
+      showUserInfo: {
+        id: 0,
+        name: "",
+        token: "",
+        iconUrl: ""
+      },
       showImage: false,
       showImageUrl: "",
 
@@ -245,7 +255,8 @@ export default {
           }
           break;
         case "personal":
-          this.showUser = !this.showUser;
+          this.showUser = true;
+          this.showUserInfo = this.userInfo;
           break;
         case "logout":
           sessionStorage.removeItem("sghen_user_info");
@@ -277,10 +288,8 @@ export default {
           if (resp.data.code === 1000) {
             this.$appTip("更新头像成功");
 
-            const info = this.userInfo;
-            info.iconUrl = response.data[0];
             sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
-            this.setUserInfo(info);
+            this.setUserInfo({ ...this.userInfo, iconUrl: response.data[0] });
           } else {
             this.$appTip(resp.data.msg);
           }
@@ -323,9 +332,12 @@ export default {
             const users = resp.data.data;
             const userMap = this.userMap;
             users.forEach(user => {
-              if (!userMap[user.id]) {
-                userMap[user.id] = user;
+              if (user.iconUrl) {
+                user.iconUrl = this.baseUrl + user.iconUrl.substr(1);
+              } else {
+                user.iconUrl = "./favicon.ico";
               }
+              userMap[user.id] = user;
             });
             this.$forceUpdate();
           } else {
@@ -401,21 +413,34 @@ export default {
       }
       createComment(comment).then(resp => {
         if (resp.data.code === 1000) {
+          comment.id = resp.data.data;
           if (comment.toId > 0) {
             this.$appTip("评论成功");
-            this.getPeotries();
+            this.addComment(peotryId, comment);
+            return;
           }
-          if (comment.comment.indexOf("unpraise") !== -1 && peotryId) {
+          if (comment.content.indexOf("unpraise") !== -1 && peotryId) {
             this.spliceComment(peotryId, comment.id);
           } else {
-            this.getPeotries();
+            this.addComment(peotryId, comment);
           }
         } else {
           this.$appTip(resp.data.msg);
         }
       });
     },
-
+    addComment(peotryId, comment) {
+      const peotry = this.peotries.find(o => o.id === peotryId);
+      if (peotry) {
+        if (!peotry.comments) {
+          peotry.comments = [];
+        }
+        const newComment = JSON.parse(JSON.stringify(comment));
+        newComment.createTime = new Date().toJSON();
+        console.log("addComment", comment, peotry);
+        peotry.comments.push(newComment);
+      }
+    },
     spliceComment(peotryId, id) {
       this.peotries.forEach(peotry => {
         if (peotry.id === peotryId && peotry.comments) {
@@ -423,8 +448,7 @@ export default {
           if (index !== -1) {
             peotry.comments.splice(index, 1);
           }
-          console.log(peotry.comments);
-          this.$forceUpdate();
+          // this.$forceUpdate();
         }
       });
     },
@@ -485,7 +509,15 @@ export default {
     onClickImage(e) {
       const el = e.srcElement;
       if (el.tagName === "IMG") {
-        this.showImageUrl = this.showImageUrl ? "" : el.getAttribute("src");
+        const imgType = el.getAttribute("img-type");
+        if (imgType === "picture") {
+          this.showImageUrl = this.showImageUrl ? "" : el.getAttribute("src");
+        } else if (imgType.indexOf("user-") === 0) {
+          const id = parseInt(imgType.replace("user-", "")),
+            user = this.userMap[id];
+          this.showUser = true;
+          this.showUserInfo = user;
+        }
       } else {
         this.showImageUrl = "";
       }
