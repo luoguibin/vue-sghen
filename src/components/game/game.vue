@@ -21,15 +21,8 @@
       <button @click.stop="onSkill(4002)">群伤1</button>
     </div>
 
-    <!-- login panel -->
-    <div v-if="showLogin" class="user-login">
-      <input v-model.number="account.uId" type="tel">
-      <input v-model="account.pw" type="password">
-      <button @click.stop="onLogin()">login</button>
-    </div>
-
     <!-- exit -->
-    <span v-else class="game-close" @click.stop="onCloseOrOpen()">×</span>
+    <span class="game-close" @click.stop="onCloseOrOpen()">×</span>
   </div>
 </template>
 
@@ -38,7 +31,6 @@ import { mapState, mapActions } from "vuex";
 import PlayerPanel from "@/components/game/player-panel";
 import MsgBox from "@/components/game/msg-box";
 
-import { loginByAccount } from "@/api";
 import GameScene from "@/common/game/game-scene";
 import GameWS from "@/common/game/game-ws";
 import OrderCenter from "@/common/game/order-center";
@@ -51,7 +43,6 @@ export default {
   },
   data() {
     return {
-      showLogin: false,
       isReady: false,
       account: {
         uId: 15625045984,
@@ -71,7 +62,6 @@ export default {
     checkLoginGame() {
       const token = this.userInfo.token;
       if (token) {
-        this.showLogin = false;
         GameWS.connect(token);
         GameScene.initDom(this.$el, flag => {
           this.$NProgress.done();
@@ -82,14 +72,8 @@ export default {
           }
         });
       } else {
-        this.showLogin = true;
+        this.showLogin();
       }
-    },
-    onShowLogin() {
-      if (this.userInfo.id > 0) {
-        return;
-      }
-      this.showLogin = !this.showLogin;
     },
     onShowPlayerPlane() {
       GameScene.playerPanel.showPlayer(GameScene.myModel.userData);
@@ -113,26 +97,23 @@ export default {
         }
       });
     },
-
-    onLogin() {
-      loginByAccount(this.account).then(resp => {
-        if (resp.data.code === 1000) {
-          const info = resp.data.data;
-          sessionStorage.setItem("sghen_user_info", JSON.stringify(info));
-          this.setUserInfo(info);
-          this.checkLoginGame();
-        } else {
-          console.log(resp.data.msg);
-        }
-      });
-    },
     onCloseOrOpen() {
       GameWS.release();
       this.$router.replace("/");
     },
     ...mapActions({
-      setUserInfo: "setUser"
+      setUserInfo: "setUser",
+      showLogin: "showLogin"
     })
+  },
+  watch: {
+    userInfo() {
+      if (this.userInfo.token) {
+        this.checkLoginGame();
+      } else {
+        console.log("game watch userinfo null");
+      }
+    }
   },
   computed: {
     ...mapState({
@@ -169,28 +150,5 @@ export default {
   right: 5px;
   z-index: 120;
   cursor: pointer;
-}
-
-.user-login {
-  width: 20rem;
-  height: 10rem;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  padding: 1rem;
-  transform: translate(-50%, -50%);
-  background-color: rgb(255, 180, 118);
-  z-index: 100;
-}
-.user-login input {
-  display: block;
-  width: 100%;
-  padding: 0.3rem;
-  font-size: 18px;
-  box-sizing: border-box;
-}
-
-.user-login button {
-  margin: 0.3rem auto 0;
 }
 </style>

@@ -27,6 +27,7 @@ export default {
           })
           .catch(e => {
             this.$appTip("@/components/game/game 加载失败");
+            console.log(e);
           });
       });
     });

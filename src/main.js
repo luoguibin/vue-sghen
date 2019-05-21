@@ -22,11 +22,14 @@ console.log(date)
 
 Vue.prototype.$NProgress = NProgress;
 
+import LoginDialog from "@/components/normal/login-dialog";
+Vue.component(LoginDialog.name, LoginDialog);
+
 new Vue({
   router,
   store,
   created() {
-    NProgress.configure({ showSpinner: false })
+    NProgress.configure({ showSpinner: false });
   },
   render: h => h(App)
 }).$mount('#app')
