@@ -134,7 +134,6 @@
 import { mapState, mapActions } from "vuex";
 import Peotry from "@/components/peotry/peotry";
 import {
-  loginByAccount,
   updateUser,
   queryUsers,
   queryPeotries,
@@ -302,7 +301,9 @@ export default {
     updatePeotriesData(datas) {
       const idsSet = new Set();
       datas.forEach(peotry => {
-        idsSet.add(peotry.user.id);
+        if (peotry.user && peotry.user.id) {
+          idsSet.add(peotry.user.id);
+        }
 
         const comments = peotry.comments;
         if (comments && comments.length) {

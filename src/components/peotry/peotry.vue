@@ -10,7 +10,7 @@
       >{{peotry.set.name + (peotry.title ? "*" + peotry.title : "")}}</span>
       <span v-else>{{peotry.title}}</span>
     </div>
-    <div class="peot">{{peotry.user.name}}--{{peotry.time | time-format}}</div>
+    <div class="peot">{{peotry.user ? peotry.user.name : ""}}--{{peotry.time | time-format}}</div>
 
     <!-- `white-wrap: pre-wrap` and code's format -->
     <div

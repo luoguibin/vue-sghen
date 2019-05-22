@@ -6,6 +6,13 @@ const baseHmacMd5 = (data, key) => {
 }
 const privateKey = CryptoJS.enc.Utf8.parse("sghenmorge");
 
+export const createUser = data =>
+    request({
+        url: "/v1/user/create",
+        method: "post",
+        data
+    })
+
 export const loginByAccount = ({ uId, pw }) =>
     request({
         url: "/v1/user/login",
@@ -94,7 +101,7 @@ export const createComment = data =>
         },
         data
     })
-    
+
 export const deleteComment = data =>
     request({
         url: "/v1/comment/delete",
@@ -105,7 +112,7 @@ export const deleteComment = data =>
         }
     })
 
-export const uploadFiles = (params, files) => 
+export const uploadFiles = (params, files) =>
     request({
         url: "/v1/upload",
         method: "post",
@@ -114,5 +121,5 @@ export const uploadFiles = (params, files) =>
             ...params
         },
         data: files,
-        headers: {"Content-Type": "multipart/form-data"}
+        headers: { "Content-Type": "multipart/form-data" }
     })
