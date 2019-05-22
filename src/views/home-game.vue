@@ -15,6 +15,10 @@ export default {
   },
   created() {
     this.$NProgress.start();
+    this.defaultContextmenu = document.oncontextmenu;
+    document.oncontextmenu = function () {
+      return false;
+    }
   },
   mounted() {
     window.homeGame = this;
@@ -50,6 +54,9 @@ export default {
         head.appendChild(script);
       });
     }
+  },
+  beforeDestroy() {
+    document.oncontextmenu = this.defaultContextmenu;
   }
 };
 </script>

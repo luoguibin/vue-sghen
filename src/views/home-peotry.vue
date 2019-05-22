@@ -480,6 +480,7 @@ export default {
 
   .el-pagination {
     white-space: pre-wrap;
+    text-align: center;
   }
 
   .image-error-slot {
