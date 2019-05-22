@@ -1,24 +1,25 @@
 <template>
   <div class="peotry">
-    <!-- <img :src="'./favicon.ico'" style="width: 23px; position: absolute; left: 0; top: 5px;"/> -->
+    <!-- <img
+      class="peotry-user"
+      :src="userMap[peotry.user.id] ? userMap[peotry.user.id].iconUrl : './favicon.ico'"
+    > -->
     <div class="title">
-      <span
-        v-if="peotry.set"
-        class="tooltip"
-        :tooltip="'选集：' + peotry.set.name"
-      >{{peotry.set.name + (peotry.title ? "*" + peotry.title : "")}}</span>
-      <span v-else>{{peotry.title}}</span>
+      <span v-if="peotry.set" class="tooltip" :tooltip="'选集：' + peotry.set.name">{{peotry.set.name}}</span>
+      <span v-if="peotry.set && peotry.title">*</span>
+      <span>{{peotry.title}}</span>
     </div>
     <div class="peot">{{peotry.user ? peotry.user.name : ""}}--{{peotry.time | time-format}}</div>
 
     <!-- `white-wrap: pre-wrap` and code's format -->
-    <div class="content" ref="contentEl" v-html="peotry.content" :style="{height: contentHeight}"></div>
-    <div v-if="contentHeight !== 'auto'" class="content-expand" @click="contentHeight='auto'">
-      <p>...</p>
-      <span class="content-expand">展开全文</span>
+    <div class="content-container" ref="contentEl" :style="{height: contentHeight}">
+      <div class="content" v-html="peotry.content"></div>
+      <div class="end" v-if="peotry.end">{{peotry.end}}</div>
     </div>
-
-    <div>{{peotry.end}}</div>
+    <div v-if="contentHeight !== 'auto'" class="content-expand">
+      <p>...</p>
+      <span @click="contentHeight='auto'">展开全文</span>
+    </div>
 
     <div class="images" v-if="peotryImages.length">
       <!-- <span style="color: gray;">peotry images has been removed.</span> -->
@@ -30,6 +31,7 @@
         :src="value"
       >
     </div>
+
     <div class="peotry-more">
       <el-dropdown @command="onCommandMore">
         <i class="el-icon-more-outline"></i>
@@ -53,7 +55,7 @@
 
           <el-dropdown-item v-if="isSelfPeotry" command="update">
             <span>
-              更改
+              更新
               <i class="el-icon-edit-outline"></i>
             </span>
           </el-dropdown-item>
@@ -113,6 +115,8 @@
         ref="commentEl"
         type="textarea"
         :autosize="{ maxRows: 4}"
+        maxlength="100"
+        show-word-limit
         placeholder="请输入内容"
         v-model="peotry.comment.content"
       ></el-input>
@@ -150,7 +154,7 @@ export default {
   inject: ["userMap"],
   mounted() {
     const contentEl = this.$refs.contentEl;
-    if (contentEl.clientHeight > 100) {
+    if (contentEl.clientHeight > 108) {
       this.contentHeight = "100px";
     }
   },
@@ -371,59 +375,78 @@ export default {
 
 <style scoped lang="scss">
 $size-content: 18px;
+$padding-set: 12px;
 
 .peotry {
   position: relative;
-  padding-left: 25px;
+  padding-left: 30px;
+
+  .peotry-user {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    position: absolute;
+    left: 0;
+    top: 5px;
+  }
 
   .title {
-    font-size: 20px;
+    padding-bottom: $padding-set;
 
-    i {
-      margin-right: 8px;
-      cursor: pointer;
-
-      &:hover {
-        color: #148acf;
+    span {
+      &:nth-child(1) {
+        font-size: 18px;
+      }
+      &:nth-child(2) {
+        font-size: 16px;
+        padding: 0 5px;
+      }
+      &:nth-child(3) {
+        font-size: 16px;
       }
     }
   }
 
   .peot {
-    margin: 5px 0;
+    padding-bottom: $padding-set;
+    font-size: 14px;
   }
 
-  .content {
-    display: inline-block;
-    font-size: $size-content;
-    white-space: pre-wrap;
+  .content-container {
     overflow: hidden;
-  }
+    box-sizing: border-box;
 
-  .content-expand {
-    margin-top: -10px;
-    font-size: $size-content;
+    .content {
+      font-size: $size-content;
+      white-space: pre-wrap;
+      padding-bottom: $padding-set;
+    }
 
-    span {
-      cursor: pointer;
-      color: gray;
-      font-size: 10px;
+    .end {
+      font-size: 12px;
+      color: #333;
+      padding-bottom: $padding-set;
     }
   }
 
-  .save {
-    vertical-align: baseline;
-    margin-left: 5px;
-    color: #148acf;
-    cursor: pointer;
+  .content-expand {
+    font-size: $size-content;
+    box-shadow: 0 -5px 3px 5px rgba(255, 255, 255, 0.15);
+
+    span {
+      cursor: pointer;
+      color: rgb(65, 65, 65);
+      font-size: 14px;
+    }
   }
 
   .images {
-    margin-top: 20px;
+    padding-bottom: $padding-set;
 
     img {
       margin: 5px;
       width: 30%;
+      object-fit: contain;
     }
   }
 
@@ -492,6 +515,7 @@ $size-content: 18px;
 
       p {
         white-space: pre-line;
+        word-break: break-all;
       }
     }
   }

@@ -51,7 +51,7 @@
         </el-form>
       </el-dialog>
 
-      <peotry-create :showCreate="showCreate"></peotry-create>
+      <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
     </el-header>
 
     <el-main ref="mainEl">
@@ -68,6 +68,7 @@
           :peotry="peotry"
           class="peotry"
           @on-delete="onDelete"
+          @on-update="onUpdate"
           @on-comment="onComment"
           @on-comment-delete="onCommentDelete"
         >
@@ -108,7 +109,6 @@ import {
   updateUser,
   queryUsers,
   queryPeotries,
-  updatePeotry,
   deletePeotry,
   createComment,
   deleteComment
@@ -141,13 +141,13 @@ export default {
       },
       showImage: false,
       showImageUrl: "",
+      updatePeotry: null,
 
       limit: 10,
       curPage: 1,
       totalPage: 1,
       totalCount: 0,
-      peotries: [],
-      
+      peotries: []
     };
   },
   provide() {
@@ -198,7 +198,7 @@ export default {
     handleCommand(key) {
       switch (key) {
         case "peotry":
-          this.showCreate = !this.showCreate;
+          this.showCreate = true;
           break;
         case "personal":
           this.showUser = true;
@@ -306,24 +306,7 @@ export default {
         }
       });
     },
-    onSave(peotry) {
-      if (!peotry || !peotry.id) return;
 
-      updatePeotry({
-        pId: peotry.id,
-        uId: this.userInfo.id,
-        sId: peotry.set.id,
-        title: peotry.title,
-        content: peotry.content,
-        end: peotry.end
-      }).then(resp => {
-        if (resp.data.code === 1000) {
-          this.$appTip("保存成功");
-        } else {
-          this.$appTip(resp.data.msg);
-        }
-      });
-    },
     onDelete(peotry) {
       if (!peotry || !peotry.id) return;
 
@@ -339,6 +322,24 @@ export default {
           this.$appTip(resp.data.msg);
         }
       });
+    },
+    onUpdate(peotry) {
+      if (!peotry || !peotry.id) return;
+      this.updatePeotry = peotry;
+    },
+    onPeotryClose(createValue) {
+      this.updatePeotry = null;
+      this.showCreate = false;
+
+      if (createValue) {
+        if (this.totalCount % this.limit === 0) {
+          this.totalPage++;
+        }
+        if (this.curPage !== this.totalPage) {
+          this.curPage = this.totalPage;
+        }
+      }
+      this.getPeotries(createValue);
     },
 
     onComment(comment, peotryId) {
@@ -392,37 +393,6 @@ export default {
           this.spliceComment(peotryId, id);
         } else {
           this.$appTip(resp.data.msg);
-        }
-      });
-    },
-
-    onCreate() {
-      this.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          const newPeotry = this.newPeotry;
-          const data = {
-            uId: this.userInfo.id,
-            ...newPeotry
-          };
-          createPeotry(data).then(resp => {
-            if (resp.data.code === 1000) {
-              this.$appTip("创建成功");
-              this.$refs.ruleForm.resetFields();
-              this.showCreate = false;
-
-              if (this.totalCount % this.limit === 0) {
-                this.totalPage++;
-              }
-              if (this.curPage !== this.totalPage) {
-                this.curPage = this.totalPage;
-              }
-              this.getPeotries(true);
-            } else {
-              this.$appTip(resp.data.msg);
-            }
-          });
-        } else {
-          this.$appTip("请输入表单内容");
         }
       });
     },

@@ -1,5 +1,10 @@
 <template>
-  <el-dialog title="创建诗词" :visible.sync="visible">
+  <el-dialog
+    :title="createValue ? '创建诗词' : '更新诗词'"
+    :visible.sync="visible"
+    @opened="onDialogOpened"
+    @closed="onDialogClosed"
+  >
     <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
       <el-form-item label="选集" prop="sId">
         <el-select v-model="newPeotry.sId" placeholder="请选择">
@@ -15,6 +20,7 @@
         <el-input
           type="textarea"
           :autosize="{ minRows: 3, maxRows: 10}"
+          maxlength="1000"
           placeholder="内容，不少于5个字符"
           v-model="newPeotry.content"
         ></el-input>
@@ -25,7 +31,11 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click.stop="onCreate">创建</el-button>
+        <el-button
+          type="primary"
+          @click.stop="onCreateUpdate"
+          :loading="inRequest"
+        >{{createValue ? '创建' : '更新'}}</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>
@@ -33,7 +43,7 @@
 
 <script>
 import { mapState } from "vuex";
-import { queryPeotrySets, createPeotry } from "@/api";
+import { queryPeotrySets, createPeotry, updatePeotry } from "@/api";
 
 export default {
   props: {
@@ -49,6 +59,8 @@ export default {
   data() {
     return {
       visible: false,
+      createValue: true,
+      inRequest: false,
       newPeotry: {
         sId: 10001,
         title: "",
@@ -78,23 +90,27 @@ export default {
   watch: {
     showCreate() {
       this.visible = this.showCreate;
-      if (this.showCreate) {
+      if (this.visible) {
         this.getPeotrySets();
       }
     },
     peotry() {
       if (this.peotry) {
         this.visible = true;
+        this.createValue = false;
+        this.getPeotrySets();
+
         const peotry = this.peotry;
         this.newPeotry = {
           id: peotry.id,
-          uId: peotry.uId,
-          sId: peotry.sId,
+          uId: peotry.user && peotry.user.id,
+          sId: peotry.set && peotry.set.id,
           title: peotry.title,
           content: peotry.content,
           end: peotry.end
         };
       } else {
+        this.createValue = true;
         this.newPeotry = {
           sId: 10001,
           title: "",
@@ -109,6 +125,9 @@ export default {
       userInfo: state => state.user
     })
   },
+  mounted() {
+    window.peotryCreate = this;
+  },
   methods: {
     getPeotrySets() {
       queryPeotrySets(this.userInfo.id).then(resp => {
@@ -119,6 +138,68 @@ export default {
           this.$appTip(resp.data.msg);
         }
       });
+    },
+
+    onCreateUpdate() {
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          if (this.createValue) {
+            this.onCreate();
+          } else {
+            this.onUpdate();
+          }
+        } else {
+          this.$appTip("请输入表单内容");
+        }
+      });
+    },
+
+    onCreate() {
+      this.inRequest = true;
+      const newPeotry = this.newPeotry;
+      const data = {
+        uId: this.userInfo.id,
+        ...newPeotry
+      };
+      createPeotry(data).then(resp => {
+        if (resp.data.code === 1000) {
+          this.$appTip("创建成功");
+          this.$refs.ruleForm.resetFields();
+          this.visible = false;
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
+    },
+
+    onUpdate() {
+      const peotry = this.newPeotry;
+      if (!peotry || !peotry.id) return;
+      this.inRequest = true;
+      updatePeotry({
+        pId: peotry.id,
+        uId: this.userInfo.id,
+        sId: peotry.sId,
+        title: peotry.title,
+        content: peotry.content,
+        end: peotry.end
+      }).then(resp => {
+        if (resp.data.code === 1000) {
+          this.$appTip("保存成功");
+          this.visible = false;
+        } else {
+          this.$appTip(resp.data.msg);
+        }
+      });
+    },
+
+    onDialogOpened() {
+      this.inRequest = false;
+    },
+    onDialogClosed() {
+      this.$emit("on-close", this.createValue);
+      this.createValue = true;
+      this.inRequest = false;
     }
   }
 };
