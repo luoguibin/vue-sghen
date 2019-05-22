@@ -1,8 +1,7 @@
 <template>
   <div class="peotry">
     <!-- <img :src="'./favicon.ico'" style="width: 23px; position: absolute; left: 0; top: 5px;"/> -->
-    <div class="title" @click.stop="onOrder">
-      <i v-if="showDelete" @click.stop="onDelete" class="el-icon-delete" style="font"></i>
+    <div class="title">
       <span
         v-if="peotry.set"
         class="tooltip"
@@ -13,52 +12,72 @@
     <div class="peot">{{peotry.user ? peotry.user.name : ""}}--{{peotry.time | time-format}}</div>
 
     <!-- `white-wrap: pre-wrap` and code's format -->
-    <div
-      class="content"
-      :class="{'content-edit': contentEditable}"
-      ref="contentEl"
-      @click.stop="onContent"
-      :contenteditable="contentEditable"
-      v-html="peotry.content"
-      :style="{height: contentHeight}"
-    ></div>
+    <div class="content" ref="contentEl" v-html="peotry.content" :style="{height: contentHeight}"></div>
     <div v-if="contentHeight !== 'auto'" class="content-expand" @click="contentHeight='auto'">
       <p>...</p>
       <span class="content-expand">展开全文</span>
     </div>
-    <i v-if="contentEditable" class="save el-icon-finished" @click.stop="onSave(true)"></i>
 
     <div>{{peotry.end}}</div>
 
-    <div class="images" v-if="peotryImages">
+    <div class="images" v-if="peotryImages.length">
       <!-- <span style="color: gray;">peotry images has been removed.</span> -->
       <img
         v-for="value in peotryImages"
         alt="image error"
         img-type="picture"
         :key="value"
-        :src="baseUrl + value.substr(1)"
+        :src="value"
       >
     </div>
-    <div class="comment-menu">
-      <span @click.stop="onToggleComment(userInfo.id)">
-        评论
-        <i class="el-icon-edit-outline"></i>
-      </span>
-      <span @click.stop="onCommentPraise()" :style="{color: currentPraise ? '#148acf' : 'initial'}">
-        赞
-        <i :class="[currentPraise ? 'el-icon-star-on' : 'el-icon-star-off']"></i>
-      </span>
+    <div class="peotry-more">
+      <el-dropdown @command="onCommandMore">
+        <i class="el-icon-more-outline"></i>
+
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="comment">
+            <span>
+              评论
+              <i class="el-icon-edit-outline"></i>
+            </span>
+          </el-dropdown-item>
+
+          <el-dropdown-item command="praise">
+            <span>
+              {{currentPraise ? "取消点赞" : "点赞"}}
+              <i
+                :class="[currentPraise ? 'el-icon-star-on' : 'el-icon-star-off']"
+              ></i>
+            </span>
+          </el-dropdown-item>
+
+          <el-dropdown-item v-if="isSelfPeotry" command="update">
+            <span>
+              更改
+              <i class="el-icon-edit-outline"></i>
+            </span>
+          </el-dropdown-item>
+
+          <el-dropdown-item v-if="isSelfPeotry" command="delete">
+            <span>
+              删除
+              <i class="el-icon-delete"></i>
+            </span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
-    <div v-if="praiseComments.length" class="praise-users">
-      <img
-        v-for="comment in praiseComments"
-        :key="comment.id"
-        :img-type="'user-' + comment.fromId"
-        :src="userMap[comment.fromId] ? userMap[comment.fromId].iconUrl : './favicon.ico'"
-      >
-    </div>
-    <div v-if="realComments.length" class="comments">
+
+    <div class="comments" v-if="praiseComments.length || realComments.length">
+      <div class="praise-users">
+        <img
+          v-for="comment in praiseComments"
+          :key="comment.id"
+          :img-type="'user-' + comment.fromId"
+          :src="userMap[comment.fromId] ? userMap[comment.fromId].iconUrl : './favicon.ico'"
+        >
+      </div>
+
       <div
         v-for="comment in realComments"
         class="comment"
@@ -97,7 +116,11 @@
         placeholder="请输入内容"
         v-model="peotry.comment.content"
       ></el-input>
-      <el-button @click.stop="onComment" size="small" :disabled="!canComment">提交</el-button>
+      <el-button
+        @click.stop="onCommentSubmit"
+        size="small"
+        :disabled="!peotry.comment.content.trim()"
+      >提交</el-button>
     </div>
 
     <el-divider></el-divider>
@@ -117,7 +140,6 @@ export default {
   },
   data() {
     return {
-      contentEditable: false,
       showDelete: false,
       inComment: false,
       clickTime: 0,
@@ -126,9 +148,6 @@ export default {
     };
   },
   inject: ["userMap"],
-  created() {
-    this.onContentLeave = this.onContentLeave.bind(this);
-  },
   mounted() {
     const contentEl = this.$refs.contentEl;
     if (contentEl.clientHeight > 100) {
@@ -142,78 +161,96 @@ export default {
     }
   },
   methods: {
-    onContent() {
-      if (this.contentEditable) return;
+    /**
+     * 分发诗词操作
+     */
+    onCommandMore(key) {
+      switch (key) {
+        case "comment":
+          this.openComment(this.userInfo.id);
+          break;
+        case "praise":
+          this.onCommentPraise();
+          break;
+        case "update":
+          this.$emit("on-update", this.peotry);
+          break;
+        case "delete":
+          this.$emit("on-delete", this.peotry);
+          break;
+        default:
+          break;
+      }
+    },
 
-      const time = new Date().getTime();
-      if (time - this.clickTime < 300) {
-        this.contentEditable = true;
-
-        document.addEventListener("click", this.onContentLeave);
-      }
-      this.clickTime = time;
-    },
-    onSave(real) {
-      this.contentEditable = false;
-      document.removeEventListener("click", this.onContentLeave);
-
-      const el = this.$refs.contentEl;
-      if (real) {
-        const content = el.innerText;
-        this.peotry.content = content;
-        this.$emit("on-save", this.peotry);
-      } else {
-        el.innerHTML = this.peotry.content;
-      }
-    },
-    onContentLeave() {
-      if (this.contentEditable) {
-        this.$appTip("放弃修改");
-        this.onSave(false);
-      }
-    },
-    onOrder() {
-      if (this.showDelete) {
-        this.showDelete = false;
-        return;
-      }
-      const time = new Date().getTime();
-      if (time - this.clickTime < 300) {
-        this.showDelete = true;
-      }
-      this.clickTime = time;
-    },
-    onDelete() {
-      this.$emit("on-delete", this.peotry);
-    },
+    /**
+     * 检测当前评论对象
+     * 若toId===fromId，表示直接评论诗词；
+     * 若toId===-1，表示点赞诗词；
+     * 否则为回复某用户的评论
+     * @param {Integer} toId
+     */
     checkComment(toId) {
-      if (!this.peotry.comment) {
-        this.$set(this.peotry, "comment", {
+      let comment = this.peotry.comment;
+      if (!comment) {
+        comment = {
           id: 0,
           content: "",
           type: 1,
           typeId: this.peotry.id,
           fromId: this.userInfo.id,
           toId: toId
-        });
+        };
+        this.$set(this.peotry, "comment", comment);
       }
-      this.peotry.comment.fromId = this.userInfo.id;
-      this.peotry.comment.toId = toId;
-      this.peotry.comment.content = "";
+      comment.fromId = this.userInfo.id;
+      comment.toId = toId;
+      comment.content = "";
     },
-    onToggleComment(toId, open) {
+
+    openComment(toId) {
       if (!this.userInfo.token) {
         this.$appTip("请登录后再操作");
         return;
       }
-      this.inComment = open ? open : !this.inComment;
-      if (this.inComment) {
-        this.checkComment(toId);
-        this.$nextTick(() => {
-          this.$refs.commentEl.focus();
-        });
+      this.inComment = true;
+      this.checkComment(toId);
+      this.$nextTick(() => {
+        this.$refs.commentEl.focus();
+      });
+
+      this.setOutClick(true);
+    },
+
+    setOutClick(flag) {
+      if (flag) {
+        if (!this.onOutClick) {
+          this.onOutClick = e => {
+            let el = e.srcElement,
+              count = 0;
+            const parentElement = this.$refs.commentEl.$el.parentElement;
+            // 3代节点内检测是否还处于评论编辑框附近
+            while (el && count < 3) {
+              if (el === parentElement) {
+                break;
+              } else {
+                count++;
+                el = el.parentElement;
+              }
+            }
+            if (el === parentElement) {
+              return;
+            }
+            this.setOutClick(false);
+            this.inComment = false;
+          };
+        }
+        window.addEventListener("click", this.onOutClick);
+      } else {
+        window.removeEventListener("click", this.onOutClick);
       }
     },
+
     onCommentUser(e) {
       if (!this.userInfo.token) {
         this.$appTip("请登录后再操作");
@@ -224,7 +261,7 @@ export default {
         const toId = parseInt(userId);
         const commentId = parseInt(e.srcElement.getAttribute("comment-id"));
         if (toId !== this.userInfo.id) {
-          this.onToggleComment(toId);
+          this.openComment(toId);
         } else if (commentId) {
           this.$confirm("是否删除该评论？", "提示", {
             confirmButtonText: "确定",
@@ -250,54 +287,84 @@ export default {
       const comment = this.peotry.comment;
       comment.id = this.currentPraise ? this.myPraiseComment.id : comment.id;
       comment.content = this.currentPraise ? "unpraise" : "praise";
-      this.onComment();
+
+      this.onCommentSubmit();
     },
-    onComment() {
+    onCommentSubmit() {
       this.$emit("on-comment", this.peotry.comment, this.peotry.id);
+      this.setOutClick(false);
       this.inComment = false;
     }
   },
   computed: {
+    /**
+     * @returns {Boolean} 返回是否为当前用户创建的诗词
+     */
+    isSelfPeotry() {
+      return this.peotry.user && this.userInfo.id === this.peotry.user.id;
+    },
+
+    /**
+     * @returns {Array} 返回诗词的直接可用图片列表
+     */
     peotryImages() {
       const imageObj = this.peotry.image;
       if (imageObj && imageObj.count) {
-        return JSON.parse(imageObj.images);
+        return JSON.parse(imageObj.images).map(v => {
+          if (v.indexOf(".") === 0) {
+            return this.baseUrl + v.substr(1);
+          } else {
+            return this.baseUrl + "/" + v;
+          }
+        });
       } else {
-        return undefined;
+        return [];
       }
     },
+
+    /**
+     * @returns {Array} 返回用户评论列表
+     */
+    realComments() {
+      if (!this.peotry.comments) return [];
+      return this.peotry.comments.filter(comment => comment.toId > 0);
+    },
+
+    /**
+     * @returns {Array} 返回用户点赞列表
+     */
+    praiseComments() {
+      if (!this.peotry.comments) return [];
+      return this.peotry.comments
+        .filter(comment => comment.toId === -1 && comment.content === "praise")
+        .sort(function(o0, o1) {
+          // 按时间排序评论列表
+          const time0 = new Date(o0.createTime).getTime(),
+            time1 = new Date(o1.createTime).getTime();
+          return time0 < time1 ? -1 : 1;
+        });
+    },
+
+    /**
+     * @returns {Comment} 返回我的点赞对象
+     */
     myPraiseComment() {
       if (!this.userInfo) return;
       return this.praiseComments.find(
         comment => comment.toId === -1 && comment.fromId === this.userInfo.id
       );
     },
+
+    /**
+     * @returns {Boolean} 返回当前登录用户是否点赞当前诗词
+     */
     currentPraise() {
       return this.myPraiseComment && this.myPraiseComment.content === "praise";
     },
-    praiseComments() {
-      if (!this.peotry.comments) return [];
-      return this.peotry.comments
-        .filter(comment => comment.toId === -1 && comment.content === "praise")
-        .sort(function(o0, o1) {
-          const time0 = new Date(o0.createTime).getTime(),
-            time1 = new Date(o1.createTime).getTime();
-          return time0 < time1 ? -1 : 1;
-        });
-    },
-    realComments() {
-      if (!this.peotry.comments) return [];
-      return this.peotry.comments.filter(comment => comment.toId > 0);
-    },
-    canComment() {
-      return this.peotry.comment.content.trim().length > 0;
-    },
+
     ...mapState({
       userInfo: state => state.user
     })
-  },
-  beforeDestroy() {
-    this.onContentLeave();
   }
 };
 </script>
@@ -344,12 +411,6 @@ $size-content: 18px;
     }
   }
 
-  div[contenteditable="true"] {
-    position: relative;
-    padding: 10px 50px 10px 10px;
-    border: 1px solid salmon;
-  }
-
   .save {
     vertical-align: baseline;
     margin-left: 5px;
@@ -366,34 +427,10 @@ $size-content: 18px;
     }
   }
 
-  .comment-menu {
-    margin: 18px 0 5px 0;
-    color: #333;
-    user-select: none;
-
-    span {
-      cursor: pointer;
-      &:hover {
-        color: #148acf;
-      }
-    }
-  }
-
-  .praise-users {
-    line-height: 24px;
-    user-select: none;
-
-    img {
-      width: 18px;
-      height: 18px;
-      margin-right: 3px;
-      cursor: pointer;
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.15);
-        border-radius: 3px;
-      }
-    }
+  .peotry-more {
+    margin: 5px 0;
+    padding-right: 5px;
+    text-align: right;
   }
 
   .comments {
@@ -402,6 +439,27 @@ $size-content: 18px;
     padding: 5px 5px 5px 20px;
     background-color: #ddd;
     border-radius: 8px;
+
+    .praise-users {
+      margin-top: 10px;
+      margin-bottom: 5px;
+      border-bottom: 1px solid white;
+      line-height: 35px;
+      user-select: none;
+
+      img {
+        width: 30px;
+        height: 30px;
+        margin-right: 3px;
+        cursor: pointer;
+        object-fit: contain;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.15);
+          border-radius: 3px;
+        }
+      }
+    }
 
     &::before {
       content: "";
