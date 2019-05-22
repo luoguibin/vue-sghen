@@ -15,6 +15,7 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import { loginByAccount } from "@/api";
+import { resetUserIconUrl } from "@/common/utils/icon-util";
 
 export default {
   name: "login-dialog",
@@ -41,7 +42,9 @@ export default {
     onLogin() {
       loginByAccount(this.account).then(resp => {
         if (resp.data.code === 1000) {
-          this.setUserInfo(resp.data.data);
+          const userInfo = resp.data.data;
+          resetUserIconUrl(userInfo);
+          this.setUserInfo(userInfo);
           this.visible = false;
         } else {
           this.$message(resp.data.msg);

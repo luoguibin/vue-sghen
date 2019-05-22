@@ -1,7 +1,7 @@
 <template>
   <div class="peotry">
     <!-- <img :src="'./favicon.ico'" style="width: 23px; position: absolute; left: 0; top: 5px;"/> -->
-    <div class="title"  @click.stop="onOrder">
+    <div class="title" @click.stop="onOrder">
       <i v-if="showDelete" @click.stop="onDelete" class="el-icon-delete" style="font"></i>
       <span
         v-if="peotry.set"
@@ -197,10 +197,15 @@ export default {
           toId: toId
         });
       }
+      this.peotry.comment.fromId = this.userInfo.id;
       this.peotry.comment.toId = toId;
       this.peotry.comment.content = "";
     },
     onToggleComment(toId, open) {
+      if (!this.userInfo.token) {
+        this.$appTip("请登录后再操作");
+        return;
+      }
       this.inComment = open ? open : !this.inComment;
       if (this.inComment) {
         this.checkComment(toId);
@@ -237,6 +242,10 @@ export default {
       }
     },
     onCommentPraise() {
+      if (!this.userInfo.token) {
+        this.$appTip("请登录后再操作");
+        return;
+      }
       this.checkComment(-1);
       const comment = this.peotry.comment;
       comment.id = this.currentPraise ? this.myPraiseComment.id : comment.id;
@@ -258,6 +267,7 @@ export default {
       }
     },
     myPraiseComment() {
+      if (!this.userInfo) return;
       return this.praiseComments.find(
         comment => comment.toId === -1 && comment.fromId === this.userInfo.id
       );

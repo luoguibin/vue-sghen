@@ -16,19 +16,7 @@
         </el-dropdown-menu>
       </el-dropdown>
 
-      <el-dialog title="登录" :visible.sync="showLogin">
-        <el-form label-width="50px" class="user-login">
-          <el-form-item label="账 号">
-            <el-input v-model.number="account.uId" type="tel"></el-input>
-          </el-form-item>
-          <el-form-item label="密 码">
-            <el-input v-model="account.pw" show-password></el-input>
-          </el-form-item>
-          <el-button type="primary" @click.stop="onLogin">登录</el-button>
-        </el-form>
-      </el-dialog>
-
-      <el-dialog title="个人信息" :visible.sync="showUser">
+      <el-dialog title="个人信息" :visible.sync="showUser" v-if="showUserInfo">
         <el-form label-width="60px">
           <el-form-item label="ID" v-if="showUserInfo.token">
             <el-input readonly v-model="showUserInfo.id"></el-input>
@@ -46,7 +34,7 @@
               ref="upload"
               :action="baseUrl + '/v1/upload'"
               :data="{'pathType': 'icon', 'token': userInfo.token}"
-              :file-list="fileList"
+              :show-file-list="false"
               :auto-upload="true"
               :on-success="onIconUploadSuccess"
             >
@@ -158,6 +146,7 @@ import {
   deleteComment
 } from "../api";
 import { baseUrl } from "../api/config";
+import { resetUserIconUrl } from "@/common/utils/icon-util";
 
 export default {
   name: "HomePeotry",
@@ -171,17 +160,15 @@ export default {
         uId: 15625045984,
         pw: "123456"
       },
-      fileList: [],
       userMap: {},
 
-      showLogin: false,
       showCreate: false,
       showUser: false,
       showUserInfo: {
         id: 0,
         name: "",
-        token: "",
-        iconUrl: ""
+        iconUrl: "",
+        token: ""
       },
       showImage: false,
       showImageUrl: "",
@@ -225,10 +212,6 @@ export default {
   },
   created() {
     window.homePeotry = this;
-    const infoStr = sessionStorage.getItem("sghen_user_info");
-    if (infoStr) {
-      this.setUserInfo(JSON.parse(infoStr));
-    }
     this.getPeotries();
   },
   computed: {
@@ -238,36 +221,35 @@ export default {
   },
   watch: {
     userInfo: {
-      deep: true,
+      immediate: true,
       handler() {
-        // 重换登录后评论的fromId需要更新
-        this.peotries.forEach(peotry => {
-          if (peotry.comment) {
-            peotry.comment.fromId = this.userInfo.id;
+        const userInfo = this.userInfo;
+        if (userInfo.token) {
+          // 重换登录后评论的fromId需要更新
+          this.peotries.forEach(peotry => {
+            if (peotry.comment) {
+              peotry.comment.fromId = userInfo.id;
+            }
+          });
+
+          this.userMap[userInfo.id] = JSON.parse(JSON.stringify(userInfo));
+
+          if (this.showUserInfo.id) {
+            this.showUserInfo = this.userMap[this.showUserInfo.id];
           }
-        });
-        // 相应token清空
-        const userMap = this.userMap;
-        for (const key in userMap) {
-          if (userMap.hasOwnProperty(key)) {
-            userMap[key].token = "";
+        } else {
+          // 相应token清空
+          const userMap = this.userMap;
+          for (const key in userMap) {
+            if (userMap.hasOwnProperty(key) && userMap[key].token) {
+              userMap[key].token = "";
+            }
           }
-        }
-        this.userMap[this.userInfo.id] = JSON.parse(
-          JSON.stringify(this.userInfo)
-        );
-        if (this.showUserInfo.id) {
-          this.showUserInfo = this.userMap[this.showUserInfo.id];
         }
       }
     }
   },
   methods: {
-    resetUserIconUrl(userInfo) {
-      userInfo.iconUrl = userInfo.iconUrl
-        ? this.baseUrl + userInfo.iconUrl.substr(1)
-        : "./favicon.ico";
-    },
     handleCommand(key) {
       switch (key) {
         case "peotry":
@@ -296,7 +278,7 @@ export default {
       this.getPeotries();
     },
     onShowLogin() {
-      this.showLogin = !this.showLogin;
+      this.showLogin();
     },
     submitUpload() {
       this.$refs.upload.submit();
@@ -309,26 +291,13 @@ export default {
           if (resp.data.code === 1000) {
             this.$appTip("更新头像成功");
             const info = { ...this.userInfo, iconUrl: response.data[0] };
-            this.resetUserIconUrl(info);
+            resetUserIconUrl(info);
             this.setUserInfo(info);
           } else {
             this.$appTip(resp.data.msg);
           }
-          this.fileList = [];
         }
       );
-    },
-    onLogin() {
-      loginByAccount(this.account).then(resp => {
-        if (resp.data.code === 1000) {
-          const info = resp.data.data;
-          this.resetUserIconUrl(info);
-          this.setUserInfo(info);
-          this.showLogin = false;
-        } else {
-          this.$appTip(resp.data.msg);
-        }
-      });
     },
     updatePeotriesData(datas) {
       const idsSet = new Set();
@@ -359,7 +328,7 @@ export default {
 
             users.forEach(user => {
               if (!userMap[user.id]) {
-                this.resetUserIconUrl(user);
+                resetUserIconUrl(user);
                 userMap[user.id] = user;
               }
             });
@@ -431,7 +400,7 @@ export default {
     onComment(comment, peotryId) {
       if (!this.userInfo.token) {
         this.$appTip("请登录后再操作");
-        this.showLogin = true;
+        this.showLogin();
         return;
       }
       createComment(comment).then(resp => {
@@ -543,7 +512,8 @@ export default {
       this.showImage = this.showImageUrl ? true : false;
     },
     ...mapActions({
-      setUserInfo: "setUser"
+      setUserInfo: "setUser",
+      showLogin: "showLogin"
     })
   }
 };

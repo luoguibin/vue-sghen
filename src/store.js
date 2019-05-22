@@ -5,7 +5,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        user: {},
+        user: {
+            id: 0,
+            name: "",
+            iconUrl: "",
+            token: ""
+        },
         loginCount: 0
     },
     mutations: {
@@ -15,7 +20,12 @@ export default new Vuex.Store({
                 state.user = user;
             } else {
                 sessionStorage.removeItem("sghen_user_info");
-                state.user = null
+                state.user = {
+                    id: 0,
+                    name: "",
+                    iconUrl: "",
+                    token: ""
+                };
             }
         },
         showLogin(state) {

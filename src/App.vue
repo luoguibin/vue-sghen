@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import CanvasNest from "canvas-nest.js";
 import tooltip from "./mixins/tooltip";
 
@@ -25,6 +26,16 @@ export default {
     this.$once("destroy", () => {
       cn.destroy();
     });
+
+    const infoStr = sessionStorage.getItem("sghen_user_info");
+    if (infoStr) {
+      this.setUserInfo(JSON.parse(infoStr));
+    }
+  },
+  methods: {
+    ...mapActions({
+      setUserInfo: "setUser"
+    })
   }
 };
 </script>
