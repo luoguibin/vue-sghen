@@ -8,7 +8,7 @@
         popper-class="theme-picker-dropdown"
       ></el-color-picker>
       <p>原理：通过遍历style节点，test匹配目标颜色值，然后replace替换，最后赋值：style.innerHTML = newStyleText</p>
-      <p>理想主题换色：加载默认主题样式default.css文件，按需加载目标主题样式target-0.css文件</p>
+      <p>理想主题换色：加载默认主题样式default.css文件，按需加载目标主题样式target-0.css文件（创建主题样式文件参见style文件夹）</p>
     </div>
 
     <el-divider content-position="left">测试组件</el-divider>
