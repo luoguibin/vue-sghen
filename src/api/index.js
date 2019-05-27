@@ -112,6 +112,16 @@ export const deleteComment = data =>
         }
     })
 
+export const createPoetrySet = data =>
+    request({
+        url: "/v1/peotry-set/create",
+        method: "get",
+        params: {
+            token: true,
+            ...data
+        }
+    })
+
 export const uploadFiles = (params, files) =>
     request({
         url: "/v1/upload",

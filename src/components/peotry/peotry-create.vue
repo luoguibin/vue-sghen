@@ -10,6 +10,7 @@
         <el-select v-model="newPeotry.sId" placeholder="请选择">
           <el-option v-for="set in peotrySets" :key="set.id" :value="set.id" :label="set.name"></el-option>
         </el-select>
+        <i class="el-icon-plus peotry-set-add" @click="addPeotrySet"></i>
       </el-form-item>
 
       <el-form-item label="标题" prop="title">
@@ -43,7 +44,12 @@
 
 <script>
 import { mapState } from "vuex";
-import { queryPeotrySets, createPeotry, updatePeotry } from "@/api";
+import {
+  queryPeotrySets,
+  createPeotry,
+  updatePeotry,
+  createPoetrySet
+} from "@/api";
 
 export default {
   props: {
@@ -62,11 +68,12 @@ export default {
       createValue: true,
       inRequest: false,
       newPeotry: {
-        sId: 10001,
+        sId: null,
         title: "",
         content: "",
         end: ""
       },
+      setName: "",
       peotrySets: [],
 
       formRules: {
@@ -112,7 +119,7 @@ export default {
       } else {
         this.createValue = true;
         this.newPeotry = {
-          sId: 10001,
+          sId: null,
           title: "",
           content: "",
           end: ""
@@ -193,6 +200,35 @@ export default {
       });
     },
 
+    setCreateChange() {},
+    addPeotrySet() {
+      this.$prompt("请输入选集名字", "创建选集", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消"
+      })
+        .then(({ value }) => {
+          const length = value.trim().length;
+          if (length <= 0) {
+            this.$appTip("选集名称不能为空");
+          } else if (length > 20) {
+            this.$appTip("选集名称不能超过20个字符");
+          } else {
+            createPoetrySet({
+              uId: this.userInfo.id,
+              name: value
+            }).then(resp => {
+              if (resp.data.code === 1000) {
+                this.$appTip("创建选集成功");
+                this.getPeotrySets();
+              } else {
+                this.$appTip(resp.data.msg);
+              }
+            });
+          }
+        })
+        .catch(() => {});
+    },
+
     onDialogOpened() {
       this.inRequest = false;
     },
@@ -205,5 +241,11 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.peotry-set-add {
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 20px;
+}
 </style>
+

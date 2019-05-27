@@ -3,7 +3,7 @@
     <!-- <img
       class="peotry-user"
       :src="userMap[peotry.user.id] ? userMap[peotry.user.id].iconUrl : './favicon.ico'"
-    > -->
+    >-->
     <div class="title">
       <span v-if="peotry.set" class="tooltip" :tooltip="'选集：' + peotry.set.name">{{peotry.set.name}}</span>
       <span v-if="peotry.set && peotry.title">*</span>
@@ -331,7 +331,14 @@ export default {
      */
     realComments() {
       if (!this.peotry.comments) return [];
-      return this.peotry.comments.filter(comment => comment.toId > 0);
+      return this.peotry.comments
+        .filter(comment => comment.toId > 0)
+        .sort(function(o0, o1) {
+          // 按时间排序评论列表
+          const time0 = new Date(o0.createTime).getTime(),
+            time1 = new Date(o1.createTime).getTime();
+          return time0 < time1 ? -1 : 1;
+        });
     },
 
     /**
