@@ -5,19 +5,22 @@
     </div>
 
     <div ref="container" style="position: relative;" :style="{height: mainHeight}">
-      <el-scrollbar ref="scrollbar" :style="scrollbarStyle">
-        <el-tree
-          ref="tree"
-          :data="treeData"
-          node-key="id"
-          accordion
-          :default-expanded-keys="expandedKeys"
-          :default-checked-keys="checkedKeys"
-          :render-content="renderContent"
-          @current-change="handleCurrentChange"
-          @node-expand="handleNodeExpand"
-        ></el-tree>
-      </el-scrollbar>
+      <div :style="scrollbarStyle">
+        <el-scrollbar ref="scrollbar" :style="{height:this.scrollHeight + 'px'}">
+          <el-tree
+            ref="tree"
+            :data="treeData"
+            class="tree"
+            node-key="id"
+            accordion
+            :default-expanded-keys="expandedKeys"
+            :default-checked-keys="checkedKeys"
+            :render-content="renderContent"
+            @current-change="handleCurrentChange"
+            @node-expand="handleNodeExpand"
+          ></el-tree>
+        </el-scrollbar>
+      </div>
       <div
         :style="{height: mainHeight}"
         style="background-color: #999; position: absolute; top: 0; left: 200px; right: 0;"
@@ -166,6 +169,8 @@ export default {
         header = refs.header,
         footer = refs.footer;
 
+      const scrollbarPosition = this.scrollbarPosition;
+
       // ①滚动条在最顶，或展开tree某个节点，tree布局表现为默认
       if (el.scrollTop < header.clientHeight - 20) {
         this.scrollbarPosition = "initial";
@@ -184,11 +189,12 @@ export default {
         }
       }
 
-      // if (el.scrollTop < header.clientHeight) {
-      //   this.scrollHeight = clientHeight - (header.clientHeight - el.scrollTop) - 20;
-      // } else {
-      //   this.scrollHeight = clientHeight - 40;
-      // }
+      // 更新滚动
+      if (scrollbarPosition !== this.scrollbarPosition) {
+        this.$nextTick(() => {
+          this.$refs.scrollbar.update();
+        });
+      }
     }
   },
   computed: {
@@ -210,7 +216,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .scrollbar-tree {
   height: 100%;
   min-height: 500px;
@@ -221,9 +227,13 @@ export default {
 </style>
 
 
-<style>
+<style lang="scss">
 .el-scrollbar__wrap {
   overflow-x: hidden;
+
+  .el-scrollbar__view {
+    margin-right: 10px;
+  }
 }
 
 .el-tree-node__content {
