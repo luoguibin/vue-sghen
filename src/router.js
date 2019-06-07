@@ -34,9 +34,15 @@ const router = new Router({
       // }
     },
     {
-      path: "/*",
-      redirect: "/"
-    }
+      path: "/home-container",
+      name: "home-conainter",
+      component: () => import(/* webpackChunkName: "home-container" */ "./views/home-container"),
+      children: []
+    },
+    // {
+    //   path: "/*",
+    //   redirect: "/"
+    // }
   ]
 });
 

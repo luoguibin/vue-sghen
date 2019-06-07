@@ -1,14 +1,8 @@
 <template>
   <div class="home">
     <ul>
-      <li>
-        <a href="./#/peotry">书三行</a>
-      </li>
-      <li>
-        <a href="./#/game">game</a>
-      </li>
-      <li>
-        <a href="./#/demo/list">demo示威</a>
+      <li v-for="menu in menus" :key="menu.key">
+        <a :href="menu.path">{{menu.name}}</a>
       </li>
     </ul>
   </div>
@@ -18,13 +12,81 @@
 export default {
   name: "home",
   data() {
-    return {};
+    return {
+      menus: [
+        {
+          name: "书三行",
+          key: "line3",
+          path: "./#/peotry"
+        },
+        {
+          name: "game",
+          key: "game",
+          path: "./#/game"
+        },
+        {
+          name: "demo示威",
+          key: "demo",
+          path: "./#/demo/list"
+        },
+        {
+          name: "容器",
+          key: "container",
+          path: "./#/home-container"
+        }
+      ]
+    };
   },
   mounted() {
     window.home = this;
     document.body.oncontextmenu = function() {
       return false;
     };
+
+    this.addDynamicRoutes();
+  },
+  methods: {
+    addDynamicRoutes() {
+      const routerConfigs = [
+        {
+          name: "hello0",
+          path: "hello0",
+          meta: { isAuth: true }
+        },
+        {
+          name: "hello1",
+          path: "hello1"
+        },
+        {
+          name: "hello2",
+          path: "hello2"
+        }
+      ];
+      const newRoutes = [];
+      routerConfigs.forEach(config => {
+        newRoutes.push({
+          name: config.name,
+          path: config.path,
+          component: () =>
+            import("@/components/container/" + config.path).catch(err =>
+              import("@/views/home-error")
+            ),
+          meta: config.meta
+        });
+      });
+
+      const router = this.$router;
+      router.addRoutes([
+        {
+          path: "/home-container",
+          name: "home-container",
+          component: () =>
+            import(/* webpackChunkName: "home-container" */ "./home-container"),
+          children: newRoutes
+        }
+      ]);
+      console.log("addDynamicRoutes");
+    }
   }
 };
 </script>
@@ -32,7 +94,7 @@ export default {
 <style lang="scss" scoped>
 .home {
   height: 100%;
-  
+
   ul {
     display: inline-block;
     position: relative;
