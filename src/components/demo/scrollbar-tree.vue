@@ -228,31 +228,33 @@ export default {
 
 
 <style lang="scss">
-.el-scrollbar__wrap {
-  overflow-x: hidden;
+.scrollbar-tree {
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
 
-  .el-scrollbar__view {
-    margin-right: 10px;
+    .el-scrollbar__view {
+      margin-right: 10px;
+    }
   }
-}
 
-.el-tree-node__content {
-  position: relative;
-}
+  .el-tree-node__content {
+    position: relative;
+  }
 
-.is-current > div:first-child .render-content {
-  width: 100%;
-  text-align: left;
-  background-color: #ccc;
-}
+  .is-current > div:first-child .render-content {
+    width: 100%;
+    text-align: left;
+    background-color: #ccc;
+  }
 
-.is-current > div:first-child:after {
-  content: "";
-  display: inline-block;
-  width: 4px;
-  height: 100%;
-  background: #00558e;
-  position: absolute;
-  right: 0px;
+  .is-current > div:first-child:after {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 100%;
+    background: #00558e;
+    position: absolute;
+    right: 0px;
+  }
 }
 </style>
