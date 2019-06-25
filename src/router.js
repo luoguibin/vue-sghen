@@ -32,17 +32,7 @@ const router = new Router({
       props: (route) => ({ compName: route.params.name }),
       // beforeEnter: (to, from, next) => {
       // }
-    },
-    {
-      path: "/home-container",
-      name: "home-conainter",
-      component: () => import(/* webpackChunkName: "home-container" */ "./views/home-container"),
-      children: []
-    },
-    // {
-    //   path: "/*",
-    //   redirect: "/"
-    // }
+    }
   ]
 });
 

@@ -76,6 +76,10 @@ export default {
       });
 
       const router = this.$router;
+      if (router.newRoutes) {
+        return;
+      }
+      router.newRoutes = newRoutes;
       router.addRoutes([
         {
           path: "/home-container",
@@ -83,6 +87,10 @@ export default {
           component: () =>
             import(/* webpackChunkName: "home-container" */ "./home-container"),
           children: newRoutes
+        },
+        {
+          path: "/*",
+          redirect: "/"
         }
       ]);
       console.log("addDynamicRoutes");
