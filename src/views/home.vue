@@ -68,8 +68,8 @@ export default {
           name: config.name,
           path: config.path,
           component: () =>
-            import("@/components/container/" + config.path).catch(err =>
-              import("@/views/home-error")
+            import("@/components/container/" + config.path + ".vue").catch(
+              err => import("@/views/home-error")
             ),
           meta: config.meta
         });
