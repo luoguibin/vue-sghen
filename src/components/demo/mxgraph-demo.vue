@@ -19,10 +19,12 @@ const {
   mxGeomentry,
   mxClient,
   mxCell,
+  mxImage,
   mxGeometry,
   mxEvent,
   mxRubberband,
   mxShape,
+  mxVertexHandler,
   mxConnectionConstraint,
   mxCellState,
   mxPoint,
@@ -66,6 +68,13 @@ mxShape.prototype.constraints = [
 // Edges have no connection points
 mxPolyline.prototype.constraints = null;
 
+mxVertexHandler.prototype.livePreview = true;
+mxVertexHandler.prototype.rotationEnabled = true;
+
+// Rounded edge and vertex handles
+var touchHandle = new mxImage("./static/mxgraph/images/handle-main.png", 17, 17);
+mxVertexHandler.prototype.handleImage = touchHandle;
+
 export default {
   name: "mxgraph-demo",
   data() {
@@ -76,7 +85,7 @@ export default {
         { key: "edge" },
         { key: "setValue" },
         { key: "delete" },
-        { key: "zoom"}
+        { key: "zoom" }
       ],
 
       currentCell: null
