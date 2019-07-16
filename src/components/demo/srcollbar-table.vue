@@ -1,17 +1,17 @@
 <template>
-    <div class="scrollbar-table">
-        <el-scrollbar>
-            <el-table :data="tableData" :stripe="true">
-                <el-table-column 
-                v-for="column in tableColumns" 
-                :key="column.prop" 
-                :prop="column.prop"
-                :label="column.label"
-                width="300">
-                </el-table-column>
-            </el-table>
-        </el-scrollbar>
-    </div>
+  <div class="scrollbar-table">
+    <el-scrollbar>
+      <el-table :data="tableData" :stripe="true">
+        <el-table-column
+          v-for="column in tableColumns"
+          :key="column.prop"
+          :prop="column.prop"
+          :label="column.label"
+          width="300"
+        ></el-table-column>
+      </el-table>
+    </el-scrollbar>
+  </div>
 </template>
 
 <script>
@@ -58,18 +58,20 @@ export default {
 </style>
 
 <style lang="scss">
-.el-table {
-  width: initial;
-  overflow: initial;
-
-  .el-table__header-wrapper,
-  .el-table__body-wrapper {
+.scrollbar-table {
+  .el-table {
+    width: initial;
     overflow: initial;
+
+    .el-table__header-wrapper,
+    .el-table__body-wrapper {
+      overflow: initial;
+    }
   }
-}
-.el-scrollbar {
-  .el-scrollbar__wrap {
-    overflow-x: hidden;
+  .el-scrollbar {
+    .el-scrollbar__wrap {
+      overflow-x: hidden;
+    }
   }
 }
 </style>
