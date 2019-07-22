@@ -1,34 +1,15 @@
 <script>
 import Vue from "vue";
 import Header from "./Header";
-
-const LoadingComponent = {
-  data() {
-    return {
-      height: 100
-    };
-  },
-  render(h) {
-    return h("div", {
-      style: {
-        height: this.height + "px"
-      },
-      directives: [
-        {
-          name: "loading",
-          rawName: "v-loading",
-          value: true,
-          expression: "true"
-        }
-      ]
-    });
-  }
-};
+import LoadingComp from "./components/loading-comp";
+import ErrorComp from "./components/error-comp";
 
 export default {
   name: "app",
   components: {
-    "my-header": Header
+    "my-header": Header,
+    "loading-comp": LoadingComp,
+    "error-comp": ErrorComp
   },
   data() {
     return {
@@ -39,6 +20,9 @@ export default {
 
   created() {
     window.app2 = this;
+
+    // 禁止被观察
+    this.renderData = null;
   },
 
   render(h) {
@@ -80,7 +64,7 @@ export default {
       ])
     );
     if (this.renderComp) {
-      children.push(h(this.renderComp));
+      children.push(h(this.renderComp, this.renderData));
     }
 
     return h(
@@ -99,12 +83,8 @@ export default {
      * 引入组件js文件
      */
     renderComponent(name) {
-      this.renderComp = Vue.component("loading-comp");
-      if (!this.renderComp) {
-        console.log("init loading-comp")
-        Vue.component("loading-comp", LoadingComponent);
-        this.renderComp = Vue.component("loading-comp");
-      }
+      this.renderComp = "loading-comp";
+      this.renderData = null;
 
       setTimeout(() => {
         this.loadComponent(name)
@@ -113,20 +93,9 @@ export default {
             this.renderComp = o.default;
           })
           .catch(err => {
-            this.renderComp = {
-              render(h) {
-                return h("div", [
-                  h("div", [
-                    h("span", { domProps: { innerHTML: "code:&nbsp;" } }),
-                    h("span", err.code)
-                  ]),
-                  h("div", [
-                    h("span", { domProps: { innerHTML: "msg:&nbsp;" } }),
-                    h("span", err.msg || "加载错误")
-                  ])
-                ]);
-              }
-            };
+            console.log("load error", err);
+            this.renderComp = "error-comp";
+            this.renderData = { props: { code: err.code } };
           });
       }, 500 + Math.floor(Math.random() * 2000));
     }
