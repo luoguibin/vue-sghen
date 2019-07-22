@@ -36,11 +36,11 @@ module.exports = {
 
     //忽略的打包文件
     config.externals({
-      // vue: "Vue",
-      // "vue-router": "VueRouter",
-      // vuex: "Vuex",
+      vue: "Vue",
+      "vue-router": "VueRouter",
+      vuex: "Vuex",
       axios: "axios",
-      // "element-ui": "ELEMENT"
+      "element-ui": "ELEMENT"
     });
 
     const plugins = config.plugins;

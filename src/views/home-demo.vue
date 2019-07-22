@@ -18,6 +18,7 @@
 
 <script>
 import Vue from "vue";
+import { getDemoComponent } from "../components/demo/index";
 import componentMap from "../common/demo/index";
 
 export default {
@@ -72,8 +73,7 @@ export default {
       if (compName && this.componentMap[compName] !== undefined) {
         if (!this.componentMap[compName]) {
           this.$NProgress.start();
-          import(/* webpackChunkName: "[request]" */ "@/components/demo/" +
-            compName).then(o => {
+          getDemoComponent(compName).then(o => {
             Vue.component(compName, o.default);
             this.componentMap[compName] = true;
             this.$NProgress.done();

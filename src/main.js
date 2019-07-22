@@ -4,10 +4,10 @@ import router from './router'
 import store from './store'
 import plugins from './plugins/index'
 
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+// import ElementUI from 'element-ui';
+// import 'element-ui/lib/theme-chalk/index.css';
 import './style/element-ui.css'
-Vue.use(ElementUI)
+// Vue.use(ElementUI)
 
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
