@@ -12,6 +12,8 @@ import './style/element-ui.css'
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 
+import componentMap from "./components/demo/index";
+
 Vue.config.productionTip = false
 Vue.use(plugins)
 
@@ -21,6 +23,8 @@ if (process.env.VUE_APP_SGHEN_MODE === 'prod')
 console.log(date)
 
 Vue.prototype.$NProgress = NProgress;
+Vue.prototype.$demoComponentMap = componentMap;
+
 
 import LoginDialog from "@/components/normal/login-dialog";
 Vue.component(LoginDialog.name, LoginDialog);

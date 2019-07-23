@@ -19,7 +19,6 @@
 <script>
 import Vue from "vue";
 import { getDemoComponent } from "../components/demo/index";
-import componentMap from "../common/demo/index";
 
 export default {
   name: "demo",
@@ -31,7 +30,7 @@ export default {
   },
   data() {
     return {
-      componentMap
+      componentMap: this.$demoComponentMap
     };
   },
   mounted() {

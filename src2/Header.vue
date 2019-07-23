@@ -9,6 +9,7 @@ export default {
   },
   created() {
     window.header = this;
+    console.log("header created")
   },
   render(h) {
     return h("div", [

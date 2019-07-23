@@ -30,6 +30,7 @@ export default {
     children.push(
       h("div", {}, [
         h("my-header", {
+          ref: "myHeader",
           props: { backText: this.backText },
           on: {
             back: (data, e) => {
@@ -85,8 +86,9 @@ export default {
     renderComponent(name) {
       this.renderComp = "loading-comp";
       this.renderData = null;
+      clearTimeout(this.handle);
 
-      setTimeout(() => {
+      this.handle = setTimeout(() => {
         this.loadComponent(name)
           .then(o => {
             window.testO = o;
