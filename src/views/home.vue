@@ -1,11 +1,31 @@
 <template>
-  <div class="home">
-    <ul>
-      <li v-for="menu in menus" :key="menu.key">
-        <a :href="menu.path">{{menu.name}}</a>
-      </li>
-    </ul>
-  </div>
+  <el-container class="home">
+    <!-- left nav menus -->
+    <el-aside width="200px">
+      <el-scrollbar>
+        <el-menu :default-active="activeIndex" @select="onMenuSelect">
+          <template v-for="menu in menus">
+            <el-submenu v-if="menu.submenus" :key="menu.key" :index="menu.key">
+              <template slot="title">{{menu.name}}</template>
+              <el-menu-item
+                v-for="submenu in menu.submenus"
+                :key="submenu.key"
+                :index="menu.key + '-' + submenu.key"
+              >{{submenu.name}}</el-menu-item>
+            </el-submenu>
+            <el-menu-item v-else :key="menu.key" :index="menu.key">{{menu.name}}</el-menu-item>
+          </template>
+        </el-menu>
+      </el-scrollbar>
+    </el-aside>
+
+    <el-container>
+      <el-header style="background-color: white;"></el-header>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
@@ -13,88 +33,70 @@ export default {
   name: "home",
   data() {
     return {
+      activeIndex: "",
       menus: [
-        {
-          name: "书三行",
-          key: "line3",
-          path: "./#/peotry"
-        },
-        {
-          name: "game",
-          key: "game",
-          path: "./#/game"
-        },
         {
           name: "demo示威",
           key: "demo",
-          path: "./#/demo/list"
+          submenus: []
         },
         {
-          name: "容器",
-          key: "container",
-          path: "./#/home-container"
+          name: "书三行",
+          key: "peotry"
+        },
+        {
+          name: "game",
+          key: "game"
         }
       ]
     };
   },
+
   created() {
-    this.addDynamicRoutes();
+    const object = this.$demoComponentMap,
+      submenus = this.menus[0].submenus;
+    for (const key in object) {
+      if (object.hasOwnProperty(key)) {
+        submenus.push({
+          name: key,
+          key: key
+        });
+      }
+    }
   },
+
   mounted() {
     window.home = this;
     document.body.oncontextmenu = function() {
       return false;
     };
+    this.checkRoute();
   },
-  methods: {
-    addDynamicRoutes() {
-      const routerConfigs = [
-        {
-          name: "hello0",
-          path: "hello0",
-          meta: { isAuth: true }
-        },
-        {
-          name: "hello1",
-          path: "hello1"
-        },
-        {
-          name: "hello2",
-          path: "hello2"
-        }
-      ];
-      const newRoutes = [];
-      routerConfigs.forEach(config => {
-        newRoutes.push({
-          name: config.name,
-          path: config.path,
-          component: () =>
-            import("@/components/container/" + config.path + ".vue").catch(
-              err => import("@/views/home-error")
-            ),
-          meta: config.meta
-        });
-      });
 
-      const router = this.$router;
-      if (router.newRoutes) {
-        return;
-      }
-      router.newRoutes = newRoutes;
-      router.addRoutes([
-        {
-          path: "/home-container",
-          name: "home-container",
-          component: () =>
-            import(/* webpackChunkName: "home-container" */ "./home-container"),
-          children: newRoutes
-        },
-        {
-          path: "/*",
-          redirect: "/"
+  watch: {
+    $route() {
+      this.checkRoute();
+    }
+  },
+
+  methods: {
+    checkRoute() {
+      const route = this.$route;
+      if (route.matched[1]) {
+        this.activeIndex = route.matched[1].name;
+        if (this.activeIndex === "demo") {
+          this.activeIndex += "-" + route.params.name;
         }
-      ]);
-      console.log("addDynamicRoutes");
+      }
+    },
+
+    onMenuSelect(index, indexPath) {
+      this.activeIndex = index;
+      if (indexPath[0] === "demo") {
+        this.$router.push({ path: "/home/" + indexPath[1].replace("-", "/") });
+      } else {
+        this.$router.push({ name: index });
+      }
     }
   }
 };
@@ -103,19 +105,18 @@ export default {
 <style lang="scss" scoped>
 .home {
   height: 100%;
+}
+</style>
 
-  ul {
-    display: inline-block;
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -100%);
-    list-style: none;
-    font-size: 22px;
+<style lang="scss">
+.home {
+  .el-scrollbar {
+    height: 100%;
+    background-color: #fff;
+  }
 
-    li {
-      margin: 10px 0;
-    }
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
   }
 }
 </style>

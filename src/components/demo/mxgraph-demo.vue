@@ -96,7 +96,7 @@ export default {
     window.mxGraphDemo = this;
     this.init();
 
-    console.log(mxGraphObj);
+    // console.log(mxGraphObj);
   },
   methods: {
     init() {

@@ -27,7 +27,7 @@
       >
         <div style="text-align: center">
           <span>高度</span>
-          <input readonly v-model="mainHeight">
+          <input readonly v-model="mainHeight" />
         </div>
       </div>
     </div>
@@ -52,7 +52,8 @@ export default {
 
       scrollHeight: 100,
       scrollbarPosition: "initial",
-      scrollbarTop: "0px"
+      scrollbarTop: 0,
+      scrollbarBottom: 0
     };
   },
   created() {
@@ -161,6 +162,7 @@ export default {
         }, 800);
       }
     },
+
     handleNodeExpand(data, o, view) {},
     onScroll(e) {
       const el = this.$el,
@@ -172,29 +174,36 @@ export default {
       const scrollbarPosition = this.scrollbarPosition;
 
       // ①滚动条在最顶，或展开tree某个节点，tree布局表现为默认
-      if (el.scrollTop < header.clientHeight - 20) {
+      const padding = 20;
+      if (el.scrollTop < header.clientHeight - padding) {
         this.scrollbarPosition = "initial";
         this.scrollHeight =
-          clientHeight - (header.clientHeight - el.scrollTop) - 20;
+          clientHeight - (header.clientHeight - el.scrollTop) - padding;
       } else {
         // ②隐藏header，tree布局表现为fixed
         this.scrollbarPosition = "fixed";
-        this.scrollbarTop = 20;
-        this.scrollHeight = el.clientHeight - 40;
+        const offsetTop = el.offsetTop + padding;
+        this.scrollbarTop = offsetTop + "px";
+        this.scrollHeight = el.clientHeight - padding * 2;
 
         // ③footer展现，tree布局表现为默认
         const y = el.clientHeight + el.scrollTop - footer.offsetTop;
         if (y > 0) {
-          this.scrollbarTop = -y + 20;
+          this.scrollbarPosition = "absolute";
+          // this.scrollbarTop = -y + offsetTop + "px" ;
+          this.scrollbarTop = "initial";
+          this.scrollbarBottom = padding + "px";
+        } else {
+          this.scrollbarBottom = "initial";
         }
       }
 
       // 更新滚动
-      if (scrollbarPosition !== this.scrollbarPosition) {
-        this.$nextTick(() => {
-          this.$refs.scrollbar.update();
-        });
-      }
+      // if (scrollbarPosition !== this.scrollbarPosition) {
+      this.$nextTick(() => {
+        this.$refs.scrollbar.update();
+      });
+      // }
     }
   },
   computed: {
@@ -203,8 +212,8 @@ export default {
         width: "200px",
         height: this.scrollHeight + "px",
         position: this.scrollbarPosition,
-        top: this.scrollbarTop + "px",
-        bottom: "0px"
+        top: this.scrollbarTop,
+        bottom: this.scrollbarBottom
       };
     }
   },
@@ -223,6 +232,7 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #ccc;
+  position: relative;
 }
 </style>
 
