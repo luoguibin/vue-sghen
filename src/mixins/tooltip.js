@@ -60,7 +60,7 @@ export default {
         bind() {
             let docEl = document.documentElement;
             docEl.addEventListener("mouseenter", this.onMouseenter, true);
-            docEl.addEventListener("mouseenter", this.onMouseleave, true);
+            docEl.addEventListener("mouseleave", this.onMouseleave, true);
         },
         doTpShow(el) {
             this.$set(this, "tpCtn", el.getAttribute("tooltip") || el.innerText || el.value);
