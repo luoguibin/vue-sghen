@@ -24,7 +24,10 @@ export default {
   },
   created() {
     window.homeContainer = this;
+  },
+  mounted() {
     this.newRoutes = [].concat(this.$router.newRoutes);
+    console.log(this.newRoutes);
   },
   methods: {
     onClick(path) {

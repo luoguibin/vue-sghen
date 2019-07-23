@@ -37,13 +37,14 @@ export default {
       ]
     };
   },
+  created() {
+    this.addDynamicRoutes();
+  },
   mounted() {
     window.home = this;
     document.body.oncontextmenu = function() {
       return false;
     };
-
-    this.addDynamicRoutes();
   },
   methods: {
     addDynamicRoutes() {
