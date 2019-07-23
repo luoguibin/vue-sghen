@@ -21,7 +21,7 @@
 
     <el-container>
       <el-header style="background-color: white;"></el-header>
-      <el-main>
+      <el-main style="height: 100%;">
         <router-view></router-view>
       </el-main>
     </el-container>

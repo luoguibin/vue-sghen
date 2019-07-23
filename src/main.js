@@ -12,8 +12,6 @@ import './style/element-ui.css'
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 
-import componentMap from "./components/demo/index";
-
 Vue.config.productionTip = false
 Vue.use(plugins)
 
@@ -23,6 +21,18 @@ if (process.env.VUE_APP_SGHEN_MODE === 'prod')
 console.log(date)
 
 Vue.prototype.$NProgress = NProgress;
+
+const requireComponent = require.context(
+  "./components/demo/",
+  false,
+  /\.vue$/
+);
+const componentMap = {};
+requireComponent.keys().forEach(fileName => {
+  // const componentConfig = requireComponent(fileName);
+  const componentName = fileName.replace(/^\.\//, "").replace(/\.\w+$/, "");
+  componentMap[componentName] = false;
+});
 Vue.prototype.$demoComponentMap = componentMap;
 
 
