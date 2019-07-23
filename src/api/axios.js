@@ -42,9 +42,9 @@ axios.interceptors.response.use(
         return res;
     },
     error => {
-        // Message.error({
-        //     message: msg
-        // });
+        Message.error({
+            message: error
+        });
         return Promise.reject(new Error(error));
     }
 );

@@ -7,7 +7,7 @@
       <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
         <span style="cursor: pointer;">
           <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
-          <img :src="userInfo.iconUrl" style="width: 33px; vertical-align: middle;">
+          <img :src="userInfo.iconUrl" style="width: 33px; vertical-align: middle;" />
         </span>
         <el-dropdown-menu>
           <el-dropdown-item command="personal">个人中心</el-dropdown-item>
@@ -19,7 +19,7 @@
       <el-dialog title="个人信息" :visible.sync="showUser" @open="onUserInfoDialogOpen">
         <el-form label-width="60px">
           <el-form-item label="ID" v-if="showUserInfo.token">
-            <el-input disabled="" v-model="showUserInfo.id"></el-input>
+            <el-input disabled v-model="showUserInfo.id"></el-input>
           </el-form-item>
 
           <el-form-item label="昵称">
@@ -27,7 +27,7 @@
           </el-form-item>
 
           <el-form-item label="头像">
-            <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;">
+            <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;" />
             <span v-if="showUserInfo.token">
               <el-button @click="onClickIconUpdate">更换</el-button>
               <input
@@ -36,7 +36,7 @@
                 accept="image/*"
                 @change="onIconChange"
                 v-show="false"
-              >
+              />
             </span>
           </el-form-item>
 
@@ -254,7 +254,7 @@ export default {
     },
 
     onUserInfoDialogOpen() {
-      this.oldShowUserInfo = JSON.parse(JSON.stringify(this.showUserInfo))
+      this.oldShowUserInfo = JSON.parse(JSON.stringify(this.showUserInfo));
     },
 
     onClickIconUpdate() {
@@ -317,23 +317,23 @@ export default {
       if (this.oldShowUserInfo.name !== this.showUserInfo.name) {
         if (this.showUserInfo.name.length) {
           updateUser({
-              name: this.showUserInfo.name,
-              uId: this.userInfo.id
-            }).then(resp => {
-              if (resp.data.code === 1000) {
-                this.$appTip("更新个人信息成功");
-                const info = { ...this.userInfo, name: this.showUserInfo.name };
-                this.setUserInfo(info);
-                this.showUser = false;
-              } else {
-                this.$appTip(resp.data.msg);
-              }
-            });
+            name: this.showUserInfo.name,
+            uId: this.userInfo.id
+          }).then(resp => {
+            if (resp.data.code === 1000) {
+              this.$appTip("更新个人信息成功");
+              const info = { ...this.userInfo, name: this.showUserInfo.name };
+              this.setUserInfo(info);
+              this.showUser = false;
+            } else {
+              this.$appTip(resp.data.msg);
+            }
+          });
         } else {
-          this.$message("名字不能为空")
+          this.$message("名字不能为空");
         }
       } else {
-        this.$message("个人信息未发生变化")
+        this.$message("个人信息未发生变化");
       }
     },
     updatePeotriesData(datas) {
@@ -383,23 +383,27 @@ export default {
         limit: this.limit,
         page: this.curPage,
         needComment: true
-      }).then(resp => {
-        if (resp.data.code === 1000) {
-          const data = resp.data;
-          this.curPage = data.curPage;
-          this.totalPage = data.totalPage;
-          this.totalCount = data.totalCount;
-          this.updatePeotriesData(data.data);
-          this.peotries = data.data;
+      })
+        .then(resp => {
+          if (resp.data.code === 1000) {
+            const data = resp.data;
+            this.curPage = data.curPage;
+            this.totalPage = data.totalPage;
+            this.totalCount = data.totalCount;
+            this.updatePeotriesData(data.data);
+            this.peotries = data.data;
 
-          this.$nextTick(() => {
-            const main = this.$refs.mainEl.$el;
-            main.scrollTop = bottom ? main.scrollHeight : 0;
-          });
-        } else {
-          this.$appTip(resp.data.msg);
-        }
-      });
+            this.$nextTick(() => {
+              const main = this.$refs.mainEl.$el;
+              main.scrollTop = bottom ? main.scrollHeight : 0;
+            });
+          } else {
+            this.$appTip(resp.data.msg);
+          }
+        })
+        .catch(err => {
+          this.$message.error(err);
+        });
     },
 
     onDelete(peotry) {
