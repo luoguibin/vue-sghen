@@ -51,25 +51,12 @@ export default {
       ]
     };
   },
-
-  created() {
-    const object = this.$demoComponentMap,
-      submenus = this.menus[0].submenus;
-    for (const key in object) {
-      if (object.hasOwnProperty(key)) {
-        submenus.push({
-          name: key,
-          key: key
-        });
-      }
-    }
-  },
-
   mounted() {
     window.home = this;
     document.body.oncontextmenu = function() {
       return false;
     };
+    this.loadDemoComponentNames();
     this.checkRoute();
   },
 
@@ -80,6 +67,25 @@ export default {
   },
 
   methods: {
+    loadDemoComponentNames() {
+      import("../assets/config/demo-comps.json")
+        .then(o => {
+          const object = o.default;
+          const submenus = this.menus[0].submenus;
+          for (const key in object) {
+            if (object.hasOwnProperty(key)) {
+              submenus.push({
+                name: key,
+                key: key
+              });
+            }
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
     checkRoute() {
       const route = this.$route;
       if (route.matched[1]) {

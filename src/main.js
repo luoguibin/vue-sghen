@@ -22,20 +22,6 @@ console.log(date)
 
 Vue.prototype.$NProgress = NProgress;
 
-const requireComponent = require.context(
-  "./components/demo/",
-  false,
-  /\.vue$/
-);
-const componentMap = {};
-requireComponent.keys().forEach(fileName => {
-  // const componentConfig = requireComponent(fileName);
-  const componentName = fileName.replace(/^\.\//, "").replace(/\.\w+$/, "");
-  componentMap[componentName] = false;
-});
-Vue.prototype.$demoComponentMap = componentMap;
-
-
 import LoginDialog from "@/components/normal/login-dialog";
 Vue.component(LoginDialog.name, LoginDialog);
 
