@@ -1,78 +1,23 @@
 <template>
   <el-container class="home-peotry">
-    <el-header>
-      <el-button @click="$router.go(-1)" icon="el-icon-back" circle></el-button>
-      <el-button v-if="!userInfo.token" class="float-right" @click="onShowLogin">登录</el-button>
+    <el-main ref="mainEl">
+      <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
 
-      <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
-        <span style="cursor: pointer;">
-          <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
-          <img :src="userInfo.iconUrl" style="width: 33px; vertical-align: middle;" />
-        </span>
-        <el-dropdown-menu>
-          <el-dropdown-item command="personal">个人中心</el-dropdown-item>
-          <el-dropdown-item command="peotry">创建诗词</el-dropdown-item>
-          <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-
-      <el-dialog title="个人信息" :visible.sync="showUser" @open="onUserInfoDialogOpen">
+      <el-dialog title="个人信息" :visible.sync="showUser">
         <el-form label-width="60px">
-          <el-form-item label="ID" v-if="showUserInfo.token">
+          <el-form-item label="ID" v-if="true">
             <el-input disabled v-model="showUserInfo.id"></el-input>
           </el-form-item>
 
           <el-form-item label="昵称">
-            <el-input :disabled="showUserInfo.token ? false : true" v-model="showUserInfo.name"></el-input>
+            <el-input :disabled="true" v-model="showUserInfo.name"></el-input>
           </el-form-item>
 
           <el-form-item label="头像">
             <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;" />
-            <span v-if="showUserInfo.token">
-              <el-button @click="onClickIconUpdate">更换</el-button>
-              <input
-                type="file"
-                ref="iconInput"
-                accept="image/*"
-                @change="onIconChange"
-                v-show="false"
-              />
-            </span>
-          </el-form-item>
-
-          <el-form-item v-if="showUserInfo.token">
-            <el-button type="primary" @click="onUpdateUserInfo">更新信息</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
-
-      <el-dialog title="头像更新" :visible.sync="iconDialogVisible">
-        <vue-cropper
-          ref="cropper"
-          class="cropper"
-          :img="option.img"
-          :outputType="option.outputType"
-          :info="option.info"
-          :canMoveBox="option.canMoveBox"
-          :fixedBox="option.fixedBox"
-          :original="option.original"
-          :autoCrop="option.autoCrop"
-          :autoCropWidth="option.autoCropWidth"
-          :autoCropHeight="option.autoCropHeight"
-          :maxImgSize="option.maxImgSize"
-        ></vue-cropper>
-        <el-button @click="onSubmitCropper">更新</el-button>
-      </el-dialog>
-
-      <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
-    </el-header>
-
-    <el-main ref="mainEl">
-      <!-- <el-carousel trigger="click" type="card" height="230px">
-        <el-carousel-item v-for="v in 5" :key="v">
-          <div>{{v}}</div>
-        </el-carousel-item>
-      </el-carousel>-->
 
       <div class="list" ref="listEl" @click="onClickImage($event)">
         <peotry
@@ -118,43 +63,28 @@
 import { mapState, mapActions } from "vuex";
 import Peotry from "@/components/peotry/peotry";
 import PeotryCreate from "@/components/peotry/peotry-create";
-import { VueCropper } from "vue-cropper";
 import {
-  updateUser,
   queryUsers,
   queryPeotries,
   deletePeotry,
   createComment,
-  deleteComment,
-  uploadFiles
+  deleteComment
 } from "../api";
-import { baseUrl } from "../api/config";
 import { resetUserIconUrl } from "@/common/utils/icon-util";
 
 export default {
   name: "HomePeotry",
   components: {
     peotry: Peotry,
-    "peotry-create": PeotryCreate,
-    "vue-cropper": VueCropper
+    "peotry-create": PeotryCreate
   },
   data() {
     return {
-      baseUrl,
-      account: {
-        uId: 15625045984,
-        pw: "123456"
-      },
       userMap: {},
 
       showCreate: false,
       showUser: false,
-      showUserInfo: {
-        id: 0,
-        name: "",
-        iconUrl: "",
-        token: ""
-      },
+      showUserInfo: {},
       showImage: false,
       showImageUrl: "",
       updatePeotry: null,
@@ -165,19 +95,7 @@ export default {
       totalCount: 0,
       peotries: [],
 
-      iconDialogVisible: false,
-      option: {
-        img: "",
-        original: true, // 上传图片按照原始比例渲染
-        outputType: "png",
-        fixedBox: true, // 固定截图框大小 不允许改变
-        canMoveBox: false,
-        autoCrop: true,
-        autoCropWidth: 128, // 只有自动截图开启 宽度高度才生效
-        autoCropHeight: 128,
-        info: false, // 隐藏裁剪框大小信息
-        maxImgSize: 300
-      }
+      iconDialogVisible: false
     };
   },
   provide() {
@@ -191,7 +109,8 @@ export default {
   },
   computed: {
     ...mapState({
-      userInfo: state => state.user
+      userInfo: state => state.user,
+      peotryCreate: state => state.peotryCreate
     })
   },
   watch: {
@@ -222,120 +141,22 @@ export default {
           }
         }
       }
+    },
+    peotryCreate() {
+      this.showCreate = true;
     }
   },
   methods: {
-    handleCommand(key) {
-      switch (key) {
-        case "peotry":
-          this.showCreate = true;
-          break;
-        case "personal":
-          this.showUser = true;
-          this.showUserInfo = this.userMap[this.userInfo.id];
-          break;
-        case "logout":
-          this.setUserInfo();
-          break;
-        default:
-          break;
-      }
-    },
     handleCurrentChange(val) {
       this.curPage = val;
       this.getPeotries();
     },
+
     handleSizeChange(val) {
       this.limit = val;
       this.getPeotries();
     },
-    onShowLogin() {
-      this.showLogin();
-    },
 
-    onUserInfoDialogOpen() {
-      this.oldShowUserInfo = JSON.parse(JSON.stringify(this.showUserInfo));
-    },
-
-    onClickIconUpdate() {
-      this.$refs.iconInput.click();
-    },
-    /**
-     * 打开图片选择
-     */
-    onIconChange(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) {
-        return;
-      }
-
-      const reader = new FileReader(reader);
-      reader.onload = e => {
-        this.option.img = reader.result;
-        this.iconDialogVisible = true;
-      };
-      reader.readAsDataURL(file);
-    },
-    onSubmitCropper() {
-      this.$refs.cropper.getCropBlob(data => {
-        const file = new File([data], "example.png", {
-          type: "image/png",
-          lastModified: Date.now()
-        });
-        const formData = new FormData();
-        formData.append("file", file);
-
-        uploadFiles({ pathType: "normal" }, formData)
-          .then(resp => {
-            if (resp.data.code !== 1000) {
-              this.$appTip(resp.data.msg);
-              return;
-            }
-
-            const iconUrl = resp.data.data[0];
-            updateUser({
-              iconUrl,
-              uId: this.userInfo.id
-            }).then(resp => {
-              if (resp.data.code === 1000) {
-                this.$appTip("更新头像成功");
-                const info = { ...this.userInfo, iconUrl: iconUrl };
-                resetUserIconUrl(info);
-                this.setUserInfo(info);
-                this.iconDialogVisible = false;
-              } else {
-                this.$appTip(resp.data.msg);
-              }
-            });
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      });
-    },
-    onUpdateUserInfo() {
-      if (this.oldShowUserInfo.name !== this.showUserInfo.name) {
-        if (this.showUserInfo.name.length) {
-          updateUser({
-            name: this.showUserInfo.name,
-            uId: this.userInfo.id
-          }).then(resp => {
-            if (resp.data.code === 1000) {
-              this.$appTip("更新个人信息成功");
-              const info = { ...this.userInfo, name: this.showUserInfo.name };
-              this.setUserInfo(info);
-              this.showUser = false;
-            } else {
-              this.$appTip(resp.data.msg);
-            }
-          });
-        } else {
-          this.$message("名字不能为空");
-        }
-      } else {
-        this.$message("个人信息未发生变化");
-      }
-    },
     updatePeotriesData(datas) {
       const idsSet = new Set();
       datas.forEach(peotry => {
@@ -378,6 +199,7 @@ export default {
         });
       }
     },
+
     getPeotries(bottom) {
       queryPeotries({
         limit: this.limit,
@@ -422,10 +244,12 @@ export default {
         }
       });
     },
+
     onUpdate(peotry) {
       if (!peotry || !peotry.id) return;
       this.updatePeotry = peotry;
     },
+
     onPeotryClose(createValue) {
       this.updatePeotry = null;
       this.showCreate = false;
@@ -465,6 +289,7 @@ export default {
         }
       });
     },
+
     addComment(peotryId, comment) {
       const peotry = this.peotries.find(o => o.id === peotryId);
       if (peotry) {
@@ -474,6 +299,7 @@ export default {
         peotry.comments.push(newComment);
       }
     },
+
     spliceComment(peotryId, id) {
       this.peotries.forEach(peotry => {
         if (peotry.id === peotryId && peotry.comments) {
@@ -513,6 +339,7 @@ export default {
       }
       this.showImage = this.showImageUrl ? true : false;
     },
+
     ...mapActions({
       setUserInfo: "setUser",
       showLogin: "showLogin"
@@ -525,14 +352,6 @@ export default {
 .home-peotry {
   height: 100%;
   overflow: hidden;
-
-  .el-header {
-    padding-top: 12px;
-
-    .float-right {
-      float: right;
-    }
-  }
 
   .el-main {
     .list {
@@ -557,12 +376,6 @@ export default {
       }
     }
   }
-
-  .cropper {
-    display: inline-block;
-    width: 300px;
-    height: 300px;
-  }
 }
 </style>
 
@@ -572,15 +385,6 @@ export default {
     .el-dialog__body {
       text-align: center !important;
     }
-  }
-
-  .user-login {
-    text-align: center;
-  }
-
-  .upload-icon {
-    display: inline-block;
-    margin-left: 10px;
   }
 
   .el-pagination {

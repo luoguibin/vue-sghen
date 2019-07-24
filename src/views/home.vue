@@ -20,7 +20,9 @@
     </el-aside>
 
     <el-container>
-      <el-header style="background-color: white;"></el-header>
+      <el-header style="background-color: white; line-height: 60px;">
+        <home-header></home-header>
+      </el-header>
       <el-main style="height: 100%;">
         <router-view></router-view>
       </el-main>
@@ -29,8 +31,15 @@
 </template>
 
 <script>
+import HomeHeader from "./home-header";
+
 export default {
   name: "home",
+
+  components: {
+    "home-header": HomeHeader // () => import("./home-header")
+  },
+
   data() {
     return {
       activeIndex: "",

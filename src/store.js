@@ -11,7 +11,8 @@ export default new Vuex.Store({
             iconUrl: "",
             token: ""
         },
-        loginCount: 0
+        loginCount: 0,
+        peotryCreate: 0
     },
     mutations: {
         setUser(state, user) {
@@ -30,6 +31,9 @@ export default new Vuex.Store({
         },
         showLogin(state) {
             state.loginCount++;
+        },
+        showPeotryCreate(state) {
+            state.peotryCreate++;
         }
     },
     actions: {
@@ -38,6 +42,9 @@ export default new Vuex.Store({
         },
         showLogin(context) {
             context.commit("showLogin")
+        },
+        showPeotryCreate(context) {
+            context.commit("showPeotryCreate")
         }
     },
 })
