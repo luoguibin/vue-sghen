@@ -11,14 +11,6 @@ module.exports = {
       entry: './src/main',
       template: './public/index.html',
       filename: 'index.html'
-    },
-    app2: {
-      entry: './src2/main',
-    },
-    app3: {
-      entry: './src3/main',
-      template: './public/index3.html',
-      filename: 'index3.html'
     }
   },
 
@@ -40,7 +32,8 @@ module.exports = {
       "vue-router": "VueRouter",
       vuex: "Vuex",
       axios: "axios",
-      "element-ui": "ELEMENT"
+      "element-ui": "ELEMENT",
+      three: "THREE",
     });
 
     const plugins = config.plugins;

@@ -9,6 +9,7 @@ import ViewControl from "./view-control";
 
 class GameMain {
 
+    el = null;
     width = 1024;
     height = 768;
 
@@ -77,13 +78,25 @@ class GameMain {
         }
         this.scene = scene;
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, autoClear: true });
         renderer.shadowMap.enabled = true;
         this.renderer = renderer;
 
         const camera = new THREE.PerspectiveCamera(45);
         camera.position.set(0, 5, 20);
         this.camera = camera;
+
+        window.addEventListener("resize", e => {
+            const width = this.el.clientWidth;
+            const height = this.el.clientHeight;
+            
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(width, height);
+            
+            this.width = width;
+            this.height = height;
+        })
 
         // const gridHelper = new THREE.GridHelper(200, 100, 0x0000ff, 0x808080);
         // this.scene.add(gridHelper);
@@ -373,6 +386,7 @@ class GameMain {
         }
         el.appendChild(statsEl);
 
+        this.el = el;
         this.width = width;
         this.height = height;
         // this.composer.setSize(width, height);
@@ -432,7 +446,9 @@ class GameMain {
 
         this.renderer = null;
         this.scene = null;
-        this.dom = null;
+        this.el = null;
+
+        window.location.reload();
     }
 }
 

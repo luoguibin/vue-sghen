@@ -56,7 +56,7 @@ class GameOrder {
                 msgBox.addMsg("[世界]" + msgOrder.fromName + ": " + msgOrder.msg);
                 break;
             case 13001:
-                msgBox.$appTip(msgOrder.msg)
+                msgBox.$message(msgOrder.msg)
                 break;
             case 13002:
                 if (msgOrder.toId === myId)

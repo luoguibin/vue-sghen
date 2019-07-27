@@ -1,27 +1,31 @@
 <template>
   <div class="msg-box" @click="onNothing" @mousedown="onNothing" @touchstart="onNothing">
     <div class="msg-type">
-      <span v-for="(item, key) in msgMap" :key="key" @click="onSelectMsgType(key)" :class="{'msg-type-select': msgKey === key}">
-        {{item.name}}
-      </span>
+      <span
+        v-for="(item, key) in msgMap"
+        :key="key"
+        @click="onSelectMsgType(key)"
+        :class="{'msg-type-select': msgKey === key}"
+      >{{item.name}}</span>
 
-      <span @click="onToogle()" class="msg-box-toogle">{{isShrink ? '+' : '-'}}</span>
+      <span
+        @click="onToogle()"
+        :class="['msg-box-toogle', isShrink ? 'el-icon-plus' : 'el-icon-minus']"
+      ></span>
     </div>
 
     <div class="msg-content" ref="msgContent">
-      <p v-for="(data, index) in mMsg.datas" :key="index">
-        {{data}}
-      </p>
+      <p v-for="(data, index) in mMsg.datas" :key="index">{{data}}</p>
     </div>
 
-    <input type="text" class="msg-input" v-model="msgInput" @keyup.enter="onSend()" />
+    <el-input :maxlength="200" v-model="msgInput" @keyup.native.enter="onSend()"></el-input>
   </div>
 </template>
 
 <script>
-import GameWS from "@/common/game/game-ws";
-import GameScene from "@/common/game/game-scene";
-import OrderCenter from "@/common/game/order-center";
+import GameWS from "@/common/game-ws";
+import GameScene from "@/common/game-scene";
+import OrderCenter from "@/common/order-center";
 
 export default {
   name: "MsgBox",
@@ -85,9 +89,9 @@ export default {
         el = this.$el;
       this.isShrink = !isShrink;
       if (isShrink) {
-        el.style.height = "200px";
+        el.style.height = "250px";
       } else {
-        el.style.height = "70px";
+        el.style.height = "80px";
       }
     },
 
@@ -117,16 +121,16 @@ export default {
 
 <style scoped>
 .msg-box {
-  width: 300px;
+  width: 350px;
   height: 200px;
   position: absolute;
   bottom: 0;
   left: 0;
   display: flex;
   flex-direction: column;
-  background-color: rgba(255, 255, 0, 0.3);
-  border: 1px solid #ffc380;
-  border-top-right-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid white;
+  border-top-right-radius: 5px;
   box-sizing: border-box;
   z-index: 100;
   transition-property: height;
@@ -135,19 +139,23 @@ export default {
 
 .msg-type {
   overflow: hidden;
+  line-height: 24px;
   word-break: none;
   border-radius: inherit;
-  border-bottom: 1px solid #ffc380;
+  border-bottom: 1px solid white;
 }
 .msg-type span {
+  display: inline-block;
   padding: 3px 5px;
   cursor: pointer;
 }
 .msg-type .msg-type-select {
-  background-color: #ffc380;
+  background-color: white;
 }
 .msg-type .msg-box-toogle {
   float: right;
+  font-size: 14px;
+  margin-top: 5px;
 }
 
 .msg-content {
@@ -160,11 +168,5 @@ export default {
   margin-bottom: 3px;
   word-break: break-all;
   word-wrap: break-word;
-}
-
-.msg-input {
-  height: 30px;
-  width: 100%;
-  box-sizing: border-box;
 }
 </style>

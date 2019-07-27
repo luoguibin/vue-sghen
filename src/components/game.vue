@@ -14,26 +14,28 @@
       @mousedown="onNothing"
       @touchstart="onNothing"
     >
-      <button @click.stop="onShowPlayerPlane()">人物</button>
-      <button @click.stop="onDrug()">药物</button>
-      <button @click.stop="onSkill(0)">单伤1</button>
-      <button @click.stop="onSkill(2)">单伤2</button>
-      <button @click.stop="onSkill(4002)">群伤1</button>
+      <el-button-group>
+        <el-button @click.stop="onShowPlayerPlane()">人物</el-button>
+        <el-button @click.stop="onDrug()">药物</el-button>
+        <el-button @click.stop="onSkill(0)">单伤1</el-button>
+        <el-button @click.stop="onSkill(2)">单伤2</el-button>
+        <el-button @click.stop="onSkill(4002)">群伤1</el-button>
+      </el-button-group>
     </div>
 
     <!-- exit -->
-    <span class="game-close" @click.stop="onCloseOrOpen()">×</span>
+    <el-button class="game-close" @click.stop="onCloseOrOpen()" icon="el-icon-close"></el-button>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex";
-import PlayerPanel from "@/components/game/player-panel";
-import MsgBox from "@/components/game/msg-box";
+import PlayerPanel from "@/components/player-panel";
+import MsgBox from "@/components/msg-box";
 
-import GameScene from "@/common/game/game-scene";
-import GameWS from "@/common/game/game-ws";
-import OrderCenter from "@/common/game/order-center";
+import GameScene from "@/common/game-scene";
+import GameWS from "@/common/game-ws";
+import OrderCenter from "@/common/order-center";
 
 export default {
   name: "game",
@@ -41,6 +43,7 @@ export default {
     "player-panel": PlayerPanel,
     "msg-box": MsgBox
   },
+
   data() {
     return {
       isReady: false,
@@ -50,34 +53,43 @@ export default {
       }
     };
   },
+
   mounted() {
-    window.gameEl = this;
+    window.game = this;
     this.checkLoginGame();
+    document.oncontextmenu = function(e) {
+      return false;
+    };
   },
+
+  computed: {
+    ...mapState({
+      userInfo: state => state.userInfo
+    })
+  },
+
   methods: {
     onNothing(e) {
       e.stopPropagation();
       e.preventDefault();
     },
+
     checkLoginGame() {
-      const token = this.userInfo.token;
-      if (token) {
-        GameWS.connect(token);
-        GameScene.initDom(this.$el, flag => {
-          this.$NProgress.done();
-          if (flag) {
-            this.isReady = true;
-          } else {
-            this.$appTip("load failed");
-          }
-        });
-      } else {
-        this.showLogin();
-      }
+      GameWS.connect(this.userInfo.token);
+      GameScene.initDom(this.$el, flag => {
+        this.$NProgress.done();
+        if (flag) {
+          this.isReady = true;
+        } else {
+          this.$message("load failed");
+        }
+      });
     },
+
     onShowPlayerPlane() {
       GameScene.playerPanel.showPlayer(GameScene.myModel.userData);
     },
+
     onDrug() {
       GameWS.sendOrder({
         order: 31000,
@@ -85,6 +97,7 @@ export default {
         fromId: GameScene.myModel.userData.id
       });
     },
+
     onSkill(id) {
       GameWS.sendOrder({
         order: 21000 + id,
@@ -97,29 +110,22 @@ export default {
         }
       });
     },
+
     onCloseOrOpen() {
-      GameWS.release();
-      this.$router.replace("/");
+      this.$confirm("是否退出游戏？", "系统通知", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消"
+      }).then(() => {
+        GameWS.release();
+        this.setUserInfo();
+      });
     },
+
     ...mapActions({
-      setUserInfo: "setUser",
-      showLogin: "showLogin"
+      setUserInfo: "setUserInfo"
     })
   },
-  watch: {
-    userInfo() {
-      if (this.userInfo.token) {
-        this.checkLoginGame();
-      } else {
-        console.log("game watch userinfo null");
-      }
-    }
-  },
-  computed: {
-    ...mapState({
-      userInfo: state => state.user
-    })
-  },
+
   beforeDestroy() {
     GameScene.release();
   }
@@ -140,15 +146,16 @@ export default {
   left: 50%;
   padding: 10px;
   transform: translate(-50%, 0);
-  border: 1px solid gray;
-  background-color: darksalmon;
 }
 
 .game-close {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 0;
+  right: 0;
   z-index: 120;
-  cursor: pointer;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #148acf;
 }
 </style>
