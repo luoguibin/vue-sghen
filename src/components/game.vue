@@ -135,8 +135,8 @@ export default {
 <style scoped>
 .game {
   height: 100%;
-  min-width: 1024px;
-  min-height: 768px;
+  min-width: 640px;
+  min-height: 480px;
   overflow: hidden;
 }
 

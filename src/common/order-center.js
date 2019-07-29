@@ -4,7 +4,7 @@ import MapCenter from "./map-center";
 class GameOrder {
 
     dealOrder(order) {
-        console.log(order);
+        console.log(JSON.parse(JSON.stringify(order)));
 
         const type = order.order;
         switch (type - type % 10000) {
@@ -96,14 +96,14 @@ class GameOrder {
     }
 
     _dealOrderAction(order) {
-        const toPoint = order.data,
+        const path = order.data,
             type = order.order;
         switch (type) {
             case 31000:
                 GameScene.takeDrug(order.fromId, order.data);
                 break;
             case 32000:
-                this.actionMove(GameScene.modelMap[order.fromId], toPoint);
+                this.actionMove(GameScene.modelMap[order.fromId], path);
                 break;
             case 32002:
                 GameScene.removePlayer(order.data);
@@ -116,10 +116,9 @@ class GameOrder {
     /**
      * action move
      * @param {THREE.Object3D} model 
-     * @param {*} toPoint 
+     * @param {*} path 
      */
-    actionMove(model, toPoint) {
-        const path = MapCenter.findPath(model.position, toPoint);
+    actionMove(model, path) {
         model.path = path;
         if (model.moveTween) {
             model.moveTween.stop();
@@ -152,8 +151,13 @@ class GameOrder {
         model.preRobotRotateY = curRotateY;
         toPoint.y = 0;
 
+        const userData = model.userData;
+        const speedDistance = distance / userData.speed;
+        console.log(speedDistance, distance)
+        const playTime = model.moveMode === "Running" ? speedDistance * 3000 : distance * 200;
+
         model.moveTween = new TWEEN.Tween(point)
-            .to(toPoint, model.moveMode === "Running" ? distance * 100 : distance * 250)
+            .to(toPoint, playTime)
             .onUpdate(() => {
                 MapCenter.updateWalkingHeight(model.position);
             })

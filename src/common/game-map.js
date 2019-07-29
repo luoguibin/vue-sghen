@@ -6,6 +6,7 @@ class MapManager {
     mixerMap = {};
 
     constructor() {
+        console.log("MapManager constructor")
         window.gameMap = this;
     }
 

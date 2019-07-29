@@ -89,11 +89,11 @@ class GameMain {
         window.addEventListener("resize", e => {
             const width = this.el.clientWidth;
             const height = this.el.clientHeight;
-            
+
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(width, height);
-            
+
             this.width = width;
             this.height = height;
         })
@@ -112,11 +112,13 @@ class GameMain {
         viewControl.setCall(ViewControl.CALL_UP, (e, type) => {
             let object = e.object;
             if (type === 0) {
+                const model = this.modelMap[this.myModel.userData.id];
+                const path = MapCenter.findPath(model.position, e.point);
                 GameWS.sendOrder({
                     order: 32000,
                     fromType: 10000,
                     fromId: this.myModel.userData.id,
-                    data: e.point
+                    data: path
                 });
             } else {
                 if (object.name === "floor") return;
@@ -180,25 +182,26 @@ class GameMain {
                 });
                 this._addMixer(model, gltf.animations);
 
-                const sphere = new THREE.SphereBufferGeometry(2, 16, 16),
-                    material = new THREE.MeshBasicMaterial({
-                        map: new THREE.CanvasTexture(this.newCanvas()),
-                        transparent: true,
-                        blending: THREE.AdditiveBlending
-                    }),
-                    mesh = new THREE.Mesh(sphere, material);
-                material.opacity = 0.5;
-                mesh.scale.y = 1.5;
-                mesh.position.y = 2;
-                const obj = { r: 0 };
-                new TWEEN.Tween(obj)
-                    .to({ r: Math.PI * 2 }, 5000)
-                    .onUpdate(() => {
-                        mesh.rotateY(Math.PI / 90);
-                    })
-                    .repeat(Infinity)
-                    .start();
-                model.add(mesh);
+                // 能量罩
+                // const sphere = new THREE.SphereBufferGeometry(2, 16, 16),
+                //     material = new THREE.MeshBasicMaterial({
+                //         map: new THREE.CanvasTexture(this.newCanvas()),
+                //         transparent: true,
+                //         blending: THREE.AdditiveBlending
+                //     }),
+                //     mesh = new THREE.Mesh(sphere, material);
+                // material.opacity = 0.5;
+                // mesh.scale.y = 1.5;
+                // mesh.position.y = 2;
+                // const obj = { r: 0 };
+                // new TWEEN.Tween(obj)
+                //     .to({ r: Math.PI * 2 }, 5000)
+                //     .onUpdate(() => {
+                //         mesh.rotateY(Math.PI / 90);
+                //     })
+                //     .repeat(Infinity)
+                //     .start();
+                // model.add(mesh);
                 addSprites(model, { x: 0, y: 2, z: 0, m: 3 });
 
 
@@ -440,12 +443,14 @@ class GameMain {
         cancelAnimationFrame(this.handle);
 
         this.isInit = false;
-        this.renderer.clear(true, true, true);
-        this.renderer.domElement.remove();
-        this.renderer.dispose();
+        if (this.renderer) {
+            this.renderer.clear(true, true, true);
+            this.renderer.domElement.remove();
+            this.renderer.dispose();
 
-        this.renderer = null;
-        this.scene = null;
+            this.renderer = null;
+            this.scene = null;
+        }
         this.el = null;
 
         window.location.reload();

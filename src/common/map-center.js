@@ -131,7 +131,7 @@ class MapManager {
 
             // test z 0
             const vertices = geometry.attributes.position.array;
-            let val = 0, unit = 0.3, count = 0;
+            let val = 0, unit = 0.2, count = 0;
             for (let l = vertices.length, i = 0; i < l; i += 3) {
                 count++;
                 if (count >= 300) {
@@ -203,14 +203,15 @@ class MapManager {
 
         const grid = new PathF.Grid(this.mapMatrix),
             finder = new PathF.AStarFinder({
+                heuristic: PathF.Heuristic.octile,
                 allowDiagonal: true,
                 dontCrossCorners: true
             }),
             path = finder.findPath(fromX, fromZ, toX, toZ, grid);
         if (path.length === 0) return [];
-
-        const newPath = PathF.Util.compressPath(path),
-            // newPath = PathF.Util.smoothenPath(grid, newPath_),
+            
+        // const newPath = PathF.Util.compressPath(path),
+        const newPath = PathF.Util.smoothenPath(grid, path),
             hUnit = this.hUnit,
             pointArray = [];
         newPath.forEach((point, i) => {
@@ -294,6 +295,8 @@ class MapManager {
 }
 
 export default new MapManager();
+
+// 地图信息应从服务器中拉取一份本地保存
 
 const MapTreeInfos = [
     {
