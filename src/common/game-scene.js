@@ -1,6 +1,7 @@
 import MapCenter from "./map-center";
 import OrderCenter from "./order-center";
 import GameWS from "./game-ws";
+import { FireworkCenter } from "./firework-center";
 import {
     newSpriteCanvas,
     addSprites
@@ -268,6 +269,10 @@ class GameMain {
         }
     }
 
+    showFireWork(id) {
+        FireworkCenter.showFireWork(this.scene, id);
+    }
+
     /**
      * show damage
      * @param {*} id 
@@ -303,7 +308,7 @@ class GameMain {
     newCanvasText(damage, add) {
         const canvas = document.createElement('canvas'),
             ctx = canvas.getContext("2d");
-        ctx.font = "blod 20px Arial";
+        ctx.font = "20px Arial";
         const metrics = ctx.measureText(damage);
         canvas.width = 128;
         canvas.height = 32;
@@ -349,10 +354,21 @@ class GameMain {
         gradient.addColorStop(0.85, `rgba(${THREE.Math.randInt(0, 255)},${THREE.Math.randInt(0, 255)},${THREE.Math.randInt(0, 255)},0.7)`);
         gradient.addColorStop(1, 'rgba(0,0,0,1)');
 
-        context.clearRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = gradient;
         context.fillRect(0, 0, canvas.width, canvas.height);
 
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < imageData.data.length; i += 4) {
+            if (imageData.data[i] === 0 &&
+                imageData.data[i] === imageData.data[i + 1] &&
+                imageData.data[i] === imageData.data[i + 2]) {
+                imageData.data[i] = 0;
+                imageData.data[i + 1] = 0;
+                imageData.data[i + 2] = 0;
+                imageData.data[i + 3] = 0;
+            }
+        }
+        context.putImageData(imageData, 0, 0);
         return canvas;
     }
 

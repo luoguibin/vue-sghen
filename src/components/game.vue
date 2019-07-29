@@ -15,6 +15,11 @@
       @touchstart="onNothing"
     >
       <el-button-group>
+        <el-button @click.stop="showFireWork(0)">烟花0</el-button>
+        <el-button @click.stop="showFireWork(1)">烟花1</el-button>
+      </el-button-group>
+      <br/>
+      <el-button-group>
         <el-button @click.stop="onShowPlayerPlane()">人物</el-button>
         <el-button @click.stop="onDrug()">药物</el-button>
         <el-button @click.stop="onSkill(0)">单伤1</el-button>
@@ -109,6 +114,10 @@ export default {
           skillId: 21000 + id
         }
       });
+    },
+
+    showFireWork(id) {
+      GameScene.showFireWork(id);
     },
 
     onCloseOrOpen() {
