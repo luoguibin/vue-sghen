@@ -12,7 +12,7 @@ export default {
   name: "app",
   components: {
     login: () => import("./components/login"),
-    game: () => import("./components/game")
+    game: () => import(/* webpackChunkName: "game" */"./components/game")
   },
 
   data() {

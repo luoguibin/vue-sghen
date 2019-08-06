@@ -35,9 +35,6 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import PlayerPanel from "@/components/player-panel";
-import MsgBox from "@/components/msg-box";
-
 import GameScene from "@/common/game-scene";
 import GameWS from "@/common/game-ws";
 import OrderCenter from "@/common/order-center";
@@ -45,8 +42,8 @@ import OrderCenter from "@/common/order-center";
 export default {
   name: "game",
   components: {
-    "player-panel": PlayerPanel,
-    "msg-box": MsgBox
+    "player-panel": () => import(/* webpackChunkName: "player-panel" */"@/components/player-panel"),
+    "msg-box": () => import(/* webpackChunkName: "msg-box" */"@/components/msg-box")
   },
 
   data() {
