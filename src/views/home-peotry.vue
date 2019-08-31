@@ -1,47 +1,55 @@
 <template>
   <el-container class="home-peotry">
     <el-main ref="mainEl">
-      <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
+      <el-scrollbar>
+        <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
 
-      <el-dialog title="个人信息" :visible.sync="showUser">
-        <el-form label-width="60px">
-          <el-form-item label="ID" v-if="true">
-            <el-input disabled v-model="showUserInfo.id"></el-input>
-          </el-form-item>
+        <el-dialog title="个人信息" :visible.sync="showUser">
+          <el-form label-width="60px">
+            <el-form-item label="ID" v-if="true">
+              <el-input disabled v-model="showUserInfo.id"></el-input>
+            </el-form-item>
 
-          <el-form-item label="昵称">
-            <el-input :disabled="true" v-model="showUserInfo.name"></el-input>
-          </el-form-item>
+            <el-form-item label="昵称">
+              <el-input :disabled="true" v-model="showUserInfo.name"></el-input>
+            </el-form-item>
 
-          <el-form-item label="头像">
-            <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;" />
-          </el-form-item>
-        </el-form>
-      </el-dialog>
+            <el-form-item label="头像">
+              <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;" />
+            </el-form-item>
+          </el-form>
+        </el-dialog>
 
-      <div class="list" ref="listEl" @click="onClickImage($event)">
-        <peotry
-          v-for="(peotry, index) in peotries"
-          :key="peotry.id"
-          :peotry="peotry"
-          class="peotry"
-          @on-delete="onDelete"
-          @on-update="onUpdate"
-          @on-comment="onComment"
-          @on-comment-delete="onCommentDelete"
+        <div class="list" ref="listEl" @click="onClickImage($event)">
+          <peotry
+            v-for="(peotry, index) in peotries"
+            :key="peotry.id"
+            :peotry="peotry"
+            class="peotry"
+            @on-delete="onDelete"
+            @on-update="onUpdate"
+            @on-comment="onComment"
+            @on-comment-delete="onCommentDelete"
+          >
+            <template>{{(curPage - 1) * limit + index + 1}}</template>
+          </peotry>
+        </div>
+
+        <el-dialog
+          title="图片"
+          :visible.sync="showImage"
+          class="show-image"
+          :show-close="false"
+          center
         >
-          <template>{{(curPage - 1) * limit + index + 1}}</template>
-        </peotry>
-      </div>
-
-      <el-dialog title="图片" :visible.sync="showImage" class="show-image" :show-close="false" center>
-        <el-image :src="showImageUrl">
-          <div slot="error" class="image-error-slot">
-            <i class="el-icon-picture-outline"></i>
-            <p>图片加载失败</p>
-          </div>
-        </el-image>
-      </el-dialog>
+          <el-image :src="showImageUrl">
+            <div slot="error" class="image-error-slot">
+              <i class="el-icon-picture-outline"></i>
+              <p>图片加载失败</p>
+            </div>
+          </el-image>
+        </el-dialog>
+      </el-scrollbar>
     </el-main>
 
     <el-footer height="auto">
@@ -354,6 +362,12 @@ export default {
   overflow: hidden;
 
   .el-main {
+    height: 100%;
+
+    .el-scrollbar {
+      background-color: transparent;
+    }
+
     .list {
       // overflow-y: auto;
       max-width: 500px;
