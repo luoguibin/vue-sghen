@@ -48,10 +48,10 @@ export default {
       signUpValue: false,
       inRequest: false,
       account: {
-        uId: 15625045984,
+        uId: null,
         name: "",
-        pw: "123456",
-        pw2: "123456"
+        pw: "",
+        pw2: ""
       },
       formRules: {
         uId: [

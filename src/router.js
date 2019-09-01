@@ -16,17 +16,12 @@ const router = new Router({
       path: "/home",
       name: "home",
       component: Home,
+      redirect: "/home/peotry",
       children: [
         {
           path: "peotry",
           name: "peotry",
           component: () => import(/* webpackChunkName: "home-peotry" */ "./views/home-peotry")
-        },
-        {
-          path: "game",
-          // alias: "/Game",  // 别名，可为数组
-          name: "game",
-          component: () => import(/* webpackChunkName: "home-game" */ "./views/home-game")
         },
         {
           path: "demo/:name",

@@ -316,9 +316,9 @@ export default {
       if (imageObj && imageObj.count) {
         return JSON.parse(imageObj.images).map(v => {
           if (v.indexOf(".") === 0) {
-            return this.baseUrl + v.substr(1);
+            return "./images/" + v.substr(1);
           } else {
-            return this.baseUrl + "/" + v;
+            return "./images/" + v;
           }
         });
       } else {

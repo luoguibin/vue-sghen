@@ -52,10 +52,6 @@ export default {
         {
           name: "书三行",
           key: "peotry"
-        },
-        {
-          name: "game",
-          key: "game"
         }
       ]
     };
