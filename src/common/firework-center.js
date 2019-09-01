@@ -9,7 +9,7 @@ export const FireworkCenter = {
                 model.add(sprite);
             }
         } else if (id === 1) {
-            this.newFireWorkByWord(model, "乐");
+            this.newFireWorkByWord(model, "魏");
         }
     },
 
@@ -24,7 +24,7 @@ export const FireworkCenter = {
 
     attachWordFireWork(sprite, model, point) {
         point.z = point.y;
-        point.y = 20;
+        point.y = 30;
 
         point.x /= 10;
         point.z /= 10;
@@ -146,7 +146,7 @@ export const FireworkCenter = {
             ctx = canvas.getContext("2d");
         const width = 128,
             height = 128,
-            unit = 7;
+            unit = 4;
         canvas.width = width;
         canvas.height = height;
         ctx.font = "100px Arial";

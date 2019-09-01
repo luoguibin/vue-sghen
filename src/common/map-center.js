@@ -71,7 +71,7 @@ class MapManager {
 
     _initLights() {
         return new Promise(function (resolve, reject) {
-            const sunLight = new THREE.DirectionalLight(0x999999),
+            const sunLight = new THREE.DirectionalLight(0x333333),
                 shadow = sunLight.shadow,
                 camera = shadow.camera;
 

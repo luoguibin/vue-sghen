@@ -28,8 +28,11 @@ class GameMain {
     }
 
     init(data) {
+        console.log("data.mapId", data.mapId)
         MapCenter.loadMapData(data.mapId)
             .then(mesh2es => {
+                console.log(mesh2es);
+
                 this._newPlayer(data, model => {
                     const object = this.meshObject;
                     mesh2es.forEach(meshes => {
@@ -75,7 +78,7 @@ class GameMain {
             return scene;
         } else {
             scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0xa5a5a5, 20, 100);
+            scene.fog = new THREE.Fog(0x444444, 20, 100);
         }
         this.scene = scene;
 
