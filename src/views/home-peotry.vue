@@ -202,7 +202,7 @@ export default {
             });
             this.$forceUpdate();
           } else {
-            this.$appTip(resp.data.msg);
+            this.$message(resp.data.msg);
           }
         });
       }
@@ -228,7 +228,7 @@ export default {
               main.scrollTop = bottom ? main.scrollHeight : 0;
             });
           } else {
-            this.$appTip(resp.data.msg);
+            this.$message(resp.data.msg);
           }
         })
         .catch(err => {
@@ -241,14 +241,14 @@ export default {
 
       deletePeotry(peotry.id).then(resp => {
         if (resp.data.code === 1000) {
-          this.$appTip("删除成功");
+          this.$message("删除成功");
           if (this.peotries.length == 1) {
             this.curPage--;
           } else {
             this.getPeotries();
           }
         } else {
-          this.$appTip(resp.data.msg);
+          this.$message(resp.data.msg);
         }
       });
     },
@@ -275,7 +275,7 @@ export default {
 
     onComment(comment, peotryId) {
       if (!this.userInfo.token) {
-        this.$appTip("请登录后再操作");
+        this.$message("请登录后再操作");
         this.showLogin();
         return;
       }
@@ -283,7 +283,7 @@ export default {
         if (resp.data.code === 1000) {
           comment.id = resp.data.data;
           if (comment.toId > 0) {
-            this.$appTip("评论成功");
+            this.$message("评论成功");
             this.addComment(peotryId, comment);
             return;
           }
@@ -293,7 +293,7 @@ export default {
             this.addComment(peotryId, comment);
           }
         } else {
-          this.$appTip(resp.data.msg);
+          this.$message(resp.data.msg);
         }
       });
     },
@@ -322,10 +322,10 @@ export default {
     onCommentDelete(id, peotryId) {
       deleteComment({ id, fromId: this.userInfo.id }).then(resp => {
         if (resp.data.code === 1000) {
-          this.$appTip("删除成功");
+          this.$message("删除成功");
           this.spliceComment(peotryId, id);
         } else {
-          this.$appTip(resp.data.msg);
+          this.$message(resp.data.msg);
         }
       });
     },
@@ -387,6 +387,18 @@ export default {
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .home-peotry {
+    .el-main {
+      padding: 0 0 20px 0;
+
+      .peotry {
+        padding-left: 0px;
       }
     }
   }

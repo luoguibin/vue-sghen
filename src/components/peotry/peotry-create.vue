@@ -142,7 +142,7 @@ export default {
           const data = resp.data;
           this.peotrySets = data.data;
         } else {
-          this.$appTip(resp.data.msg);
+          this.$message(resp.data.msg);
         }
       });
     },
@@ -156,7 +156,7 @@ export default {
             this.onUpdate();
           }
         } else {
-          this.$appTip("请输入表单内容");
+          this.$message("请输入表单内容");
         }
       });
     },
@@ -170,11 +170,11 @@ export default {
       };
       createPeotry(data).then(resp => {
         if (resp.data.code === 1000) {
-          this.$appTip("创建成功");
+          this.$message("创建成功");
           this.$refs.ruleForm.resetFields();
           this.visible = false;
         } else {
-          this.$appTip(resp.data.msg);
+          this.$message(resp.data.msg);
         }
       });
     },
@@ -192,10 +192,10 @@ export default {
         end: peotry.end
       }).then(resp => {
         if (resp.data.code === 1000) {
-          this.$appTip("保存成功");
+          this.$message("保存成功");
           this.visible = false;
         } else {
-          this.$appTip(resp.data.msg);
+          this.$message(resp.data.msg);
         }
       });
     },
@@ -209,19 +209,19 @@ export default {
         .then(({ value }) => {
           const length = value.trim().length;
           if (length <= 0) {
-            this.$appTip("选集名称不能为空");
+            this.$message("选集名称不能为空");
           } else if (length > 20) {
-            this.$appTip("选集名称不能超过20个字符");
+            this.$message("选集名称不能超过20个字符");
           } else {
             createPoetrySet({
               uId: this.userInfo.id,
               name: value
             }).then(resp => {
               if (resp.data.code === 1000) {
-                this.$appTip("创建选集成功");
+                this.$message("创建选集成功");
                 this.getPeotrySets();
               } else {
-                this.$appTip(resp.data.msg);
+                this.$message(resp.data.msg);
               }
             });
           }

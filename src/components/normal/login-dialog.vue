@@ -139,7 +139,7 @@ export default {
             });
           }
         } else {
-          this.$appTip("请输入表单内容");
+          this.$message("请输入表单内容");
         }
       });
     },

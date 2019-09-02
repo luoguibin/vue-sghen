@@ -48,7 +48,7 @@ export default {
     beforeUpload(file) {
       console.log("beforeUpload", file);
       if (file.size / 1024 / 1024 > 8) {
-        this.$appTip("文件" + file.name + "大小超过8M");
+        this.$message("文件" + file.name + "大小超过8M");
         return false;
       }
     },

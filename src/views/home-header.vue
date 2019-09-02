@@ -1,7 +1,12 @@
 <template>
   <div class="home-header">
-    <el-button @click="$router.go(-1)" icon="el-icon-back" circle></el-button>
-    <el-button v-if="!userInfo.token" class="float-right" @click="onShowLogin">登录</el-button>
+    <!-- <el-button @click="$router.go(-1)" icon="el-icon-back" circle></el-button> -->
+    <el-button
+      v-if="!userInfo.token"
+      class="float-right"
+      style="margin-top: 10px;"
+      @click="onShowLogin"
+    >登录</el-button>
 
     <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
       <span style="cursor: pointer;">
@@ -174,7 +179,7 @@ export default {
         uploadFiles({ pathType: "normal" }, formData)
           .then(resp => {
             if (resp.data.code !== 1000) {
-              this.$appTip(resp.data.msg);
+              this.$message(resp.data.msg);
               return;
             }
 
@@ -184,13 +189,13 @@ export default {
               uId: this.userInfo.id
             }).then(resp => {
               if (resp.data.code === 1000) {
-                this.$appTip("更新头像成功");
+                this.$message("更新头像成功");
                 const info = { ...this.userInfo, iconUrl: iconUrl };
                 resetUserIconUrl(info);
                 this.setUserInfo(info);
                 this.iconDialogVisible = false;
               } else {
-                this.$appTip(resp.data.msg);
+                this.$message(resp.data.msg);
               }
             });
           })
@@ -207,12 +212,12 @@ export default {
           uId: this.userInfo.id
         }).then(resp => {
           if (resp.data.code === 1000) {
-            this.$appTip("更新个人信息成功");
+            this.$message("更新个人信息成功");
             const info = { ...this.userInfo, name: this.showUserInfo.name };
             this.setUserInfo(info);
             this.showUser = false;
           } else {
-            this.$appTip(resp.data.msg);
+            this.$message(resp.data.msg);
           }
         });
       } else {
@@ -231,6 +236,8 @@ export default {
 
 <style lang="scss" scoped>
 .home-header {
+  height: 100%;
+
   .float-right {
     float: right;
   }

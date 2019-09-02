@@ -214,7 +214,7 @@ export default {
 
     openComment(toId) {
       if (!this.userInfo.token) {
-        this.$appTip("请登录后再操作");
+        this.$message("请登录后再操作");
         return;
       }
       this.inComment = true;
@@ -257,7 +257,7 @@ export default {
 
     onCommentUser(e) {
       if (!this.userInfo.token) {
-        this.$appTip("请登录后再操作");
+        this.$message("请登录后再操作");
         return;
       }
       const userId = e.srcElement.getAttribute("user-id");
@@ -284,7 +284,7 @@ export default {
     },
     onCommentPraise() {
       if (!this.userInfo.token) {
-        this.$appTip("请登录后再操作");
+        this.$message("请登录后再操作");
         return;
       }
       this.checkComment(-1);

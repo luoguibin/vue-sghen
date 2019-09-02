@@ -1,7 +1,7 @@
 <template>
   <el-container class="home">
     <!-- left nav menus -->
-    <el-aside width="200px">
+    <el-aside width="200px" :style="{left: isDrawerShow ? '0px' : '-200px'}">
       <el-scrollbar>
         <el-menu :default-active="activeIndex" @select="onMenuSelect">
           <template v-for="menu in menus">
@@ -17,6 +17,13 @@
           </template>
         </el-menu>
       </el-scrollbar>
+
+      <el-button
+        class="home_drawer-btn"
+        @click="onClickDrawer"
+        type="text"
+        :icon="[isDrawerShow ? 'el-icon-s-fold' : 'el-icon-s-unfold']"
+      ></el-button>
     </el-aside>
 
     <el-container>
@@ -45,15 +52,17 @@ export default {
       activeIndex: "",
       menus: [
         {
+          name: "书三行",
+          key: "peotry"
+        },
+        {
           name: "demo示威",
           key: "demo",
           submenus: []
-        },
-        {
-          name: "书三行",
-          key: "peotry"
         }
-      ]
+      ],
+
+      isDrawerShow: false
     };
   },
   mounted() {
@@ -76,7 +85,7 @@ export default {
       import("../assets/config/demo-comps.json")
         .then(o => {
           const object = o.default;
-          const submenus = this.menus[0].submenus;
+          const submenus = this.menus[1].submenus;
           for (const key in object) {
             if (object.hasOwnProperty(key)) {
               submenus.push({
@@ -108,6 +117,10 @@ export default {
       } else {
         this.$router.push({ name: index });
       }
+    },
+
+    onClickDrawer() {
+      this.isDrawerShow = !this.isDrawerShow;
     }
   }
 };
@@ -116,6 +129,37 @@ export default {
 <style lang="scss" scoped>
 .home {
   height: 100%;
+
+  .el-aside {
+    .home_drawer-btn {
+      display: none;
+      position: absolute;
+      right: -30px;
+      top: 10px;
+      font-size: 24px;
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .home {
+    position: relative;
+
+    .el-aside {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 100;
+      overflow: inherit;
+      transition-property: left;
+      transition-duration: 500ms;
+
+      .home_drawer-btn {
+        cursor: pointer;
+      }
+    }
+  }
 }
 </style>
 
