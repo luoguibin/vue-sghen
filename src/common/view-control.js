@@ -16,9 +16,9 @@ export default class ViewControl {
     MAX_RADIANS = 85 / 180 * Math.PI;
     RADIANS_FACTOR = Math.PI / 1800;
 
-    MIN_RADIUS = 20;
+    MIN_RADIUS = 5;
     MAX_RADIUS = 400;
-    WHELL_FACTOR = 0.5;
+    WHELL_FACTOR = 1.5;
 
     raycaster = new THREE.Raycaster();
     objects = [];

@@ -26,7 +26,7 @@ var initParticle = function (particle, delay) {
     //     .start();
 }
 
-var newSpriteCanvas = function(colorStr) {
+var newSpriteCanvas = function (colorStr) {
     var canvas = document.createElement('canvas');
     canvas.width = 16;
     canvas.height = 16;
@@ -45,7 +45,7 @@ var newSpriteCanvas = function(colorStr) {
     return canvas;
 }
 
-var addSprites = function(mesh, offSet) {
+var addSprites = function (mesh, offSet) {
     const colors = ["rgb(255, 136, 136)", "rgb(255, 255, 255)", "rgb(136, 255, 136)"],
         length = colors.length;
     for (let i = 0; i < length; i++) {
@@ -53,7 +53,7 @@ var addSprites = function(mesh, offSet) {
             map: new THREE.CanvasTexture(newSpriteCanvas(colors[i])),
             blending: THREE.AdditiveBlending
         });
-        spriteMaterial.transparent =  true;
+        spriteMaterial.transparent = true;
         const sprite = new THREE.Sprite(spriteMaterial);
         mesh.add(sprite);
 
@@ -73,6 +73,33 @@ var addSprites = function(mesh, offSet) {
             })
             .repeat(Infinity)
             .start()
+    }
+
+    for (let i = 0; i < 8; i++) {
+        const spriteMaterial = new THREE.SpriteMaterial({
+            map: new THREE.ImageUtils.loadTexture(require("@/assets/textures/cloud_002.png")),
+            color: 0xffffff,
+            blending: THREE.AdditiveBlending
+        });
+        spriteMaterial.transparent = true;
+        const sprite = new THREE.Sprite(spriteMaterial);
+        sprite.position.y = 2.0 + Math.random() * 1;
+        sprite.material.opacity = 0.8;
+        sprite.scale.set(1, 1);
+        // sprite.scale.set(5, 5);
+
+        new TWEEN.Tween(sprite.scale)
+            .to({ x: 7, y: 7 }, 2000)
+            .delay(300 * i)
+            .onUpdate(() => {
+                // 3-5 => 0.3-0
+                sprite.material.opacity = 0.8 - (sprite.scale.x - 1) / 6 * 0.8;
+            })
+            .repeat(Infinity)
+            // .yoyo(true)
+            .start();
+
+        mesh.add(sprite)
     }
 }
 

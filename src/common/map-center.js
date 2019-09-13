@@ -71,7 +71,7 @@ class MapManager {
 
     _initLights() {
         return new Promise(function (resolve, reject) {
-            const sunLight = new THREE.DirectionalLight(0x333333),
+            const sunLight = new THREE.DirectionalLight(0x888888),
                 shadow = sunLight.shadow,
                 camera = shadow.camera;
 
@@ -88,7 +88,7 @@ class MapManager {
 
             const position = sunLight.position,
                 radians = { v: -Math.PI / 2 };
-            position.set(0, 100, 0);
+            position.set(500, 100, 0);
             // new TWEEN.Tween(radians)
             //     .to({ v: Math.PI * 4 / 3 }, 20 * 1000)
             //     .repeat(Infinity)

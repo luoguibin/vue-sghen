@@ -24,7 +24,7 @@ class GameMain {
     sTargetId = 0;
 
     constructor() {
-        window.game = this;
+        window.gameInstance = this;
     }
 
     init(data) {
@@ -59,6 +59,8 @@ class GameMain {
                     // this.composer = composer;
 
                     this._start();
+
+                    FireworkCenter.newMoon(this.scene);
                 });
             });
     }
@@ -78,7 +80,7 @@ class GameMain {
             return scene;
         } else {
             scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0x444444, 20, 100);
+            // scene.fog = new THREE.Fog(0x444444, 20, 100);
         }
         this.scene = scene;
 
@@ -212,6 +214,19 @@ class GameMain {
                 this.modelMap[data.id] = model;
                 call(model);
             });
+    }
+
+    testStateAction(state) {
+        if (state) {
+            OrderCenter._actionMoveChange(this.myModel, state, 0.2);
+            return;
+        }
+        ['Idle', 'Walking', 'WalkJump', 'Running', 'Dance', 'Death', 'Sitting', 'Standing', 'Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp']
+            .forEach((state_, i) => {
+                setTimeout((s) => {
+                    OrderCenter._actionMoveChange(this.myModel, s, 0.2); 
+                }, 4000 * i, state_);
+            })
     }
 
     _addMixer(model, animations) {

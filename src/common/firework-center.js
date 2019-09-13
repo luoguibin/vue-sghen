@@ -177,5 +177,46 @@ export const FireworkCenter = {
         }
 
         return points;
+    },
+
+    newMoon(scene) {
+        const spriteMaterial = new THREE.SpriteMaterial({
+            map: new THREE.ImageUtils.loadTexture(require("@/assets/textures/moon.png")),
+            color: 0xffffff,
+            // blending: THREE.AdditiveBlending
+        });
+        spriteMaterial.transparent = true;
+        const sprite = new THREE.Sprite(spriteMaterial);
+        sprite.scale.set(30, 30);
+        sprite.position.x = -220;
+        sprite.position.z = 0;
+        sprite.position.y = 50;
+
+        scene.add(sprite)
+
+
+        for (let index = 0; index < 3; index++) {
+            const spriteMaterial01 = new THREE.SpriteMaterial({
+                map: new THREE.ImageUtils.loadTexture(require("@/assets/textures/cloud_001.png")),
+                color: 0xffffff,
+                // blending: THREE.AdditiveBlending
+            });
+            spriteMaterial01.transparent = true;
+            const sprite01 = new THREE.Sprite(spriteMaterial01);
+            sprite01.scale.set(60, 30);
+            sprite01.material.opacity = 0.9;
+            sprite01.position.x = -205 + Math.random() * 10;
+            sprite01.position.z = 100 + 30 * index;
+            const posY = 35 + Math.random() * 25
+            sprite01.position.y = posY;
+
+            new TWEEN.Tween(sprite01.position)
+                // .delay(8000 * index)
+                .to({ x: -198, y: posY, z: -100 }, 50000 + 30000 * index)
+                .repeat(Infinity)
+                .start();
+
+            scene.add(sprite01)
+        }
     }
 }
