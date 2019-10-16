@@ -4,7 +4,10 @@
 
 <script>
 import Vue from "vue";
-import { getDemoComponent } from "../components/index";
+
+const getDemoComponent = function (name) {
+    return import(/* webpackChunkName: "[request]" */"@/components/" + name);
+}
 
 export default {
   name: "demo",
