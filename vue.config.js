@@ -14,11 +14,6 @@ module.exports = {
     },
     app2: {
       entry: './src2/main',
-    },
-    app3: {
-      entry: './src3/main',
-      template: './public/index3.html',
-      filename: 'index3.html'
     }
   },
 
@@ -83,7 +78,7 @@ module.exports = {
 
 
   devServer: {
-    port: 8086,
+    port: 8080,
     https: false,
     hotOnly: false,
     proxy: null
