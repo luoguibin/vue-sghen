@@ -14,6 +14,11 @@ module.exports = {
     },
     app2: {
       entry: './src2/main',
+      filename: 'index2.html'
+    },
+    app3: {
+      entry: './src3/main',
+      filename: 'index3.html'
     }
   },
 
