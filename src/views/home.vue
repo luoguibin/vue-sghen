@@ -4,17 +4,7 @@
     <el-aside width="200px" :style="{left: isDrawerShow ? '0px' : '-200px'}">
       <el-scrollbar>
         <el-menu :default-active="activeIndex" @select="onMenuSelect">
-          <template v-for="menu in menus">
-            <el-submenu v-if="menu.submenus" :key="menu.key" :index="menu.key">
-              <template slot="title">{{menu.name}}</template>
-              <el-menu-item
-                v-for="submenu in menu.submenus"
-                :key="submenu.key"
-                :index="menu.key + '-' + submenu.key"
-              >{{submenu.name}}</el-menu-item>
-            </el-submenu>
-            <el-menu-item v-else :key="menu.key" :index="menu.key">{{menu.name}}</el-menu-item>
-          </template>
+          <el-menu-item v-for="menu in menus" :key="menu.key" :index="menu.key">{{menu.name}}</el-menu-item>
         </el-menu>
       </el-scrollbar>
 
@@ -50,17 +40,7 @@ export default {
   data() {
     return {
       activeIndex: "",
-      menus: [
-        {
-          name: "书三行",
-          key: "peotry"
-        },
-        {
-          name: "demo示威",
-          key: "demo",
-          submenus: []
-        }
-      ],
+      menus: [],
 
       isDrawerShow: false
     };
@@ -85,15 +65,16 @@ export default {
       import("../assets/config/demo-comps.json")
         .then(o => {
           const object = o.default;
-          const submenus = this.menus[1].submenus;
+          const menus = [];
           for (const key in object) {
             if (object.hasOwnProperty(key)) {
-              submenus.push({
+              menus.push({
                 name: key,
                 key: key
               });
             }
           }
+          this.menus = menus;
         })
         .catch(err => {
           console.log(err);
@@ -102,21 +83,14 @@ export default {
 
     checkRoute() {
       const route = this.$route;
-      if (route.matched[1]) {
-        this.activeIndex = route.matched[1].name;
-        if (this.activeIndex === "demo") {
-          this.activeIndex += "-" + route.params.name;
-        }
+      if (route.name === "demo") {
+        this.activeIndex = route.params.name;
       }
     },
 
-    onMenuSelect(index, indexPath) {
+    onMenuSelect(index) {
       this.activeIndex = index;
-      if (indexPath[0] === "demo") {
-        this.$router.push({ path: "/home/" + indexPath[1].replace("-", "/") });
-      } else {
-        this.$router.push({ name: index });
-      }
+      this.$router.push({ name: "demo", params: { name: index } });
     },
 
     onClickDrawer() {
@@ -156,6 +130,7 @@ export default {
       transition-duration: 500ms;
 
       .home_drawer-btn {
+        display: initial;
         cursor: pointer;
       }
     }

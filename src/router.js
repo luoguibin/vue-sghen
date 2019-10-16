@@ -16,13 +16,7 @@ const router = new Router({
       path: "/home",
       name: "home",
       component: Home,
-      redirect: "/home/peotry",
       children: [
-        {
-          path: "peotry",
-          name: "peotry",
-          component: () => import(/* webpackChunkName: "home-peotry" */ "./views/home-peotry")
-        },
         {
           path: "demo/:name",
           name: "demo",

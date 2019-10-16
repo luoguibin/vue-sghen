@@ -1,8 +1,6 @@
 <template>
   <div id="app" ref="canvas">
     <router-view/>
-
-    <login-dialog></login-dialog>
   </div>
 </template>
 

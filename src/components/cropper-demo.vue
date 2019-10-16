@@ -30,7 +30,6 @@
 
 <script>
 import { VueCropper } from "vue-cropper";
-import { uploadFiles } from "../../api";
 
 export default {
   name: "cropper-demo",
@@ -92,14 +91,7 @@ export default {
         const formData = new FormData();
         formData.append("file", file);
 
-        uploadFiles({ pathType: "normal" }, formData)
-          .then(resp => {
-            console.log(resp);
-            this.$message(resp.data.msg);
-          })
-          .catch(err => {
-            console.log(err);
-          });
+        // uploadFile
       });
 
       //   this.$refs.cropper.getCropData(data => {

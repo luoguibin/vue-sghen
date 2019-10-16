@@ -4,7 +4,7 @@
 
 <script>
 import Vue from "vue";
-import { getDemoComponent } from "../components/demo/index";
+import { getDemoComponent } from "../components/index";
 
 export default {
   name: "demo",

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { JsLoader } from "../../common/utils/js-loader";
+import { JsLoader } from "../common/utils/js-loader";
 
 export default {
   name: "extjs-demo",

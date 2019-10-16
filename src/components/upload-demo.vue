@@ -24,14 +24,12 @@
 
 <script>
 import { mapState } from "vuex";
-import { baseUrl } from "../../api/config";
-import { uploadFiles } from "../../api";
 
 export default {
   data() {
     return {
       fileList: [],
-      baseUrl
+      baseUrl: 'http://localhost'
     };
   },
   created() {
@@ -62,13 +60,7 @@ export default {
       this.$refs.upload.submit();
 
       console.log("submitUpload after submit");
-      uploadFiles({ pathType: "peotry", pId: 1557454650644243 }, this.fileData)
-        .then(resp => {
-          console.log(resp);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      // uploadFiles
     },
     beforeRemove(file, fileList) {
       console.log("beforeRemove", file, fileList);

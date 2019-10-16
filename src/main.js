@@ -12,9 +12,6 @@ Vue.config.productionTip = false
 
 Vue.prototype.$NProgress = NProgress;
 
-import LoginDialog from "@/components/normal/login-dialog";
-Vue.component(LoginDialog.name, LoginDialog);
-
 new Vue({
   router,
   store,
