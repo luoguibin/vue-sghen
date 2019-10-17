@@ -1,5 +1,7 @@
 <template>
-  <div class="home-header">    
+  <div class="home-header">
+    <el-button type="text" @click="onGoIndex(2)">Vue Render</el-button>
+    <el-button type="text" @click="onGoIndex(3)">Vue-JS-CSS</el-button>
   </div>
 </template>
 
@@ -16,6 +18,9 @@ export default {
   },
 
   methods: {
+    onGoIndex(num) {
+      location.href = location.origin + `/index${num}.html`;
+    }
   }
 };
 </script>

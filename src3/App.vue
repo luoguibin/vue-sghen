@@ -1,7 +1,6 @@
 <template>
   <div class="app">
     <Tabs value="g-vue" class="tabs">
-
       <TabPane label="Vue" name="g-vue">
         <fieldset>
           <legend>vue</legend>
@@ -9,7 +8,7 @@
         </fieldset>
         <fieldset>
           <legend>render test</legend>
-          <g-render>day day up</g-render>
+          <el-button type="text" @click="onGoIndex2">跳转</el-button>
         </fieldset>
         <fieldset>
           <legend>extend与mixins</legend>
@@ -69,6 +68,10 @@ export default {
   methods: {
     printVal(v0, v1) {
       console.log("printVal", v0, v1);
+    },
+
+    onGoIndex2() {
+      location.href = location.origin + "/index2.html?tab=hello0";
     }
   }
 };

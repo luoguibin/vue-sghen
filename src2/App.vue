@@ -25,6 +25,19 @@ export default {
     this.renderData = null;
   },
 
+  mounted() {
+    const search = location.search.substr(1);
+    const keyVals = search.split("&");
+    const query = {};
+    keyVals.forEach(str => {
+      const keyVal = str.split("=");
+      query[keyVal[0]] = keyVal[1];
+    });
+    if (query.tab) {
+      this.renderComponent(query.tab);
+    }
+  },
+
   render(h) {
     const children = [];
     children.push(
@@ -34,7 +47,7 @@ export default {
           props: { backText: this.backText },
           on: {
             back: (data, e) => {
-              console.log(data, e);
+              history.go(-1);
             }
           }
         }),

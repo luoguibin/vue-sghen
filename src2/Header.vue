@@ -9,7 +9,7 @@ export default {
   },
   created() {
     window.header = this;
-    console.log("header created")
+    console.log("header created");
   },
   render(h) {
     return h("div", [
@@ -21,6 +21,9 @@ export default {
           click: e => {
             this.$emit("back", { a: 123 }, e);
           }
+        },
+        style: {
+          cursor: "pointer"
         }
       }),
       h("el-divider", { attrs: { direction: "vertical" } }),
