@@ -14,11 +14,16 @@
     <el-divider content-position="left">测试组件</el-divider>
 
     <div style="padding-left: 2em;">
-      <el-button>test</el-button>
       <el-button type="primary">test</el-button>
       <el-radio v-model="radioVal" label="1">备选项</el-radio>
       <el-checkbox v-model="checkedVal">备选项</el-checkbox>
       <el-switch v-model="switchVal" active-text="开" inactive-text="关"></el-switch>
+    </div>
+
+    <div>
+      <el-button class="button button-main" @click="onMakeBlobCssFile(true)">测试blob-css-file</el-button>
+      <el-button class="button button-main" @click="onMakeBlobCssFile(false)">移除blob-css-file</el-button>
+      <button class="button button-main">test</button>
     </div>
   </div>
 </template>
@@ -35,7 +40,8 @@ export default {
       switchVal: true,
       radioVal: "1",
       checkedVal: true,
-      defaultTheme: "#409EFF"
+      defaultTheme: "#409EFF",
+      currentTheme: "#8a2be2"
     };
   },
   watch: {
@@ -169,6 +175,29 @@ export default {
       }
       clusters.push(shadeColor(theme, 0.1));
       return clusters;
+    },
+    onMakeBlobCssFile(isNew) {
+      let cssLink = document.getElementById("css-blob-link");
+      if (!cssLink) {
+        cssLink = document.createElement("link");
+        cssLink.setAttribute("id", "css-blob-link");
+        cssLink.setAttribute("rel", "stylesheet");
+        document.head.append(cssLink);
+      }
+
+      if (!isNew) {
+        cssLink.setAttribute("href", "");
+        return;
+      }
+
+      const cssStr = `.el-dialog{max-width:500px}.button{color:red;background-color:#8a2be2}.button-main{padding:10px;font-size:20px}`;
+      const reg = new RegExp(this.currentTheme, "g");
+      const blob = new Blob([cssStr.replace(reg, this.theme)], {
+        type: "text/css;charset=uft-8"
+      });
+      const cssUrl = URL.createObjectURL(blob);
+
+      cssLink.setAttribute("href", cssUrl);
     }
   }
 };
