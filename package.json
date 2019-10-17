@@ -22,6 +22,7 @@
     "file-saver": "^2.0.2",
     "html2canvas": "^1.0.0-rc.3",
     "iview": "^3.2.2",
+    "js-cookie": "^2.2.1",
     "jspdf": "^1.5.3",
     "mxgraph": "^3.9.12",
     "node-sass": "^4.12.0",
