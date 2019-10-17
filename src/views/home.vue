@@ -3,7 +3,7 @@
     <!-- left nav menus -->
     <el-aside width="200px" :style="{left: isDrawerShow ? '0px' : '-200px'}">
       <el-scrollbar>
-        <el-menu :default-active="activeIndex" @select="onMenuSelect">
+        <el-menu ref="elMenu" :default-active="activeIndex" @select="onMenuSelect">
           <el-menu-item v-for="menu in menus" :key="menu.key" :index="menu.key">{{menu.name}}</el-menu-item>
         </el-menu>
       </el-scrollbar>
@@ -85,7 +85,25 @@ export default {
       const route = this.$route;
       if (route.name === "demo") {
         this.activeIndex = route.params.name;
+        // this.$nextTick(() => {
+        //   this.focusActiveMenu();
+        // });
+        setTimeout(() => {
+          this.focusActiveMenu();
+        }, 200);
       }
+    },
+
+    focusActiveMenu() {
+      const elMenu = this.$refs.elMenu;
+      if (!elMenu) {
+        return;
+      }
+      const activeMenus = elMenu.$el.getElementsByClassName("is-active");
+      if (!activeMenus || !activeMenus.length) {
+        return;
+      }
+      activeMenus[0].focus();
     },
 
     onMenuSelect(index) {
