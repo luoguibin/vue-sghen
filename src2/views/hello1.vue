@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { async } from "q";
 export default {
   name: "hello1",
 
