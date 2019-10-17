@@ -14,7 +14,8 @@ export default {
   data() {
     return {
       renderComp: null,
-      backText: "<-"
+      backText: "<-",
+      info: { a: 1, b: 2 }
     };
   },
 
@@ -23,6 +24,15 @@ export default {
 
     // 禁止被观察
     this.renderData = null;
+  },
+
+  watch: {
+    info: {
+      deep: true,
+      handler(v) {
+        console.log(v);
+      }
+    }
   },
 
   mounted() {
@@ -78,7 +88,9 @@ export default {
       ])
     );
     if (this.renderComp) {
-      children.push(h(this.renderComp, this.renderData));
+      children.push(
+        h(this.renderComp, { props: { info: this.info }, ...this.renderData })
+      );
     }
 
     return h(

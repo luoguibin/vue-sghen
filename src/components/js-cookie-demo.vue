@@ -1,6 +1,6 @@
 <template>
   <div class="js-cookie-demo">
-    <p>监听document的visibilitychange事件，刷新对应的cookie</p>
+    <p>监听document的visibilitychange事件，刷新对应的cookie，但是同时打开两个浏览器窗口则不会触发</p>
     <el-input v-model.number="keyVals.id">
       <span slot="prepend">id</span>
     </el-input>
