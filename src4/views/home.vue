@@ -1,7 +1,7 @@
 <template>
   <a-layout class="home">
     <a-layout-sider>
-      <a-menu style="width: 256px" @click="handleClick" v-model="selectedKeys">
+      <a-menu style="width: 200px" @click="handleClick" v-model="selectedKeys">
         <a-menu-item v-for="menu in menus" :key="menu.key">{{menu.name}}</a-menu-item>
       </a-menu>
     </a-layout-sider>
