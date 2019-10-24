@@ -11,6 +11,7 @@
   "dependencies": {
     "@types/pixi.js": "^4.8.6",
     "animejs": "^3.0.1",
+    "ant-design-vue": "^1.4.3",
     "axios": "^0.18.0",
     "canvas-nest.js": "^2.0.4",
     "countup.js": "^2.0.4",
