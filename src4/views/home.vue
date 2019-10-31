@@ -49,6 +49,11 @@ export default {
       if (name) {
         this.loadComp(name);
         this.selectedKeys = [name];
+      } else {
+        this.$router.push({
+          name: "home",
+          query: { compName: this.menus[0].name }
+        });
       }
     },
     async loadMenus() {

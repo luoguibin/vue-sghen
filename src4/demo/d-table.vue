@@ -11,6 +11,7 @@
       :scroll="tableScroll"
       @change="handleTableChange"
     >
+      <template slot="t-name">Name-</template>
       <template slot="name" slot-scope="name">{{name.first}}{{name.last}}</template>
     </a-table>
   </div>
@@ -26,13 +27,18 @@ export default {
         {
           title: "IDIDIDIDIDIDIDIDIDID",
           dataIndex: "id",
-          width: "100px"
+          width: "20%"
         },
         {
           title: "Name",
           dataIndex: "name",
-          sorter: true,
-          width: "200px",
+          sorter: (a, b) => {
+            return a.name.first > b.name.first;
+          },
+          // sortOrder: "ascend", // 'ascend' 'descend' false/true
+          sortDirections: ["descend"],
+          width: "20%",
+          // slots: { title: "t-name" },
           scopedSlots: { customRender: "name" }
         },
         {
@@ -42,17 +48,17 @@ export default {
             { text: "Male", value: "male" },
             { text: "Female", value: "female" }
           ],
-          width: "200px",
+          width: "20%"
         },
         {
           title: "Email",
           dataIndex: "email",
-          width: "130px"
+          width: "20%"
         },
         {
           title: "Address",
           dataIndex: "address",
-          width: "300px"
+          width: "20%"
         }
       ],
       data: [],
@@ -69,7 +75,6 @@ export default {
 
   methods: {
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination);
       const pager = { ...this.pagination };
       pager.current = pagination.current;
       this.pagination = pager;
@@ -95,7 +100,7 @@ export default {
           data.push({
             id: i,
             name: {
-              first: "firstfirstfirstfirstfirstfirst" + i,
+              first: i + "firstfirstfirstfirstfirstfirst",
               last: "lastlastlastlastlastlastlast" + i
             },
             gender: i % 2 === 0 ? "male" : "female",
@@ -132,7 +137,8 @@ export default {
   table {
     table-layout: fixed;
 
-    th > div, td {
+    th > div,
+    td {
       overflow: hidden;
       text-overflow: ellipsis;
     }
