@@ -15,6 +15,7 @@
     "pixi-demo": false,
     "scrollbar-tree": false,
     "scrollbar-table": false,
+    "selfdrap-demo": false,
     "shape-cut": false,
     "style-optimization": false,
     "themepicker": false,
