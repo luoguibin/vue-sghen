@@ -5,11 +5,17 @@
       <el-button @click="removeDrapItem">removeDrapItem</el-button>
     </el-button-group>
 
-    <svg xmlns="http://www.w3.org/2000/svg" @click="drapIndex = null">
+    <svg xmlns="http://www.w3.org/2000/svg">
       <line-item v-for="lineItem in lineItems" :key="lineItem.id" :obj="lineItem" />
     </svg>
 
-    <div ref="drapPanel" class="drap-panel">
+    <div
+      ref="drapPanel"
+      class="drap-panel"
+      @mousedown="onMouseDown"
+      @mouseup="onMouseUp"
+      @mouseleave="onMouseOut"
+    >
       <drap-item
         v-for="(drapItem, index) in drapItems"
         :key="drapItem.id"
@@ -45,7 +51,9 @@ const DrapItemComp = {
     }
   },
 
-  data() {},
+  data() {
+    return {};
+  },
 
   mounted() {
     const el = this.$el,
@@ -83,6 +91,26 @@ const DrapItemComp = {
             "drap-type": "point-top"
           }
         }),
+        h("el-dropdown", { class: "drap-menu", attrs: { trigger: "click" } }, [
+          h("i", { class: { "el-icon-more": true } }),
+          h("el-dropdown-menu", [
+            h("el-dropdown-item", {
+              domProps: {
+                innerHTML: "item-0"
+              }
+            }),
+            h("el-dropdown-item", {
+              domProps: {
+                innerHTML: "item-1"
+              }
+            }),
+            h("el-dropdown-item", {
+              domProps: {
+                innerHTML: "item-2"
+              }
+            })
+          ])
+        ]),
         h("div", {
           class: {
             "drap-box": true
@@ -98,6 +126,60 @@ const DrapItemComp = {
     );
   }
 };
+
+function getQPos(x0, y0, x1, y1) {
+  const xv = x1 - x0,
+    yv = y1 - y0,
+    axv = Math.abs(xv),
+    ayv = Math.abs(yv);
+
+  const big = 1,
+    small = 0,
+    pos = { x: x0, y: y0 };
+
+  if (xv > 0) {
+    if (yv > 0) {
+      // 右上角
+      if (axv > ayv) {
+        pos.x += axv * big;
+        pos.y += ayv * small;
+      } else {
+        pos.x += axv * small;
+        pos.y += ayv * big;
+      }
+    } else {
+      // 右下角
+      if (axv > ayv) {
+        pos.x += axv * big;
+        pos.y += ayv * small;
+      } else {
+        pos.x += axv * small;
+        pos.y -= ayv * big;
+      }
+    }
+  } else {
+    if (yv > 0) {
+      // 左上角
+      if (axv > ayv) {
+        pos.x -= axv * big;
+        pos.y += ayv * small;
+      } else {
+        pos.x -= axv * small;
+        pos.y += ayv * big;
+      }
+    } else {
+      // 左下角
+      if (axv > ayv) {
+        pos.x -= axv * big;
+        pos.y -= ayv * small;
+      } else {
+        pos.x -= axv * small;
+        pos.y -= ayv * big;
+      }
+    }
+  }
+  return pos;
+}
 
 const LineItemComp = {
   name: "line-item",
@@ -117,12 +199,11 @@ const LineItemComp = {
       sTop = startItem.position.top,
       eLeft = endItem.position.left + endItem.size.width / 2,
       eTop = endItem.position.top;
-    const path = `M ${sLeft} ${sTop} L ${eLeft} ${eTop}`;
+    const qPos = getQPos(sLeft, sTop, eLeft, eTop);
+    const path = `M ${sLeft} ${sTop} Q ${qPos.x} ${qPos.y} ${eLeft} ${eTop}`;
     return h("path", {
       attrs: {
-        d: path,
-        stroke: "#0096f2",
-        "stroke-width": 2
+        d: path
       }
     });
   }
@@ -152,121 +233,120 @@ export default {
         id: i,
         content: "content" + i,
         position: {
-          left: 100 * (i + 1),
-          top: 50
+          left: 200 * (i + 1),
+          top: 100
         },
         size: { width: 0, height: 0 }
       });
     }
   },
 
-  mounted() {
-    this.init();
-  },
+  mounted() {},
 
   methods: {
-    init() {
-      this.$refs.drapPanel.addEventListener("mousedown", e => {
-        this.drapType = null;
-        this.drapIndex = null;
+    onMouseDown(e) {
+      this.drapType = null;
+      this.drapIndex = null;
 
-        const target = e.target,
-          drapType = target.getAttribute("drap-type");
-        if (!drapType) {
+      const target = e.target,
+        drapType = target.getAttribute("drap-type");
+      if (!drapType) {
+        return;
+      }
+
+      const drapIndex = this.getDragItemIndex(target);
+      const drapItem = this.drapItems[drapIndex];
+      console.log("mousedown", drapType, drapIndex);
+
+      this.drapIndex = drapIndex;
+      this.drapType = drapType;
+      this.x = e.clientX;
+      this.y = e.clientY;
+
+      switch (drapType) {
+        case "drap-box":
+          break;
+        case "point-top":
+          const endItem = this.addDrapItem(true);
+          endItem.position = { ...drapItem.position };
+          endItem.position.left += drapItem.size.width / 2;
+          this.lineItems.push({
+            startItem: drapItem,
+            endItem
+          });
+          break;
+        default:
           return;
-        }
-
-        const drapIndex = this.getDragItemIndex(target);
-        const drapItem = this.drapItems[drapIndex];
-        console.log(drapType, drapIndex);
-
-        this.drapIndex = drapIndex;
-        this.drapType = drapType;
-        this.x = e.clientX;
-        this.y = e.clientY;
-
-        switch (drapType) {
-          case "drap-box":
-            break;
-          case "point-top":
-            const endItem = this.addDrapItem(true);
-            endItem.position = { ...drapItem.position };
-            endItem.position.left += drapItem.size.width / 2;
-            this.lineItems.push({
-              startItem: drapItem,
-              endItem
-            });
-            break;
-          default:
-            return;
-        }
-        this.$refs.drapPanel.addEventListener("mousemove", this.moveE);
-      });
-
-      this.moveE = e => {
-        const addX = e.clientX - this.x,
-          addY = e.clientY - this.y;
-
-        this.x = e.clientX;
-        this.y = e.clientY;
-
-        switch (this.drapType) {
-          case "drap-box":
-            const drapItem = this.drapItems[this.drapIndex];
-            drapItem.position.left += addX;
-            drapItem.position.top += addY;
-            break;
-          case "point-top":
-            const endItem = this.lineItems[this.lineItems.length - 1].endItem;
-            endItem.position.left += addX;
-            endItem.position.top += addY;
-            break;
-          default:
-            return;
-        }
-      };
-
-      this.$refs.drapPanel.addEventListener("mouseup", e => {
-        const target = e.target,
-          drapIndex = this.getDragItemIndex(target);
-
-        switch (this.drapType) {
-          case "drap-box":
-            break;
-          case "point-top":
-            const drapType = target.getAttribute("drap-type");
-            if (drapType) {
-              const lineItem = this.lineItems[this.lineItems.length - 1];
-              lineItem.endItem = this.drapItems[drapIndex];
-            } else {
-              this.lineItems.pop();
-            }
-            break;
-          default:
-            return;
-        }
-
-        this.drapType = null;
-        this.$refs.drapPanel.removeEventListener("mousemove", this.moveE);
-      });
+      }
+      this.$el.addEventListener("mousemove", this.onMouseMove);
     },
 
-    // todo:
+    onMouseMove(e) {
+      const addX = e.clientX - this.x,
+        addY = e.clientY - this.y;
+
+      this.x = e.clientX;
+      this.y = e.clientY;
+
+      switch (this.drapType) {
+        case "drap-box":
+          const drapItem = this.drapItems[this.drapIndex];
+          drapItem.position.left += addX;
+          drapItem.position.top += addY;
+          break;
+        case "point-top":
+          const endItem = this.lineItems[this.lineItems.length - 1].endItem;
+          // console.log(JSON.stringify(endItem.position));
+          endItem.position.left += addX;
+          endItem.position.top += addY;
+          break;
+        default:
+          return;
+      }
+    },
+
+    onMouseOut(e) {
+      this.onMouseUp(e);
+    },
+
+    onMouseUp(e) {
+      const target = e.target,
+        drapIndex = this.getDragItemIndex(target);
+
+      console.log("mouseup", this.drapType);
+      switch (this.drapType) {
+        case "drap-box":
+          break;
+        case "point-top":
+          const drapType = target.getAttribute("drap-type");
+          console.log(drapType, drapIndex);
+          if (drapType) {
+            const lineItem = this.lineItems[this.lineItems.length - 1];
+            lineItem.endItem = this.drapItems[drapIndex];
+          } else {
+            this.lineItems.pop();
+          }
+          break;
+        default:
+          break;
+      }
+
+      this.drapType = null;
+      this.$refs.drapPanel.removeEventListener("mousemove", this.onMouseMove);
+    },
+
     getDragItemIndex(el) {
-      if (!el) {
-        return null;
-      }
       const drapPanel = this.$refs.drapPanel;
-      let preEl = el;
-      el = el.parentElement;
-      while (el && el !== drapPanel) {
-        preEl = el;
-        el = el.parentElement;
+      while (el) {
+        if (el.parentElement === drapPanel) {
+          break;
+        } else {
+          el = el.parentElement;
+        }
       }
       if (!el) {
         return null;
       }
-      el = preEl;
 
       let index = 0;
       while (el.previousElementSibling) {
@@ -297,9 +377,10 @@ export default {
     removeDrapItem() {
       const drapIndex = this.drapIndex;
       if (drapIndex !== null) {
-        const drapId = this.drapItems[drapIndex];
+        const drapId = this.drapItems[drapIndex].id;
+        console.log(drapId);
         this.lineItems = this.lineItems.filter(o => {
-          return o.endItem.id === drapId || o.endItem.id === drapId;
+          return o.endItem.id !== drapId && o.endItem.id !== drapId;
         });
 
         this.drapItems.splice(drapIndex, 1);
@@ -341,27 +422,39 @@ export default {
       }
     }
 
+    .drap-menu {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+
     /* key class */
     .drap-box {
-      padding: 10px;
+      padding: 10px 30px 10px 10px;
       user-select: none;
     }
   }
 
   .drap-item_focus {
     border: 1px solid #148acf;
+    z-index: 10;
   }
 
+  svg,
   .drap-panel {
-    height: 100%;
-  }
-
-  svg {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+  }
+
+  svg path {
+    stroke: rgb(0, 150, 242);
+    stroke-width: 2;
+    fill: transparent;
   }
 
   .el-button-group {
