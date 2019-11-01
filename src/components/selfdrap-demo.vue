@@ -85,10 +85,20 @@ const DrapItemComp = {
       [
         h("span", {
           class: {
+            "drap-point": true,
             "drap-point_top": true
           },
           attrs: {
             "drap-type": "point-top"
+          }
+        }),
+        h("span", {
+          class: {
+            "drap-point": true,
+            "drap-point_bottom": true
+          },
+          attrs: {
+            "drap-type": "point-bottom"
           }
         }),
         h("el-dropdown", { class: "drap-menu", attrs: { trigger: "click" } }, [
@@ -192,13 +202,22 @@ const LineItemComp = {
   },
 
   render(h) {
-    const startItem = this.obj.startItem,
-      endItem = this.obj.endItem;
+    const obj = this.obj,
+      startItem = obj.startItem,
+      endItem = obj.endItem;
 
-    const sLeft = startItem.position.left + startItem.size.width / 2,
+    let sLeft = startItem.position.left + startItem.size.width / 2,
       sTop = startItem.position.top,
       eLeft = endItem.position.left + endItem.size.width / 2,
       eTop = endItem.position.top;
+
+    if (obj.startType === "point-bottom") {
+      sTop += startItem.size.height;
+    }
+    if (obj.endType === "point-bottom") {
+      eTop += endItem.size.height;
+    }
+
     const qPos = getQPos(sLeft, sTop, eLeft, eTop);
     const path = `M ${sLeft} ${sTop} Q ${qPos.x} ${qPos.y} ${eLeft} ${eTop}`;
     return h("path", {
@@ -267,12 +286,18 @@ export default {
         case "drap-box":
           break;
         case "point-top":
+        case "point-bottom":
           const endItem = this.addDrapItem(true);
           endItem.position = { ...drapItem.position };
           endItem.position.left += drapItem.size.width / 2;
+          if (drapType === "point-bottom") {
+            endItem.position.top += drapItem.size.height;
+          }
           this.lineItems.push({
             startItem: drapItem,
-            endItem
+            startType: drapType,
+            endItem,
+            endType: drapType
           });
           break;
         default:
@@ -294,7 +319,9 @@ export default {
           drapItem.position.left += addX;
           drapItem.position.top += addY;
           break;
+
         case "point-top":
+        case "point-bottom":
           const endItem = this.lineItems[this.lineItems.length - 1].endItem;
           // console.log(JSON.stringify(endItem.position));
           endItem.position.left += addX;
@@ -318,11 +345,13 @@ export default {
         case "drap-box":
           break;
         case "point-top":
+        case "point-bottom":
           const drapType = target.getAttribute("drap-type");
           console.log(drapType, drapIndex);
           if (drapType) {
             const lineItem = this.lineItems[this.lineItems.length - 1];
             lineItem.endItem = this.drapItems[drapIndex];
+            lineItem.endType = drapType;
           } else {
             this.lineItems.pop();
           }
@@ -380,7 +409,7 @@ export default {
         const drapId = this.drapItems[drapIndex].id;
         console.log(drapId);
         this.lineItems = this.lineItems.filter(o => {
-          return o.endItem.id !== drapId && o.endItem.id !== drapId;
+          return o.startItem.id !== drapId && o.endItem.id !== drapId;
         });
 
         this.drapItems.splice(drapIndex, 1);
@@ -403,22 +432,37 @@ export default {
     background-color: white;
     cursor: pointer;
 
-    /* key class */
-    .drap-point_top {
+    .drap-point {
       position: absolute;
-      top: 0;
-      left: 50%;
       width: 20px;
       height: 10px;
+      transition: transform 300ms;
+      user-select: none;
+    }
+
+    .drap-point_top {
+      top: 0;
+      left: 50%;
       border-radius: 20px 20px 0 0;
       background-color: green;
-      transition: transform 300ms;
-      transform: translate(-50%, -100%) scale(1);
       transform-origin: center bottom;
-      user-select: none;
+      transform: translate(-50%, -100%) scale(1);
 
       &:hover {
         transform: translate(-50%, -100%) scale(1.2);
+      }
+    }
+
+    .drap-point_bottom {
+      bottom: 0;
+      left: 50%;
+      border-radius: 0 0 20px 20px;
+      background-color: red;
+      transform-origin: center top;
+      transform: translate(-50%, 100%) scale(1);
+
+      &:hover {
+        transform: translate(-50%, 100%) scale(1.2);
       }
     }
 
@@ -429,7 +473,6 @@ export default {
       transform: translate(0, -50%);
     }
 
-    /* key class */
     .drap-box {
       padding: 10px 30px 10px 10px;
       user-select: none;
@@ -449,6 +492,7 @@ export default {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    user-select: none;
   }
 
   svg path {
