@@ -8,6 +8,8 @@ import "./style/element-ui.css";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
+require("promise.prototype.finally").shim()
+
 Vue.config.productionTip = false
 
 Vue.prototype.$NProgress = NProgress;
