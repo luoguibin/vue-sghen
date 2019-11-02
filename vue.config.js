@@ -45,7 +45,8 @@ module.exports = {
       "vue-router": "VueRouter",
       vuex: "Vuex",
       axios: "axios",
-      "element-ui": "ELEMENT"
+      "element-ui": "ELEMENT",
+      "ant-design-vue": "Antd"
     });
 
     const plugins = config.plugins;
