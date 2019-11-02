@@ -22,6 +22,7 @@ module.exports = {
     },
     app4: {
       entry: './src4/main',
+      template: './public/index4.html',
       filename: 'index4.html'
     }
   },
