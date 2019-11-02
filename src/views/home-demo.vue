@@ -43,7 +43,6 @@ export default {
     initComp() {
       this.$NProgress.start();
       this.compState = 0;
-
       getDemoComponent(this.compName)
         .then(o => {
           Vue.component(this.compName, o.default);
