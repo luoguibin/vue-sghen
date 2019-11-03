@@ -46,7 +46,7 @@ module.exports = {
       vuex: "Vuex",
       axios: "axios",
       "element-ui": "ELEMENT",
-      "ant-design-vue": "Antd"
+      "ant-design-vue": "antd"
     });
 
     const plugins = config.plugins;

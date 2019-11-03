@@ -1,9 +1,11 @@
 <template>
-  <div class="jsplumb-demo flowContainer">
-    <div v-for="plumbItem in plumbItems" :key="plumbItem.id" :id="plumbItem.id" class="plumb-item">
-      <span class="plumb-point flow-node-drag"></span>
-      <div class="plumb-content">{{plumbItem.content}}</div>
+  <div class="jsplumb-demo" id="jsplumb-demo">
+    <div class="plumb-item" id="dragDropWindow1" style="left: 50px; top: 100px;">
+      <span>dragDropWindow1</span>
     </div>
+    <div class="plumb-item" id="dragDropWindow2" style="left: 350px; top: 100px;">dragDropWindow2</div>
+    <div class="plumb-item" id="dragDropWindow3" style="left: 50px; top: 300px;">dragDropWindow3</div>
+    <div class="plumb-item" id="dragDropWindow4" style="left: 350px; top: 300px;">dragDropWindow4</div>
   </div>
 </template>
 
@@ -16,110 +18,236 @@ export default {
   data() {
     return {
       plumbItems: [],
-      plumbId: 0,
-
-      // https://gitee.com/xiaoka2017/easy-flow/tree/master/src/components/flow
-      // 默认设置参数
-      jsplumbSetting: {
-        // 动态锚点、位置自适应
-        Anchors: [
-          "Top",
-          "TopCenter",
-          "TopRight",
-          "TopLeft",
-          "Right",
-          "RightMiddle",
-          "Bottom",
-          "BottomCenter",
-          "BottomRight",
-          "BottomLeft",
-          "Left",
-          "LeftMiddle"
-        ],
-        Container: "flowContainer",
-        // 连线的样式 StateMachine、Flowchart、Bezier
-        Connector: "Bezier",
-        // 鼠标不能拖动删除线
-        ConnectionsDetachable: false,
-        // 删除线的时候节点不删除
-        DeleteEndpointsOnDetach: false,
-        // 连线的端点
-        // Endpoint: ["Dot", {radius: 5}],
-        Endpoint: ["Rectangle", { height: 10, width: 10 }],
-        // 线端点的样式
-        EndpointStyle: { fill: "rgba(255,255,255,0)", outlineWidth: 1 },
-        LogEnabled: true, //是否打开jsPlumb的内部日志记录
-        // 绘制线
-        PaintStyle: { stroke: "black", strokeWidth: 3 },
-        // 绘制箭头
-        Overlays: [["Arrow", { width: 12, length: 12, location: 1 }]],
-        RenderMode: "svg"
-      },
-      // jsplumb连接参数
-      jsplumbConnectOptions: {
-        isSource: true,
-        isTarget: true,
-        // 动态锚点、提供了4个方向 Continuous、AutoDefault
-        anchor: "Continuous"
-      },
-      jsplumbSourceOptions: {
-        filter:
-          ".flow-node-drag" /*"span"表示标签，".className"表示类，"#id"表示元素id*/,
-        filterExclude: false,
-        anchor: "Continuous",
-        allowLoopback: false
-      },
-      jsplumbTargetOptions: {
-        filter:
-          ".flow-node-drag" /*"span"表示标签，".className"表示类，"#id"表示元素id*/,
-        filterExclude: false,
-        anchor: "Continuous",
-        allowLoopback: false
-      }
+      plumbId: 0
     };
   },
 
   mounted() {
     window.jsPlumbDemo = this;
 
-    const jsPlumbInstance = jsPlumb.getInstance();
-    this.jsPlumbInstance = jsPlumbInstance;
-
-    jsPlumbInstance.ready(() => {
-      // 导入默认配置
-      jsPlumbInstance.importDefaults(this.jsplumbSetting);
-      // 会使整个jsPlumb立即重绘。
-      jsPlumbInstance.setSuspendDrawing(false, true);
-
-      jsPlumbInstance.bind("connection", evt => {
-        console.log("connection", evt);
+    jsPlumb.ready(() => {
+      const instance = jsPlumb.getInstance({
+        DragOptions: { cursor: "pointer", zIndex: 2000 },
+        PaintStyle: { stroke: "#666" },
+        EndpointHoverStyle: { fill: "orange" },
+        HoverPaintStyle: { stroke: "orange" },
+        EndpointStyle: { width: 20, height: 16, stroke: "#666" },
+        Endpoint: "Rectangle",
+        Anchors: ["TopCenter", "TopCenter"],
+        ConnectionOverlays: [
+          ["Arrow", { width: 20, length: 10, foldback: 0.623, location: 0.92, visible: true }]
+        ],
+        Container: "jsplumb-demo"
       });
+      this.plumbInstance = instance
 
-      for (let i = 0; i < 3; i++) {
-        this.addPlumbItem();
-      }
-    });
-  },
+      // suspend drawing and initialise.
+      instance.batch(function() {
+        // bind to connection/connectionDetached events, and update the list of connections on screen.
+        instance.bind("connection", function(info, originalEvent) {
+        });
+        instance.bind("connectionDetached", function(info, originalEvent) {
+        });
 
-  methods: {
-    addPlumbItem() {
-      const id = this.plumbId++,
-        obj = {
-          id: "jsplumb-" + id,
-          content: new Date().toString(),
-          left: 0,
-          top: 0
+        instance.bind("connectionMoved", function(info, originalEvent) {
+          //  only remove here, because a 'connection' event is also fired.
+          // in a future release of jsplumb this extra connection event will not
+          // be fired.
+          console.log("connection moved")
+        });
+
+        instance.bind("click", function(component, originalEvent) {
+          alert("click!");
+        });
+
+        // configure some drop options for use by all endpoints.
+        var exampleDropOptions = {
+          tolerance: "touch",
+          hoverClass: "dropHover",
+          activeClass: "dragActive"
         };
-      this.plumbItems.push(obj);
-      this.$nextTick(() => {
-        const jsPlumbInstance = this.jsPlumbInstance;
-        jsPlumbInstance.makeSource(obj.id, this.jsplumbSourceOptions);
-        jsPlumbInstance.makeTarget(obj.id, this.jsplumbTargetOptions);
-        jsPlumbInstance.draggable(obj.id, {
-          containment: "parent"
+
+        //
+        // first example endpoint.  it's a 25x21 rectangle (the size is provided in the 'style' arg to the Endpoint),
+        // and it's both a source and target.  the 'scope' of this Endpoint is 'exampleConnection', meaning any connection
+        // starting from this Endpoint is of type 'exampleConnection' and can only be dropped on an Endpoint target
+        // that declares 'exampleEndpoint' as its drop scope, and also that
+        // only 'exampleConnection' types can be dropped here.
+        //
+        // the connection style for this endpoint is a Bezier curve (we didn't provide one, so we use the default), with a strokeWidth of
+        // 5 pixels, and a gradient.
+        //
+        // there is a 'beforeDrop' interceptor on this endpoint which is used to allow the user to decide whether
+        // or not to allow a particular connection to be established.
+        //
+        var exampleColor = "#00f";
+        var exampleEndpoint = {
+          endpoint: "Rectangle",
+          paintStyle: { width: 25, height: 21, fill: exampleColor },
+          isSource: true,
+          reattach: true,
+          scope: "blue",
+          connectorStyle: {
+            gradient: {
+              stops: [[0, exampleColor], [0.5, "#09098e"], [1, exampleColor]]
+            },
+            strokeWidth: 5,
+            stroke: exampleColor,
+            dashstyle: "2 2"
+          },
+          isTarget: true,
+          beforeDrop: function(params) {
+            return true;
+          },
+          dropOptions: exampleDropOptions
+        };
+
+        //
+        // the second example uses a Dot of radius 15 as the endpoint marker, is both a source and target,
+        // and has scope 'exampleConnection2'.
+        //
+        var color2 = "#316b31";
+        var exampleEndpoint2 = {
+          endpoint: ["Dot", { radius: 10 }],
+          paintStyle: { fill: color2 },
+          isSource: true,
+          scope: "green",
+          connectorStyle: { stroke: color2, strokeWidth: 2 },
+          connector: ["Bezier", { curviness: 63 }],
+          maxConnections: 3,
+          isTarget: true,
+          beforeDrop: function(params) {
+            return true;
+          },
+          dropOptions: exampleDropOptions
+        };
+
+        //
+        // the third example uses a Dot of radius 17 as the endpoint marker, is both a source and target, and has scope
+        // 'exampleConnection3'.  it uses a Straight connector, and the Anchor is created here (bottom left corner) and never
+        // overriden, so it appears in the same place on every element.
+        //
+        // this example also demonstrates the beforeDetach interceptor, which allows you to intercept
+        // a connection detach and decide whether or not you wish to allow it to proceed.
+        //
+        var example3Color = "rgba(229,219,61,0.5)";
+        var exampleEndpoint3 = {
+          endpoint: ["Dot", { radius: 17 }],
+          anchor: "BottomLeft",
+          paintStyle: { fill: example3Color, opacity: 0.5 },
+          isSource: true,
+          scope: "yellow",
+          connectorStyle: {
+            stroke: example3Color,
+            strokeWidth: 4
+          },
+          connector: "Straight",
+          isTarget: true,
+          dropOptions: exampleDropOptions,
+          beforeDetach: function(conn) {
+            return confirm("Detach connection?");
+          },
+          onMaxConnections: function(info) {
+            alert(
+              "Cannot drop connection " +
+                info.connection.id +
+                " : maxConnections has been reached on Endpoint " +
+                info.endpoint.id
+            );
+          }
+        };
+
+        // setup some empty endpoints.  again note the use of the three-arg method to reuse all the parameters except the location
+        // of the anchor (purely because we want to move the anchor around here; you could set it one time and forget about it though.)
+        var e1 = instance.addEndpoint(
+          "dragDropWindow1",
+          { anchor: [0.5, 1, 0, 1] },
+          exampleEndpoint2
+        );
+
+        // setup some DynamicAnchors for use with the blue endpoints
+        // and a function to set as the maxConnections callback.
+        var anchors = [
+            [1, 0.2, 1, 0],
+            [0.8, 1, 0, 1],
+            [0, 0.8, -1, 0],
+            [0.2, 0, 0, -1]
+          ],
+          maxConnectionsCallback = function(info) {
+            alert(
+              "Cannot drop connection " +
+                info.connection.id +
+                " : maxConnections has been reached on Endpoint " +
+                info.endpoint.id
+            );
+          };
+
+        var e1 = instance.addEndpoint(
+          "dragDropWindow1",
+          { anchor: anchors },
+          exampleEndpoint
+        );
+        // you can bind for a maxConnections callback using a standard bind call, but you can also supply 'onMaxConnections' in an Endpoint definition - see exampleEndpoint3 above.
+        e1.bind("maxConnections", maxConnectionsCallback);
+
+        var e2 = instance.addEndpoint(
+          "dragDropWindow2",
+          { anchor: [0.5, 1, 0, 1] },
+          exampleEndpoint
+        );
+        // again we bind manually. it's starting to get tedious.  but now that i've done one of the blue endpoints this way, i have to do them all...
+        e2.bind("maxConnections", maxConnectionsCallback);
+        instance.addEndpoint(
+          "dragDropWindow2",
+          { anchor: "RightMiddle" },
+          exampleEndpoint2
+        );
+
+        var e3 = instance.addEndpoint(
+          "dragDropWindow3",
+          { anchor: [0.25, 0, 0, -1] },
+          exampleEndpoint
+        );
+        e3.bind("maxConnections", maxConnectionsCallback);
+        instance.addEndpoint(
+          "dragDropWindow3",
+          { anchor: [0.75, 0, 0, -1] },
+          exampleEndpoint2
+        );
+
+        var e4 = instance.addEndpoint(
+          "dragDropWindow4",
+          { anchor: [1, 0.5, 1, 0] },
+          exampleEndpoint
+        );
+        e4.bind("maxConnections", maxConnectionsCallback);
+        instance.addEndpoint(
+          "dragDropWindow4",
+          { anchor: [0.25, 0, 0, -1] },
+          exampleEndpoint2
+        );
+
+        // make .window divs draggable
+        instance.draggable(jsPlumb.getSelector(".plumb-item"));
+
+        // add endpoint of type 3 using a selector.
+        instance.addEndpoint(
+          jsPlumb.getSelector(".plumb-item"),
+          exampleEndpoint3
+        );
+
+        var hideLinks = jsPlumb.getSelector(".plumb-item span");
+        instance.on(hideLinks, "click", function(e) {
+          console.log(e);
+          // instance.toggleVisible(true);
+          // instance.toggleDraggable(true);
+          // instance.deleteConnectionsForElement(true);
+          // instance.detachEveryConnection();
         });
       });
-    }
+
+      jsPlumb.fire("jsPlumbDemoLoaded", instance);
+    });
   }
 };
 </script>
@@ -128,25 +256,14 @@ export default {
 .jsplumb-demo {
   height: 100%;
   position: relative;
+  overflow: hidden;
 
   .plumb-item {
     position: absolute;
+    z-index: 10;
+    padding: 10px;
     border: 1px solid gray;
-    background-color: white;
-
-    .plumb-point {
-      position: absolute;
-      left: calc(50% - 10px);
-      top: -10px;
-      display: inline-block;
-      padding: 10px;
-      border-radius: 50%;
-      background-color: green;
-    }
-
-    .plumb-content {
-      padding: 10px;
-    }
+    background-color: rgba(255, 255, 255, 0.342);
   }
 }
 </style>
