@@ -88,6 +88,8 @@ export default {
     border: 1px solid gray;
     border-bottom-width: 2px;
     margin-bottom: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 </style>
