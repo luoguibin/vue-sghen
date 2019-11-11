@@ -24,14 +24,25 @@ const getTables = () => {
     })
 }
 
-const getTableData = (tableName, field = false) => {
+const getTableData = (data, field = false) => {
     return request({
         url: '/v1/common/get',
         method: 'get',
         params: {
             type: 'table-data',
-            tableName,
+            data,
             field
+        }
+    })
+}
+
+const getSQLData = data => {
+    return request({
+        url: '/v1/common/get',
+        method: 'get',
+        params: {
+            type: 'sql-data',
+            data
         }
     })
 }
@@ -39,5 +50,6 @@ const getTableData = (tableName, field = false) => {
 export default {
     getApiData,
     getTables,
-    getTableData
+    getTableData,
+    getSQLData
 }

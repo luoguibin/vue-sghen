@@ -2,7 +2,7 @@
   <div class="codemirror-demo">
     <codemirror
       ref="codemirror"
-      :value="editCode"
+      v-model="editCode"
       :options="options"
       @changes="handleChages"
       class="code"
