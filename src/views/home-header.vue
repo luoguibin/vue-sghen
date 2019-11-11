@@ -19,7 +19,7 @@ export default {
 
   methods: {
     onGoIndex(num) {
-      location.href = location.origin + `/index${num}.html`;
+      location.href = location.origin + location.pathname.replace("/index.html", `/index${num}.html`);
     }
   }
 };
