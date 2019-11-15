@@ -81,7 +81,7 @@ export default {
     },
 
     handleClick(menu) {
-      this.loadComp(menu.key);
+      this.$router.push({ name: "home", query: { compName: menu.key } });
     }
   }
 };

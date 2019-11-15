@@ -228,7 +228,14 @@ export default {
         );
 
         // make .window divs draggable
-        instance.draggable(jsPlumb.getSelector(".plumb-item"));
+        instance.draggable(jsPlumb.getSelector(".plumb-item"), {
+          // grid: [1, 1],
+          // start(e) { console.log('start', e) },
+          // stop(e) { console.log('stop', e) },
+          // startEvent(e) { console.log('startEvent', e) },
+          // drag(e) { console.log('drag', e) },
+          // beforeStart(e) { console.log('beforeStart', e) }
+        });
 
         // add endpoint of type 3 using a selector.
         instance.addEndpoint(
