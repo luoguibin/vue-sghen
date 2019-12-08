@@ -23,6 +23,9 @@
       <p>
         <bdi>keep-alive</bdi> 要求同时只有一个子元素被渲染</p>
       <p>父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的。</p>
+      <p>
+        <bdi>router-view的key</bdi>配合keep-alive可以缓存同组件多实例的情况</p>
+      <p>
 
       <div>
         <button @click="onLoadDMixTest">onLoadDMixTest</button>
