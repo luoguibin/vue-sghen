@@ -26,6 +26,11 @@
       <p>
         <bdi>router-view的key</bdi>配合keep-alive可以缓存同组件多实例的情况</p>
       <p>
+      <p>
+        <bdi>回调的arguments</bdi>
+        <span style="text-decoration: line-through;">@change="onChange($event0, $event1, 'id')"</span>
+        => @change="onChange(arguments, 'id')"
+      <p>
 
       <div>
         <button @click="onLoadDMixTest">onLoadDMixTest</button>
