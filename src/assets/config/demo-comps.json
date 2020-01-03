@@ -15,6 +15,7 @@
     "line-adsorption": false,
     "mxgraph-demo": false,
     "pixi-demo": false,
+    "poplar-annotation-demo": false,
     "scrollbar-tree": false,
     "scrollbar-table": false,
     "selfdrap-demo": false,
@@ -22,6 +23,7 @@
     "style-optimization": false,
     "themepicker": false,
     "upload-demo": false,
+    "word-tree": false,
     "worker-demo": false,
     "xlsx-pdf-demo": false
 }
