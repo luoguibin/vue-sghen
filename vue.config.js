@@ -11,27 +11,14 @@ module.exports = {
       entry: './src/main',
       template: './public/index.html',
       filename: 'index.html'
-    },
-    app2: {
-      entry: './src2/main',
-      filename: 'index2.html'
-    },
-    app3: {
-      entry: './src3/main',
-      filename: 'index3.html'
-    },
-    app4: {
-      entry: './src4/main',
-      template: './public/index4.html',
-      filename: 'index4.html'
     }
   },
 
   chainWebpack: config => {
     config
       .output
-      .filename('js/[name].js?[hash]')
-      .chunkFilename('js/[name].js?[hash]')
+      .filename('js/[name]-[hash].js')
+      .chunkFilename('js/[name]-[hash].js')
       .end();
 
     config.resolve.alias.set(
@@ -50,7 +37,7 @@ module.exports = {
     });
 
     const plugins = config.plugins;
-    ["app", "app2", "app3"].forEach(key => {
+    ["app"].forEach(key => {
       plugins.delete(`prefetch-${key}`)
       plugins.delete(`preload-${key}`)
     });
