@@ -13,6 +13,7 @@
     "jsplumb-demo": false,
     "lab-dom-demo": false,
     "line-adsorption": false,
+    "much-item-scroll": false,
     "mxgraph-demo": false,
     "pixi-demo": false,
     "poplar-annotation-demo": false,
@@ -21,8 +22,10 @@
     "selfdrap-demo": false,
     "shape-cut": false,
     "style-optimization": false,
+    "test-demo": false,
     "themepicker": false,
     "upload-demo": false,
+    "video-demo": false,
     "word-tree": false,
     "worker-demo": false,
     "xlsx-pdf-demo": false

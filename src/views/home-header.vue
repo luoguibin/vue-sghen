@@ -1,7 +1,5 @@
 <template>
-  <div class="home-header">
-    <el-button type="text">None</el-button>
-  </div>
+  <div class="home-header"></div>
 </template>
 
 <script>
