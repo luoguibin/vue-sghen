@@ -1,32 +1,35 @@
 <template>
-  <div v-show="visible" class="music-box-mask">
-    <div class="music-box">
-      <!-- 音乐名 -->
-      <div class="music-name">{{ name }}</div>
-      <!-- 音乐功能按钮 -->
-      <div class="music-options">
-        <button class="music-previous" :disabled="previousDisabled" @click="onPlayNext(false)"></button>
-        <button :class="{'music-toggle': true, 'music-play': isPlaying, 'music-pause': !isPlaying }"
-          @click="onTogglePlay(null, $event)"></button>
-        <button class="music-next" :disabled="nextDisabled" @click="onPlayNext(true)"></button>
-      </div>
-      <!-- 播放实体 -->
-      <audio ref="audio" :src="musicSrc" hidden
-        @timeupdate="handleTimeUpdate" @canplay="handleCanPlay" @ended="handleEnded">
-      </audio>
-      <!-- 播放进度 -->
-      <div class="music-progress">
-        <div class="music-progress__outer" @click="onClickProgress">
-          <div class="music-progress__inner" :style="{ width: progress }"></div>
+  <div class="music-container">
+    <button @click="visible = true">显示</button>
+    <div v-show="visible" class="music-box-mask">
+      <div class="music-box">
+        <!-- 音乐名 -->
+        <div class="music-name">{{ name }}</div>
+        <!-- 音乐功能按钮 -->
+        <div class="music-options">
+          <button class="music-previous" :disabled="previousDisabled" @click="onPlayNext(false)"></button>
+          <button :class="{'music-toggle': true, 'music-play': isPlaying, 'music-pause': !isPlaying }"
+            @click="onTogglePlay(null, $event)"></button>
+          <button class="music-next" :disabled="nextDisabled" @click="onPlayNext(true)"></button>
         </div>
-        <div class="music-time">
-          <div class="left">{{ currentTime | minuteFilter }}</div>
-          <div class="right">{{ totalTime | minuteFilter }}</div>
+        <!-- 播放实体 -->
+        <audio ref="audio" :src="musicSrc" hidden @pause="handlePause" @play="handlePlay"
+          @timeupdate="handleTimeUpdate" @canplay="handleCanPlay" @ended="handleEnded">
+        </audio>
+        <!-- 播放进度 -->
+        <div class="music-progress">
+          <div class="music-progress__outer" @click="onClickProgress">
+            <div class="music-progress__inner" :style="{ width: progress }"></div>
+          </div>
+          <div class="music-time">
+            <div class="left">{{ currentTime | minuteFilter }}</div>
+            <div class="right">{{ totalTime | minuteFilter }}</div>
+          </div>
         </div>
-      </div>
-      <!-- 关闭 -->
-      <div class="music-box-close">
-        <button @click="$emit('update:visible', false)">关闭</button>
+        <!-- 关闭 -->
+        <div class="music-box-close">
+          <button @click="$emit('update:visible', false)">关闭</button>
+        </div>
       </div>
     </div>
   </div>
@@ -37,10 +40,6 @@ export default {
   name: 'MusicBox',
 
   props: {
-    visible: {
-      type: Boolean,
-      default: true
-    },
     /**
      * 播放的音乐列表
      * eg: [{contentID: 0, transferstate: 3, contentName: 'victory.mp3', presentURL: 'http://mp3.music.cn/pure/vicotry.mp3'}]
@@ -62,6 +61,7 @@ export default {
 
   data () {
     return {
+      visible: true,
       hasUserAction: false, // 是否有人为点击播放动作
       index: 0,
       musicSrc: '',
@@ -110,6 +110,18 @@ export default {
   },
 
   methods: {
+    /**
+     * @description 监听音频是否被暂停，主要用于解决第三方应用引起
+     */
+    handlePause () {
+      this.isPlaying = false
+    },
+    /**
+     * @description 监听音频是否被暂停，主要用于解决第三方应用引起
+     */
+    handlePlay () {
+      this.isPlaying = true
+    },
     /**
      * @description 音频当前播放时间回调事件
      * @param {Event} e
