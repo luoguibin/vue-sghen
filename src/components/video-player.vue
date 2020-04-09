@@ -41,10 +41,14 @@ export default {
 
   methods: {
     initDPlayer () {
-      const videoObj = JSON.parse(sessionStorage.getItem('video'))
-      if (!videoObj) {
-        return
-      }
+    //   const videoObj = JSON.parse(sessionStorage.getItem('video'))
+    //   if (!videoObj) {
+    //     return
+    //   }
+    const videoObj = {
+        presentURL: 'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
+        presentLURL: 'https://www.runoob.com/try/demo_source/mov_bbb.mp4'
+    }
 
       // presentURL  String 内容标准播放格式的URL地址
       // presentLURL String 内容流畅播放格式的URL地址
