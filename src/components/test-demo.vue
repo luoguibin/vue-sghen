@@ -4,6 +4,10 @@
     @touchmove="onTouch('touchmove', $event)"
     @touchend="onTouch('touchend', $event)"
   >
+    <div class="test-input">
+      <input placeholder="封号" />
+      <label>封号</label>
+    </div>
     <div class="td-tabs" ref="tdTabs" @click="onTabClick">
       <div class="td-tab-indicator" :style="indicatorStyle"></div>
       <div class="td-tab">tab1</div>
@@ -144,6 +148,49 @@ export default {
 <style lang="scss" scoped>
 .test-demo {
   height: 100%;
+
+  .test-input {
+    position: relative;
+    box-sizing: border-box;
+    border-bottom: 5px solid rgb(190, 190, 190);
+    input {
+      width: 100%;
+      display: block;
+      padding: 0 12px;
+      line-height: 35px;
+      box-sizing: border-box;
+      border: none;
+      background-color: transparent;
+      outline: none;
+      &:placeholder-shown::placeholder {
+          color: transparent;
+      }
+      &:focus~label,
+      &:not(:placeholder-shown)~label {
+        color: steelblue;
+        transform: translate(0, -16px);
+      }
+    }
+    label {
+      position: absolute;
+      left: 10px;
+      top: 5px;
+      transition: transform 300ms;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -5px;
+      transform: scale(0);
+      transition: transform 300ms;
+      border-bottom: 5px solid steelblue;
+    }
+    &:focus-within::after {
+      transform: scale(1);
+    }
+  }
 
   .td-tabs {
     text-align: center;
