@@ -24,7 +24,7 @@ export default {
       isFullScreen: false,
       outerHeaderVisible: false,
       isControllerVisible: false,
-      backImgSrc: require('@/assets/image/myPicture/goback.png')
+      backImgSrc: require('@/assets/image/audio/audio_previous.png')
     }
   },
 
@@ -337,7 +337,7 @@ export default {
         height: 1.6rem;
         margin: 0.8rem 1rem 0;
         background-size: 100% 100%;
-        background-image: url('~@/assets/image/myVideo/video_play_2x.png');
+        background-image: url('~@/assets/image/audio/audio_play.png');
         svg {
           display: none;
         }
@@ -349,7 +349,7 @@ export default {
       height: 1.6rem;
       margin: 0 1rem;
       background-size: 100% 100%;
-      background-image: url('~@/assets/image/myVideo/video_screen_enlarge_2x.png');
+      background-image: url('~@/assets/image/audio/audio_play.png');
       span {
         display: none;
       }
@@ -362,7 +362,7 @@ export default {
   .dplayer-playing {
     .dplayer-controller {
       .dplayer-play-icon {
-        background-image: url('~@/assets/image/myVideo/video_pause_2x.png');
+        background-image: url('~@/assets/image/audio/audio_pause.png');
       }
     }
   }
@@ -371,7 +371,7 @@ export default {
 .video-player-fullscreen {
   .dplayer {
     .dplayer-full-icon {
-        background-image: url('~@/assets/image/myVideo/video_screen_shrink_2x.png');
+        background-image: url('~@/assets/image/audio/audio_play.png');
     }
   }
 }
