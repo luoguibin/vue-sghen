@@ -12,17 +12,19 @@
         x5-video-player-type="h5"
         x5-video-player-fullscreen="true"
         x5-video-orientation="portraint"
+        controls
+        codecs="avc1.42E01E,mp4a.40.2"
       >
         <source :src="mp4Path" type="video/mp4" />
         <source :src="oggPath" type="video/ogg" />您的浏览器不支持 HTML5 video 标签。
       </video>
 
       <!-- 视频控件 -->
-      <div class="video-controls">
+      <div class="video-controls" v-show="false">
         <div class="video-controls-top" v-show="controlsVisble">
           <p @click="onClickTitle">大白与蝴蝶.mp4</p>
         </div>
-        <div class="video-controls-middle" @click="onControlMiddle"></div>
+        <div class="video-controls-middle" @touchend="onControlMiddle" @mouseup="onControlMiddle"></div>
         <div class="video-controls-bottom" v-show="controlsVisble">
           <div class="video-controls-btns">
             <i
@@ -78,39 +80,6 @@ export default {
 
   methods: {
     onClickTitle() {
-      if (this.isFullscreen) {
-        this.exitFullscreen()
-      } else {
-        this.fullScreen()
-      }
-    },
-    //全屏
-    fullScreen() {
-      this.isFullscreen = true
-      const element = this.$refs.videoWrapper;
-      if (element.requestFullscreen) {
-        element.requestFullscreen();
-      } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
-      } else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
-      } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-      }
-    },
-
-    //退出全屏
-    exitFullscreen() {
-      this.isFullscreen = false
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
     },
     togglePlay() {
       const video = this.$refs.video;
