@@ -192,6 +192,9 @@ export default {
 
       this.resetVideoName()
       dp.fullScreen.request()
+      setTimeout(() => {
+        video.setAttribute('x5-video-orientation', 'portraint') // 播放器的方向， landscape横屏，portraint竖屏，默认值为竖屏
+      }, 0);
     },
     showHeader () {
       if (!this.isFullScreen) {
