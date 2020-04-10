@@ -69,6 +69,12 @@ export default {
       this.$refs.video.play()
       this.posterVisible = false
       this.hasUserAction = !!e
+
+      this.$el.requestFullscreen().then(resp => {
+        console.log(resp)
+      }).catch(err => {
+        console.log(err)
+      })
     },
 
     onReload () {
