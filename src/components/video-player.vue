@@ -191,6 +191,7 @@ export default {
       }
 
       this.resetVideoName()
+      dp.fullScreen.request()
     },
     showHeader () {
       if (!this.isFullScreen) {
