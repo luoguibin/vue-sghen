@@ -218,13 +218,13 @@ export default {
       this.coverView.style.display = ''
     },
     resetVideoName () {
-      if (!this.videoObj) return
-      const videoName = this.videoObj.contentName
-      if (videoName.length > 16) {
-        this.videoName = videoName.substring(0, 9) + '...' + videoName.substring(videoName.length - 9, videoName.length)
-      } else {
-        this.videoName = videoName
-      }
+      // if (!this.videoObj) return
+      // const videoName = this.videoObj.contentName
+      // if (videoName.length > 16) {
+      //   this.videoName = videoName.substring(0, 9) + '...' + videoName.substring(videoName.length - 9, videoName.length)
+      // } else {
+      //   this.videoName = videoName
+      // }
     },
     goBack () {
       if (this.isFullScreen) {

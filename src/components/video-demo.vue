@@ -77,9 +77,16 @@ export default {
   updated() {},
 
   methods: {
-    onClickTitle() {},
+    onClickTitle() {
+      if (this.isFullscreen) {
+        this.exitFullscreen()
+      } else {
+        this.fullScreen()
+      }
+    },
     //全屏
     fullScreen() {
+      this.isFullscreen = true
       const element = this.$refs.videoWrapper;
       if (element.requestFullscreen) {
         element.requestFullscreen();
@@ -94,6 +101,7 @@ export default {
 
     //退出全屏
     exitFullscreen() {
+      this.isFullscreen = false
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.msExitFullscreen) {
