@@ -88,6 +88,10 @@ export default {
         theme: '#b7daff',
         mutex: false
       })
+      const video = dp.video
+      video.setAttribute('x5-video-player-type', 'h5')
+      video.setAttribute('x5-video-player-fullscreen', true)
+
       this.dp = dp
       this.$once('hook:beforeDestroy', () => {
         dp.destroy()
