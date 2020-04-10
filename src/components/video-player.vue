@@ -53,15 +53,11 @@ export default {
 
   mounted () {
     window.videoPlayer = this
-    this.$loading()
+    // this.$loading()
   },
 
   methods: {
     goBack () {
-      if (this.isFullScreen) {
-        this.dp.fullScreen.cancel()
-        return
-      }
       if (history.length > 1) {
         this.$router.go(-1)
       } else {
@@ -88,7 +84,7 @@ export default {
       const video = this.$refs.video
       if (!this.videoReady) {
         video.setAttribute('controls', true)
-        this.$loading.hide()
+        // this.$loading.hide()
         this.videoReady = true
       }
       if (video.paused && this.hasUserAction) {
