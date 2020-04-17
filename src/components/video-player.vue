@@ -1,10 +1,16 @@
 <template>
   <div class="video-player">
     <div class="video-player-header">
-      <img @click="goBack" src="@/assets/image/audio/audio_previous.png" alt />
-      <p class="video-name" @click="onClickTitle">{{videoName}}</p>
+      <div class="back--title">
+        <img @click="goBack" src="@/assets/image/audio/audio_previous.png" alt />
+        <p class="video-name" @click="onClickTitle">{{videoName}}</p>
+      </div>
+      <div>
+        <input v-model="videoURL0" style="width: calc(100% - 60px);line-height: 25px; display: inline-block; padding: 0 10px; box-sizing: border-box;" />
+        <button @click="onResetLoad()" style="line-height: 25px; width: 60px;box-sizing: border-box;">加载</button>
+      </div>
     </div>
-
+    
     <div ref="wrapper" :class="{'video-player-wrapper': true, 'video-hidden': !videoReady }">
       <video
         ref="video"
@@ -48,6 +54,7 @@ export default {
       videoReady: false,
       videoName: 'big_buck_bunny.mp4',
       videoURL: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+      videoURL0: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
       videoPosterURL: 'http://218.104.127.194:2414/storageWeb/servlet/GetFileByURLServlet?root=/mnt/D999&fileid=mz74bda2ec99358cab89c7625ff8c28e6c.mp4&ct=3&type=1&code=A16BCA895B99F451D0F77AFC92EC9339033717F750518E923756F3AC15356D28&account=MTU2MjUwNDU5ODQ=&p=0&ui=TT11jJpQI00x&ci=TT11jJpQI00x0042020040816524000h&cn=mov_bbb&oprChannel=10000000&dom=D888',
       tipVisible: false,
       posterVisible: true,
@@ -97,6 +104,11 @@ export default {
       // }).catch(err => {
       //   console.log(err)
       // })
+    },
+
+    onResetLoad (e) {
+      this.videoURL = this.videoURL0
+      this.onReload(e)
     },
 
     onReload (e) {
@@ -182,18 +194,21 @@ export default {
   }
 
   .video-player-header {
-    display: flex;
-    align-items: center;
     width: 100%;
-    height: 4.4rem;
     position: fixed;
     top: 0;
     right: 0;
     left: 0;
     z-index: 29999;
-    box-sizing: border-box;
     background: linear-gradient(rgba(0, 0, 0, 0.5), transparent);
-    padding: 0 1.6rem;
+
+    .back--title {
+      padding: 0 1.6rem;
+      display: flex;
+      align-items: center;
+      height: 4.4rem;
+      box-sizing: border-box;
+    }
     img {
       display: inline-block;
       width: 2rem;
