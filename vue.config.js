@@ -4,7 +4,7 @@ module.exports = {
   publicPath: './',
   outputDir: 'dist',
 
-  lintOnSave: false,
+  lintOnSave: true,
 
   pages: {
     app: {
@@ -76,10 +76,12 @@ module.exports = {
 
 
   devServer: {
+    disableHostCheck: true,
+    host: '0.0.0.0',
+    open: false,
     port: 8081,
     https: false,
-    hotOnly: false,
-    proxy: null
+    hotOnly: false
   },
 
   // 三方插件的选项

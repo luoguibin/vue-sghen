@@ -2,7 +2,7 @@
   <div class="video-player">
     <div class="video-player-header">
       <img @click="goBack" src="@/assets/image/audio/audio_previous.png" alt />
-      <p class="video-name">{{videoName}}</p>
+      <p class="video-name" @click="onClickTitle">{{videoName}}</p>
     </div>
 
     <div ref="wrapper" :class="{'video-player-wrapper': true, 'video-hidden': !videoReady }">
@@ -13,7 +13,8 @@
         x-webkit-airplay="true"
         x5-playsinline="true"
         webkit-playsinline="true"
-        x5-video-player-type="h5"
+        preload="auto"
+        @loadeddata="handleLoadedData"
         @waiting="handleWaiting"
         @canplay="hanldeCanPlay"
         @play="hanlePlay"
@@ -21,15 +22,19 @@
         @error="handleError"
       ></video>
       <div class="video-player-poster" v-show="posterVisible">
-        <img class="poster" :src="videoPosterURL" />
-        <img class="play" @click="onInitPlay" src="@/assets/image/audio/audio_play.png" />
+        <img :class="{'poster': true, 'img-hidden': !isPosterLoaded}" :src="videoPosterURL" @error="isPosterLoaded = false" @load="isPosterLoaded = true" />
+        <img class="play" v-show="videoReady" @click="onInitPlay" src="@/assets/image/audio/audio_pause.png" />
       </div>
     </div>
 
-    <div class="video-player-tip" v-show="tipVisible">
+     <div class="video-player-tip" v-show="tipVisible">
       <p>加载失败，请
         <span @click="onReload">重新加载</span>
       </p>
+    </div>
+
+    <div v-if="true" class="log">
+      <div v-html="logMsg"></div>
     </div>
   </div>
 </template>
@@ -41,19 +46,24 @@ export default {
   data () {
     return {
       videoReady: false,
-      videoName: 'mov_bbb.mp4',
-      videoURL: 'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
-      videoPosterURL:
-        'http://218.104.127.194:2414/storageWeb/servlet/GetFileByURLServlet?root=/mnt/D999&fileid=mz74bda2ec99358cab89c7625ff8c28e6c.mp4&ct=3&type=1&code=A16BCA895B99F451D0F77AFC92EC9339033717F750518E923756F3AC15356D28&account=MTU2MjUwNDU5ODQ=&p=0&ui=TT11jJpQI00x&ci=TT11jJpQI00x0042020040816524000h&cn=mov_bbb&oprChannel=10000000&dom=D888',
+      videoName: 'big_buck_bunny.mp4',
+      videoURL: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+      videoPosterURL: 'http://218.104.127.194:2414/storageWeb/servlet/GetFileByURLServlet?root=/mnt/D999&fileid=mz74bda2ec99358cab89c7625ff8c28e6c.mp4&ct=3&type=1&code=A16BCA895B99F451D0F77AFC92EC9339033717F750518E923756F3AC15356D28&account=MTU2MjUwNDU5ODQ=&p=0&ui=TT11jJpQI00x&ci=TT11jJpQI00x0042020040816524000h&cn=mov_bbb&oprChannel=10000000&dom=D888',
       tipVisible: false,
       posterVisible: true,
-      hasUserAction: false
+      isPosterLoaded: true,
+      hasUserAction: false,
+      isFullScreen: false,
+      logMsg: 'create\n'
     }
   },
 
   mounted () {
     window.videoPlayer = this
     // this.$loading()
+    this.$refs.video.load()
+  
+    this.$el.parentElement.style.padding = '0'
   },
 
   methods: {
@@ -64,29 +74,55 @@ export default {
         this.$router.push('/main')
       }
     },
-
     onInitPlay (e) {
-      this.$refs.video.play()
+      const video = this.$refs.video
+      video.play()
       this.posterVisible = false
       this.hasUserAction = !!e
 
-      this.$el.requestFullscreen().then(resp => {
-        console.log(resp)
-      }).catch(err => {
-        console.log(err)
-      })
+      // 进入全屏，设置状态
+      video.addEventListener('x5videoenterfullscreen', () => {
+        this.logMsg += 'x5videoenterfullscreen\n'
+        this.isFullScreen = true
+      }, false)
+
+      // 退出全屏时，清空状态
+      video.addEventListener('x5videoexitfullscreen', () => {
+        this.logMsg += 'x5videoexitfullscreen\n'
+        this.isFullScreen = false
+      }, false)
+
+      // this.$el.requestFullscreen().then(resp => {
+      //   console.log(resp)
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
 
-    onReload () {
+    onReload (e) {
+      if (!this.isOnline()) {
+        alert('网络异常，请稍后重试')
+        return
+      }
       this.tipVisible = false
+      this.posterVisible = true
+      this.videoReady = false
+      // this.$loading()
+      this.hasUserAction = !!e
       this.$refs.video.load()
     },
 
-    handleWaiting (e) {
-      console.log('handleWaiting', e)
+    handleWaiting () {
+      // console.log('handleWaiting', e)
+      this.logMsg += 'waiting\n'
     },
-    hanldeCanPlay (e) {
-      console.log('hanldeCanPlay', e)
+    handleLoadedData () {
+      // console.log('handleLoadedData', e)
+      this.logMsg += 'loadeddata\n'
+    },
+    hanldeCanPlay () {
+      // console.log('hanldeCanPlay', e)
+      this.logMsg += 'canplay\n'
       const video = this.$refs.video
       if (!this.videoReady) {
         video.setAttribute('controls', true)
@@ -97,16 +133,33 @@ export default {
         video.play()
       }
     },
-    hanlePlay (e) {
-      console.log('hanlePlay', e)
+    hanlePlay () {
+      // console.log('hanlePlay', e)
+      this.logMsg += 'play\n'
     },
-    handlePlaying (e) {
-      console.log('handlePlaying', e)
+    handlePlaying () {
+      // console.log('handlePlaying', e)
+      this.logMsg += 'playing\n'
     },
     handleError (e) {
       const error = e.target.error
-      console.log('handleError', error)
-      this.tipVisible = true
+      this.logMsg += `error ${JSON.stringify(error)}\n`
+      // 1 = MEDIA_ERR_ABORTED - 取回过程被用户中止
+      // 2 = MEDIA_ERR_NETWORK - 当下载时发生错误
+      // 3 = MEDIA_ERR_DECODE - 当解码时发生错误
+      // 4 = MEDIA_ERR_SRC_NOT_SUPPORTED - 不支持音频/视频
+      if (error.code > 1) {
+        if (!this.isOnline()) alert('网络异常，请稍后重试')
+        this.tipVisible = true
+      }
+      // this.$loading.hide()
+      // console.log('handleError', error)
+    },
+    onClickTitle () {
+
+    },
+    isOnline () {
+      return navigator.onLine
     }
   }
 }
@@ -118,14 +171,14 @@ export default {
   height: 100%;
   background-color: black;
 
-  video {
-    width: 100%;
-  }
-
   .video-hidden {
     video {
       opacity: 0;
     }
+  }
+
+  .img-hidden {
+    opacity: 0;
   }
 
   .video-player-header {
@@ -150,9 +203,9 @@ export default {
       color: #fff;
       font-size: 1.6rem;
       text-align: center;
-      // overflow: hidden;
-      // text-overflow: ellipsis;
-      // white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       padding-right: 2rem;
     }
   }
@@ -162,7 +215,14 @@ export default {
     top: 50%;
     left: 50%;
     width: 100%;
+    height: 21rem;
     transform: translate(-50%, -50%);
+    video {
+      background: #111;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
   }
 
   .video-player-poster {
@@ -171,6 +231,7 @@ export default {
     right: 0;
     bottom: 0;
     left: 0;
+    background: black;
     .poster {
       display: block;
       width: 100%;
@@ -181,6 +242,8 @@ export default {
       position: absolute;
       top: 50%;
       left: 50%;
+      width: 7rem;
+      height: 7rem;
       transform: translate(-50%, -50%);
     }
   }
@@ -206,5 +269,29 @@ export default {
       }
     }
   }
+
+  .log {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5rem;
+    overflow: auto;
+    color: white;
+    white-space: pre-line;
+  }
+}
+.x5-fullscreen {
+  // .video-player-header {
+  //   display: none;
+  // }
+  // .video-player-wrapper {
+  //   height: 100%;
+  //   video {
+  //     width: initial;
+  //     height: initial;
+  //     object-position: center top;
+  //   }
+  // }
 }
 </style>
