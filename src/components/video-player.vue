@@ -165,11 +165,11 @@ export default {
     },
     handleLoadedMetadata() {
       // console.log('handleWaiting', e)
-      this.logMsg += "loadedmetadata\n";
+      this.logMsg += "loaded metadata\n";
     },
     handleProgress() {
       // console.log('handleWaiting', e)
-      this.logMsg += "pregress\n";
+      this.logMsg += "progress\n";
     },
     handlePlayThrough() {
       // console.log('handleWaiting', e)
