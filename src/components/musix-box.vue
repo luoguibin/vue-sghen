@@ -83,8 +83,7 @@ export default {
             contentID: 0,
             transferstate: 3,
             contentName: "test from caiyun.mp3",
-            presentURL:
-              "http://media.caiyun.feixin.10086.cn:80/StorageWeb/servlet/GetFileByURLServlet?dm=D960&root=/mnt/wfs65&pt=/de3/fb&fileid=K8de3fbed4c88676f1a8f3349bc10e03bb.mp3&type=5&ui=15625045984&ci=0111TyOUz4gZ06420200317110301r9s&cn=%E6%B8%85%E6%BC%AA-%E5%87%BA%E5%A1%9E%E6%AD%8C&ct=2&time=1584415267&exp=12&code=AAE37182B67D5DCA942CFAE81062753961E18A117E8004A5CA7891B06C9A9222&ec=0"
+            presentURL: "http://mp3.music.cn/pure/vicotry.mp3"
           }
         ];
       }
