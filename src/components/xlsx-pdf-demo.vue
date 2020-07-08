@@ -1,30 +1,27 @@
 <template>
   <div class="xlsx-pdf-demo">
     <div>
-      <el-upload
-        ref="upload"
-        action
-        with-credentials
-        :show-file-list="false"
-        :auto-upload="false"
-        :on-change="onFileChange"
-        style="display: inline-block;"
-      >
-        <el-button type="primary">点击上传</el-button>
-      </el-upload>
+      <div>
+        .xls,.xslx,.xlsx
+        <input type="file" accept=".xls, .xslx, .xlsx" @change="onFileChange" />
+      </div>
 
-      <el-button style="margin-left: 10px;" :disabled="!tableData.length" @click="onDownload">下载数据</el-button>
-      <el-button :disabled="!tableData.length" @click="onDownloadPdf">下载Pdf</el-button>
+      <button style="margin-left: 10px;" :disabled="!tableData.length" @click="onDownload">下载数据</button>
+      <button :disabled="!tableData.length" @click="onDownloadPdf">下载Pdf</button>
     </div>
 
-    <el-table :data="tableData" border stripe>
-      <el-table-column
-        v-for="column in tableColumns"
-        :key="column.prop"
-        :prop="column.prop"
-        :label="column.prop"
-      ></el-table-column>
-    </el-table>
+    <div class="table">
+      <div class="header row">
+        <div v-for="column in tableColumns" :key="column.prop" class="cell">{{column.prop}}</div>
+      </div>
+      <div class="content">
+        <div class="wrapper">
+          <div v-for="(item, index) in tableData" :key="index" class="row">
+            <div v-for="column in tableColumns" :key="column.prop" class="cell">{{item[column.prop]}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -56,7 +53,11 @@ export default {
   },
 
   methods: {
-    onFileChange(file, fileList) {
+    /**
+     * @param {Event} e
+     */
+    onFileChange(e) {
+      const file = e.target.files[0];
       if (!file) {
         console.log("当前没有选择文件");
         return;
@@ -71,7 +72,7 @@ export default {
       reader.onload = e => {
         this.readExcelData(e.target.result);
       };
-      reader.readAsBinaryString(file.raw);
+      reader.readAsBinaryString(file);
     },
 
     readExcelData(data) {
@@ -164,9 +165,40 @@ export default {
 
 <style lang="scss">
 .xlsx-pdf-demo {
-  .el-upload-list {
-    display: inline-block;
-    vertical-align: middle;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .table {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .header {
+      font-weight: bold;
+    }
+    .content {
+      flex: 1;
+      height: 100%;
+    }
+    .row {
+      display: flex;
+      flex-direction: row;
+      font-size: 1.4rem;
+      line-height: 2.5rem;
+    }
+    .cell {
+      display: inline-block;
+      width: 100%;
+      padding: 0 1rem;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  .wrapper {
+    height: 100%;
+    overflow-y: auto;
   }
 }
 </style>

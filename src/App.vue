@@ -5,35 +5,11 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import CanvasNest from "canvas-nest.js";
-import tooltip from "./mixins/tooltip";
 
 export default {
-  name: "app",
-  mixins: [tooltip],
+  name: "App",
   mounted() {
     window.app = this;
-
-    // Using config rendering effect at 'element'.
-    const cn = new CanvasNest(this.$refs.canvas, {
-      color: "20,155,250",
-      count: 88,
-      zIndex: 0
-    });
-    this.$once("destroy", () => {
-      cn.destroy();
-    });
-
-    const infoStr = sessionStorage.getItem("sghen_user_info");
-    if (infoStr) {
-      this.setUserInfo(JSON.parse(infoStr));
-    }
-  },
-  methods: {
-    ...mapActions({
-      setUserInfo: "setUser"
-    })
   }
 };
 </script>

@@ -1,67 +1,27 @@
 <template>
-  <el-container class="home">
-    <!-- left nav menus -->
-    <el-aside width="200px" :style="{left: isDrawerShow ? '0px' : '-200px'}">
-      <el-scrollbar>
-        <el-menu ref="elMenu" :default-active="activeIndex" @select="onMenuSelect">
-          <el-menu-item v-for="menu in menus" :key="menu.key" :index="menu.key">{{menu.name}}</el-menu-item>
-        </el-menu>
-      </el-scrollbar>
-
-      <el-button
-        class="home_drawer-btn"
-        @click="onClickDrawer"
-        type="text"
-        :icon="[isDrawerShow ? 'el-icon-s-fold' : 'el-icon-s-unfold']"
-      ></el-button>
-    </el-aside>
-
-    <el-container>
-      <el-header style="background-color: white; line-height: 60px;">
-        <home-header></home-header>
-      </el-header>
-      <el-main style="height: 100%;">
-        <router-view></router-view>
-      </el-main>
-    </el-container>
-  </el-container>
+  <div class="demos" @click="onClick">
+    <div class="wrapper">
+      <div v-for="menu in menus" :key="menu.key" class="item">{{menu.name}}</div>
+    </div>
+  </div>
 </template>
 
 <script>
-import HomeHeader from "./home-header";
-
 export default {
-  name: "home",
-
-  components: {
-    "home-header": HomeHeader // () => import("./home-header")
-  },
+  name: "Demos",
 
   data() {
     return {
-      activeIndex: "",
-      menus: [],
-
-      isDrawerShow: false
+      menus: []
     };
   },
   mounted() {
-    window.home = this;
-    document.body.oncontextmenu = function() {
-      return false;
-    };
-    this.loadDemoComponentNames();
-    this.checkRoute();
-  },
-
-  watch: {
-    $route() {
-      this.checkRoute();
-    }
+    window.demos = this;
+    this.initDemoNames();
   },
 
   methods: {
-    loadDemoComponentNames() {
+    initDemoNames() {
       import("../assets/config/demo-comps.json")
         .then(o => {
           const object = o.default;
@@ -77,94 +37,82 @@ export default {
           this.menus = menus;
         })
         .catch(err => {
-          console.log(err);
+          alert("初始化Demo列表失败：" + JSON.stringify(err || {}));
         });
     },
 
-    checkRoute() {
-      const route = this.$route;
-      if (route.name === "demo") {
-        this.activeIndex = route.params.name;
-        // this.$nextTick(() => {
-        //   this.focusActiveMenu();
-        // });
-        setTimeout(() => {
-          this.focusActiveMenu();
-        }, 200);
-      }
-    },
-
-    focusActiveMenu() {
-      const elMenu = this.$refs.elMenu;
-      if (!elMenu) {
+    /**
+     * @description demo按钮点击冒泡
+     * @param {Event} e
+     */
+    onClick(e) {
+      let el = e.target;
+      if (!el.classList.contains("item")) {
         return;
       }
-      const activeMenus = elMenu.$el.getElementsByClassName("is-active");
-      if (!activeMenus || !activeMenus.length) {
-        return;
+
+      let index = 0;
+      while (el.previousElementSibling) {
+        el = el.previousElementSibling;
+        index++;
       }
-      activeMenus[0].focus();
-    },
 
-    onMenuSelect(index) {
-      this.activeIndex = index;
-      this.$router.push({ name: "demo", params: { name: index } });
-    },
-
-    onClickDrawer() {
-      this.isDrawerShow = !this.isDrawerShow;
+      this.$router.push({
+        name: "demo",
+        params: { name: this.menus[index].name }
+      });
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.home {
+.demos {
   height: 100%;
-
-  .el-aside {
-    .home_drawer-btn {
-      display: none;
-      position: absolute;
-      right: -30px;
-      top: 10px;
-      font-size: 24px;
-    }
+  overflow-y: auto;
+  .wrapper {
+    padding: 1rem 0;
+  }
+  .item {
+    display: inline-block;
+    width: 100%;
+    padding: 0 1rem;
+    margin-bottom: 1.6rem;
+    font-size: 1.4rem;
+    line-height: 2.2rem;
+    box-sizing: border-box;
+    border: 1px solid whitesmoke;
+    border-radius: 0.5rem;
+    background-color: rgb(125, 159, 211);
+    color: white;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
-
 @media screen and (max-width: 500px) {
-  .home {
-    position: relative;
-
-    .el-aside {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      z-index: 100;
-      overflow: inherit;
-      transition-property: left;
-      transition-duration: 500ms;
-
-      .home_drawer-btn {
-        display: initial;
-        cursor: pointer;
-      }
+  .demos {
+    .wrapper {
+      padding: 1rem;
     }
   }
 }
-</style>
-
-<style lang="scss">
-.home {
-  .el-scrollbar {
-    height: 100%;
-    background-color: #fff;
+@media screen and (min-width: 501px) and (max-width: 1000px) {
+  .demos {
+    .item {
+      width: 48%;
+      margin-right: 1%;
+      margin-left: 1%;
+    }
   }
-
-  .el-scrollbar__wrap {
-    overflow-x: hidden;
+}
+@media screen and (min-width: 1001px) {
+  .demos {
+    .item {
+      width: 30%;
+      margin-right: 1.5%;
+      margin-left: 1.5%;
+    }
   }
 }
 </style>

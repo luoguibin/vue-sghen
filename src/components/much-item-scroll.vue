@@ -10,6 +10,12 @@
 <script>
 export default {
   name: 'MuchItemScroll',
+  created () {
+    window.muchItemScroll = this
+  },
+  mounted () {
+    this.onAddDiv()
+  },
   methods: {
     onAddDiv(count = 100) {
       const divEl = this.newDivEl(count)

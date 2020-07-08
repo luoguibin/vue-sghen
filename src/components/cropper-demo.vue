@@ -3,7 +3,7 @@
     <div>
       <span>选择图片</span>
       <input type="file" ref="input" @change="onChange">
-      <el-button @click="onStartCrop">crop</el-button>
+      <button @click="onStartCrop">crop</button>
     </div>
     <div class="container">
       <vue-cropper
@@ -68,7 +68,7 @@ export default {
       }
 
       const reader = new FileReader(reader);
-      reader.onload = e => {
+      reader.onload = () => {
         this.option.img = reader.result;
       };
       reader.readAsDataURL(file);
@@ -77,7 +77,7 @@ export default {
     onStartCrop() {
       this.$refs.cropper.getCropBlob(data => {
         const img = this.$refs.showImg;
-        img.onload = e => {
+        img.onload = () => {
           window.URL.revokeObjectURL(this.imgUrl);
           this.imgStyle = {};
           img.onload = null;
@@ -100,7 +100,7 @@ export default {
       //   });
     },
     realTime(data) {
-      //   console.log("realTime", data);
+        console.log("realTime", data);
       //   this.imgUrl = data.url;
       //   this.imgStyle = data.img;
     },

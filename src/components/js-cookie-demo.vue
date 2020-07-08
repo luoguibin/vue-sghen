@@ -1,18 +1,21 @@
 <template>
   <div class="js-cookie-demo">
-    <p>监听document的visibilitychange事件，刷新对应的cookie，但是同时打开两个浏览器窗口则不会触发</p>
-    <el-input v-model.number="keyVals.id">
-      <span slot="prepend">id</span>
-    </el-input>
-    <el-input v-model="keyVals.name">
-      <span slot="prepend">name</span>
-    </el-input>
-    <el-input v-model="keyVals.token">
-      <span slot="prepend">token</span>
-    </el-input>
+    <p>监听document的visibilitychange事件，JsCookie刷新对应的cookie，但是同时打开两个浏览器窗口(非网页标签)则不会触发</p>
+    <div>
+      <span>id</span>
+      <input v-model.number="keyVals.id" />
+    </div>
+    <div>
+      <span>name</span>
+      <input v-model="keyVals.name" />
+      </div>
+    <div>
+      <span>token</span>
+      <input v-model="keyVals.token" />
+    </div>
 
-    <el-button type="primary" @click="onSave">保存</el-button>
-    <el-button type="primary" @click="onDelete">移除</el-button>
+    <button type="primary" @click="onSave">保存</button>
+    <button type="primary" @click="onDelete">移除</button>
   </div>
 </template>
 
@@ -35,7 +38,7 @@ export default {
 
   methods: {
     init() {
-      const visibilitychange = e => {
+      const visibilitychange = () => {
         console.log(
           "visibilitychange",
           document.visibilityState,

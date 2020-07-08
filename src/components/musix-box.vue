@@ -79,12 +79,12 @@ export default {
             presentURL:
               "http://www.sghen.cn/peotry/media/%E5%BE%90%E9%B2%A4%20-%20%E9%95%9C%E6%B9%96.ec79cf7a.mp3"
           },
-          {
-            contentID: 0,
-            transferstate: 3,
-            contentName: "test from caiyun.mp3",
-            presentURL: "http://mp3.music.cn/pure/vicotry.mp3"
-          }
+          // {
+          //   contentID: 0,
+          //   transferstate: 3,
+          //   contentName: "test from caiyun.mp3",
+          //   presentURL: "http://mp3.music.cn/pure/vicotry.mp3"
+          // }
         ];
       }
     },
@@ -152,9 +152,7 @@ export default {
   mounted() {
     window.musicBox = this;
 
-    setTimeout(() => {
-      this.visible = true;
-    }, 5000);
+    this.visible = true;
   },
 
   methods: {
@@ -178,7 +176,7 @@ export default {
      * @description 音频可播放回调事件
      * @param {Event} e
      */
-    handleCanPlay(e) {
+    handleCanPlay() {
       // wap端需要手动点击播放
       console.log("handleCanPlay");
       this.hasUserAction && this.playAudio();
@@ -215,7 +213,7 @@ export default {
       console.log("handlePause");
       this.isPlaying = false;
     },
-    handleEnded(e) {
+    handleEnded() {
       console.log("handleEnded");
       this.onPlayNext(true);
     },
@@ -261,7 +259,7 @@ export default {
       ratio = Math.min(ratio, 1);
       this.audioCurrentTime = ratio * this.audioDuration;
     },
-    onTouchEnd(e) {
+    onTouchEnd() {
       if (this.previousTouch) {
         this.previousTouch = null;
         this.$refs.audio.currentTime = this.audioCurrentTime;

@@ -1,18 +1,16 @@
 <template>
   <div class="poplar-annotation-demo">
     <div class="pad-header">
-      <i class="el-icon-info"></i>
       <span>选中文字添加标签，右键删除</span>
     </div>
     <div class="pad-main" ref="box"></div>
 
-    <el-dialog title="标签类型" :visible.sync="labelConfig.visible">
-      <el-radio-group v-model="labelId">
-        <el-radio v-for="item in labelCategories" :key="item.id" :label="item.id">{{item.text}}</el-radio>
-      </el-radio-group>
-
-      <el-button slot="footer" @click="addLabel">确认</el-button>
-    </el-dialog>
+    <div class="dialog" v-if="labelConfig.visible">
+      <div class="title">标签类型<span @click="labelConfig.visible = false">×</span></div>
+      <div class="radios">
+        <div v-for="item in labelCategories" :key="item.id" @click="addLabel(item.id)">{{item.text}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -208,7 +206,7 @@ export default {
       labelConfig.startIndex = startIndex;
       labelConfig.endIndex = endIndex;
     });
-    annotator.on("labelRightClicked", (id, event) => {
+    annotator.on("labelRightClicked", (id) => {
       annotator.applyAction(Action.Label.Delete(id));
     });
 
@@ -218,7 +216,8 @@ export default {
   },
 
   methods: {
-    addLabel() {
+    addLabel(id) {
+      this.addLabel = id
       const { startIndex, endIndex } = this.labelConfig;
       this.annotator.applyAction(Action.Label.Create(this.labelId, startIndex, endIndex));
 
@@ -241,6 +240,23 @@ export default {
   }
   .pad-main {
     flex: 1;
+  }
+  .dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 30rem;
+    padding: 1rem;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    
+    .title {
+      text-align: center;
+      span {
+        float: right;
+      }
+    }
   }
 }
 </style>

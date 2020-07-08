@@ -9,35 +9,33 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: "/",
-      redirect: "/home"
-    },
-    {
       path: "/home",
       name: "home",
-      component: Home,
-      children: [
-        {
-          path: "demo/:name",
-          name: "demo",
-          component: () => import(/* webpackChunkName: "home-demo" */ "./views/home-demo"),
-          // props: true,
-          props: (route) => ({ compName: route.params.name }),
-          // beforeEnter: (to, from, next) => {
-          // }
-        }
-      ]
+      component: Home
     },
+    {
+      path: "/demo/:name",
+      name: "demo",
+      component: () => import(/* webpackChunkName: "demo" */ "./views/demo"),
+      // props: true,
+      // props: (route) => ({ compName: route.params.name }),
+      // beforeEnter: (to, from, next) => {
+      // }
+    },
+    {
+      path: "*",
+      redirect: "/home"
+    }
   ]
 });
 
-router.beforeEach((to, from, next) => {
-  // console.log("router.beforeEach()");
-  next();
-});
+// router.beforeEach((to, from, next) => {
+//   // console.log("router.beforeEach()");
+//   next();
+// });
 
-router.afterEach((to, from) => {
-  // console.log("router.afterEach");
-});
+// router.afterEach((to, from) => {
+//   // console.log("router.afterEach");
+// });
 
 export default router;

@@ -16,7 +16,7 @@ const mxGraphObj = require("mxgraph")({
 });
 const {
   mxGraph,
-  mxGeomentry,
+  // mxGeomentry,
   mxClient,
   mxCell,
   mxImage,
@@ -30,12 +30,12 @@ const {
   mxPoint,
   mxPolyline,
   mxUtils,
-  mxConstants,
-  mxPerimeter
+  // mxConstants,
+  // mxPerimeter
 } = mxGraphObj;
 
 // Overridden to define per-shape connection points
-mxGraph.prototype.getAllConnectionConstraints = function(terminal, source) {
+mxGraph.prototype.getAllConnectionConstraints = function(terminal) {
   if (terminal != null && terminal.shape != null) {
     if (terminal.shape.stencil != null) {
       if (terminal.shape.stencil != null) {
@@ -120,7 +120,7 @@ export default {
       graph.setConnectable(true);
 
       // Enables connect preview for the default edge style
-      graph.connectionHandler.createEdgeState = function(me) {
+      graph.connectionHandler.createEdgeState = function() {
         const edge = graph.createEdge(null, null, null, null, null);
 
         return new mxCellState(
@@ -138,7 +138,7 @@ export default {
       new mxRubberband(graph);
 
       // Allows moving of relative cells
-      graph.isCellLocked = function(cell) {
+      graph.isCellLocked = function() {
         return this.isCellsLocked();
       };
 
@@ -159,11 +159,11 @@ export default {
           return;
         }
 
-        if (cell.vertex) {
-          this.$message.info("添加了一个节点");
-        } else if (cell.edge) {
-          this.$message.info("添加了一条线");
-        }
+        // if (cell.vertex) {
+        //   this.$message.info("添加了一个节点");
+        // } else if (cell.edge) {
+        //   this.$message.info("添加了一条线");
+        // }
       });
 
       // graph.addListener(mxEvent.CLICK, (sender, evt) => {
@@ -183,7 +183,7 @@ export default {
       try {
         switch (key) {
           case "insert-vertex":
-            const vertex = graph.insertVertex(
+            graph.insertVertex(
               currentCell ? currentCell : graph.getDefaultParent(),
               null,
               "content",
@@ -215,6 +215,7 @@ export default {
             break;
 
           case "edge":
+            {
             const edge = new mxCell(
               "我是边描述",
               new mxGeometry(),
@@ -228,6 +229,7 @@ export default {
 
             graph.addCell(edge, graph.getDefaultParent());
             console.log(edge);
+            }
             break;
 
           case "setValue":

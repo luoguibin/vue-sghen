@@ -79,14 +79,14 @@ export default {
   methods: {
     onHightLight(e, type) {
       const driver = new Driver();
-
+      const target = e.target;
       switch (type) {
         case 0:
-          driver.highlight(e.target);
+          driver.highlight(target);
           break;
         case 1:
           driver.highlight({
-            element: e.target,
+            element: target,
             popover: {
               title: "Title for the Popover",
               description: "Description for it"
@@ -94,36 +94,37 @@ export default {
           });
           break;
         case 2:
-          const target = e.target;
-          const el = target.tagName === "P" ? target.parentElement : target;
-          driver.defineSteps([
-            {
-              element: el.children[0],
-              popover: {
-                className: "first-step-popover-class",
-                title: "Title on Popover",
-                description: "Body of the popover",
-                position: "top"
+          {
+            const el = target.tagName === "P" ? target.parentElement : target;
+            driver.defineSteps([
+              {
+                element: el.children[0],
+                popover: {
+                  className: "first-step-popover-class",
+                  title: "Title on Popover",
+                  description: "Body of the popover",
+                  position: "top"
+                }
+              },
+              {
+                element: el.children[1],
+                popover: {
+                  title: "Title on Popover",
+                  description: "Body of the popover",
+                  position: "top"
+                }
+              },
+              {
+                element: el.children[2],
+                popover: {
+                  title: "Title on Popover",
+                  description: "Body of the popover",
+                  position: "top"
+                }
               }
-            },
-            {
-              element: el.children[1],
-              popover: {
-                title: "Title on Popover",
-                description: "Body of the popover",
-                position: "top"
-              }
-            },
-            {
-              element: el.children[2],
-              popover: {
-                title: "Title on Popover",
-                description: "Body of the popover",
-                position: "top"
-              }
-            }
-          ]);
-          driver.start();
+            ]);
+            driver.start();
+          }
           break;
         default:
           break;
