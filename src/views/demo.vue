@@ -42,6 +42,7 @@ export default {
 
   methods: {
     initComp() {
+      this.$toast("加载中...", { loading: true, duration: -1 });
       const name = this.$route.params.name;
       this.compName = name;
       this.compState = 0;
@@ -51,10 +52,12 @@ export default {
         .then(o => {
           Vue.component(name, o.default);
           this.compState = 1;
+          this.$toast.hide();
         })
         .catch(err => {
           this.compState = -1;
           this.compData = err;
+          this.$toast.hide();
         });
     }
   }
