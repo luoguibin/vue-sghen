@@ -53,7 +53,10 @@ export default {
     onClick(e) {
       let el = e.target;
       if (!el.classList.contains("item")) {
-        return;
+        el = el.parentElement
+        if (!el.classList.contains("item")) {
+          return;
+        }
       }
 
       let index = 0;
