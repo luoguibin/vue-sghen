@@ -58,10 +58,8 @@ export default {
     for (let index = 0; index < 33; index++) {
       this.items.push({ id: index });
     }
-    if ("ontouchstart" in document) {
+    if (!this.$checkToTip(this, 'wap')) {
       sgScroll.sgScrollInit();
-    } else {
-      this.$toast('请在移动端测试', { duration: 5000})
     }
   }
 };

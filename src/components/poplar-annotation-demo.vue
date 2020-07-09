@@ -73,6 +73,8 @@ export default {
   },
 
   mounted() {
+    this.$checkToTip(this, 'web')
+    
     const labelCategories = this.labelCategories;
     const connectionCategories = this.connectionCategories;
     const data = {

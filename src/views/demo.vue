@@ -42,7 +42,7 @@ export default {
 
   methods: {
     initComp() {
-      this.$toast("加载中...", { loading: true, duration: -1 });
+      this.$toast("加载中...", { loading: true, duration: -1, direction: 'middle' });
       const name = this.$route.params.name;
       this.compName = name;
       this.compState = 0;

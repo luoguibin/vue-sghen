@@ -1,23 +1,82 @@
 {
-    "test-demo": false,
-    "bloodship-chart": false,
-    "canvas-demo": false,
-    "codemirror-demo": false,
-    "countup-demo": false,
-    "cropper-demo": false,
-    "driver-demo": false,
-    "extjs-demo": false,
-    "js-cookie-demo": false,
-    "jsplumb-demo": false,
-    "line-adsorption": false,
-    "much-item-scroll": false,
-    "musix-box": false,
-    "mxgraph-demo": false,
-    "page-list": false,
-    "pixi-demo": false,
-    "poplar-annotation-demo": false,
-    "sg-scroll-demo": false,
-    "shape-cut": false,
-    "worker-demo": false,
-    "xlsx-pdf-demo": false
+    "bloodship-chart": {
+        "description": "echarts关系图测试",
+        "js": ["echarts"]
+    },
+    "canvas-demo": {
+        "description": "canva测试2d绘制折线图",
+        "js": []
+    },
+    "codemirror-demo": {
+        "description": "仿代码编辑器",
+        "js": ["codemirror"]
+    },
+    "countup-demo": {
+        "description": "数字滚动效果",
+        "js": ["countup.js"]
+    },
+    "cropper-demo": {
+        "description": "图片裁剪组件测试",
+        "js": ["vue-cropper(vue组件)"]
+    },
+    "driver-demo": {
+        "description": "页面导航指引",
+        "js": ["driver.js"]
+    },
+    "extjs-demo": {
+        "description": "extjs前端开发框架",
+        "js": ["extjs"]
+    },
+    "js-cookie-demo": {
+        "description": "cookie测试",
+        "js": ["js-cookie"]
+    },
+    "jsplumb-demo": {
+        "description": "流程图或拓扑图绘制工具库",
+        "js": ["jsplumb"]
+    },
+    "line-adsorption": {
+        "description": "平面几何图形的边自动吸附",
+        "js": []
+    },
+    "much-item-scroll": {
+        "description": "多数据的列表滚动",
+        "js": []
+    },
+    "musix-box": {
+        "description": "音乐播放器",
+        "js": []
+    },
+    "mxgraph-demo": {
+        "description": "流程图绘制工具",
+        "js": ["mxgraph"]
+    },
+    "page-list": {
+        "description": "列表分页数据删除后的拼接",
+        "js": []
+    },
+    "pixi-demo": {
+        "description": "2D渲染引擎",
+        "js": ["pixi.js"]
+    },
+    "poplar-annotation-demo": {
+        "description": "自然语言(NLP)标注工具",
+        "js": ["poplar-annotation"]
+    },
+    "sg-scroll-demo": {
+        "description": "移动端自定义滚动",
+        "js": ["sg-scroll"]
+    },
+    "shape-cut": {
+        "description": "几何图形切割",
+        "js": []
+    },
+    "worker-demo": {
+        "description": "多线程worker",
+        "js": []
+    },
+    "xlsx-pdf-demo": {
+        "description": "exce文件数据导入、下载，pdf导出下载",
+        "js": ["xlsx", "file-saver", "html2canvas", "jspdf"]
+    }
 }

@@ -20,7 +20,7 @@ export default {
 
   data () {
     return {
-      direction: 'bottom',
+      direction: 'top',
       msg: '',
       visible: false,
       loading: false
