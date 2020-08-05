@@ -1,8 +1,8 @@
 <template>
   <div class="sg-scroll-demo scroll-vertical" sg-scroll="vertical_base">
-    <div class="scroll-vertical bg1" sg-scroll="vertical_stop" style="height: 30%;">
+    <div class="scroll-vertical bg1" sg-scroll="vertical_stop" sg-sticky="sg-sticky-item" style="height: 30%;">
       <div class="item">sg-scroll="vertical_stop"</div>
-      <div v-for="item in items" :key="item.id" class="item">{{item.id}}</div>
+      <div v-for="item in items" :key="item.id" :class="{'item': true, 'sg-sticky-item': item.id % 7 === 0}">{{item.id + '  ' + (item.id % 7 === 0 ? 'stick-item' : '')}}</div>
     </div>
 
     <div class="scroll-vertical bg2" sg-scroll="vertical_base" style="height: 30%;">
@@ -59,7 +59,8 @@ export default {
       this.items.push({ id: index });
     }
     if (!this.$checkToTip(this, 'wap')) {
-      sgScroll.sgScrollInit();
+      sgScroll.sgScrollInit()
+      sgScroll.sgSticky()
     }
   }
 };
@@ -110,7 +111,9 @@ export default {
   word-break: break-all;
   box-sizing: border-box;
 }
-
+.sg-sticky-item {
+  background-color: rgb(29, 88, 122);
+}
 .bg0 {
   background-color: rgb(255, 107, 107);
 }
