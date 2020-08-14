@@ -71,22 +71,26 @@
 
       <!-- 自定义滚动 -->
       <div v-show="menuKey === 'scroll'" class="scroll-vertical" sg-scroll="vertical_stop">
-        <div class="scroll-vertical bg1" sg-scroll="vertical_stop" style="height: 50%">
-          <div class="item" style="white-space: pre-line;">sg-scroll="vertical_stop"
-            竖直方向非冒泡滚动
+        <div style="height: 50%">
+          <div class="scroll-vertical bg1" sg-scroll="vertical_stop" sg-edge>
+            <div class="text">sg-scroll="vertical_stop"
+              竖直方向非冒泡滚动
+            </div>
+            <div class="text">sg-edge作用于滚动容器，同时滚动容器的父元素将被设置position:relative，需要导入目录下的/style/edge.css样式文件</div>
+            <div v-for="item in items" :key="item.id" class="item">{{item.id }}</div>
           </div>
-          <div v-for="item in items" :key="item.id" class="item">{{item.id }}</div>
         </div>
+        
 
         <div class="scroll-vertical bg2" sg-scroll="vertical_base" style="height: 50%;">
-          <div class="item" style="white-space: pre-line;">sg-scroll="vertical_base"
+          <div class="text">sg-scroll="vertical_base"
             基于手势方向冒泡滚动
           </div>
           <div v-for="item in items" :key="item.id" class="item">{{item.id}}</div>
         </div>
 
         <div class="scroll-vertical bg0" sg-scroll style="height: 50%;">
-          <div class="item" style="white-space: pre-line;">sg-scroll(default value is `vertical`)
+          <div class="text">sg-scroll(default value is `vertical`)
             默认竖直冒泡滚动
           </div>
           <div v-for="item in items" :key="item.id" class="item">{{item.id}}</div>
@@ -94,12 +98,12 @@
 
         <div style="height: 50%;">
           <div class="scroll-horizontal bg1" sg-scroll="horizontal_base">
-            <div class="item" style="white-space: pre-line;">sg-scroll="horizontal"
+            <div class="text">sg-scroll="horizontal"
               横向冒泡滚动
             </div>
             <div class="item">
               <div class="scroll-vertical" sg-scroll="vertical_base">
-                <div class="item" style="white-space: pre-line;">sg-scroll="vertical_base"</div>
+                <div class="text">sg-scroll="vertical_base"</div>
                 <div v-for="item in items" :key="item.id" class="item">{{item.id}}</div>
               </div>
             </div>
@@ -108,7 +112,7 @@
         </div>
 
         <div style="height: 50%;" class="scroll-normal bg2" sg-scroll="normal">
-          <div class="item" style="white-space: pre-line;">sg-scroll="normal"
+          <div class="text">sg-scroll="normal"
             双向冒泡滚动
           </div>
           <div
@@ -127,6 +131,7 @@
 
 <script>
 import sgScroll from "sg-scroll";
+import 'sg-scroll/style/edge.css';
 
 export default {
   name: "App",
@@ -150,6 +155,7 @@ export default {
     if (!this.$checkToTip(this, "wap")) {
       sgScroll.sgScrollInit();
       sgScroll.sgStickyInit();
+      sgScroll.sgEdgeInit();
     }
   },
 
@@ -207,6 +213,10 @@ export default {
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
+}
+.text {
+  color: white;
+  margin: 1rem 0;
 }
 .item {
   color: white;
