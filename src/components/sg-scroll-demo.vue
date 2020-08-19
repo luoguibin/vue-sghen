@@ -14,6 +14,7 @@
         v-show="menuKey === 'sticky'"
         sg-scroll="vertical_stop"
         sg-sticky="sg-sticky-item"
+        sg-edge
         class="scroll-vertical"
       >
         <h3>sg-sticky自粘滞定位</h3>
@@ -98,7 +99,7 @@
 
         <div style="height: 50%;">
           <div class="scroll-horizontal bg1" sg-scroll="horizontal_base">
-            <div class="text">sg-scroll="horizontal"
+            <div class="item text" style="margin: 0;">sg-scroll="horizontal"
               横向冒泡滚动
             </div>
             <div class="item">
@@ -130,7 +131,7 @@
 </template>
 
 <script>
-import sgScroll from "sg-scroll";
+import { sgScroll, sgSticky, sgEdge } from "sg-scroll";
 import 'sg-scroll/style/edge.css';
 
 export default {
@@ -153,10 +154,14 @@ export default {
       this.items.push({ id: index });
     }
     if (!this.$checkToTip(this, "wap")) {
-      sgScroll.sgScrollInit();
-      sgScroll.sgStickyInit();
-      sgScroll.sgEdgeInit();
+      sgScroll.init();
+      sgSticky.init();
+      sgEdge.init();
     }
+  },
+
+  beforeDestroy () {
+    sgScroll.release()
   },
 
   methods: {
