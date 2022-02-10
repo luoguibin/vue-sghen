@@ -22,7 +22,7 @@
     "jspdf": "^1.5.3",
     "jsplumb": "^2.12.5",
     "mxgraph": "^3.9.12",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "poplar-annotation": "^2.0.0-beta3",
     "promise.prototype.finally": "^3.1.1",
     "sass-loader": "^7.1.0",
